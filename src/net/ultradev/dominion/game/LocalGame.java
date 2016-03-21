@@ -70,9 +70,17 @@ public class LocalGame {
 		return config;
 	}
 	
+	public List<JSONObject> getPlayersAsJson() {
+		List<JSONObject> objs = new ArrayList<>();
+		for(Player p : players) 
+			objs.add(p.getAsJson());
+		return objs;
+	}
+	
 	public JSONObject getAsJson() {
 		return new JSONObject()
-				.accumulate("config", getConfig().getAsJson());
+				.accumulate("config", getConfig().getAsJson())
+				.accumulate("players", getPlayersAsJson());
 	}
 	
 	public static LocalGame getGame(HttpSession session) {
