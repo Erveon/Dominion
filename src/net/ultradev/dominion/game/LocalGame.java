@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.utils.Utils;
 
 public class LocalGame {
@@ -13,9 +14,6 @@ public class LocalGame {
 		// Create game > ?action=create&type=local
 		// Check if a game is running > ?action=info&type=local
 		// Set config > ?action=setconfig&type=local&key=players&value=4
-	
-	//TODO voor AJAX
-		// > Set config properties
 	
 	public static Map<HttpSession, LocalGame> games = new HashMap<>();
 	
@@ -32,6 +30,10 @@ public class LocalGame {
 	
 	public GameConfig getConfig() {
 		return config;
+	}
+	
+	public JSONObject getAsJson() {
+		return new JSONObject().accumulate("config", getConfig().getAsJson());
 	}
 	
 	public static LocalGame getGame(HttpSession session) {

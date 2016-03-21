@@ -3,6 +3,7 @@ package net.ultradev.dominion.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.utils.Utils;
 
 public class GameConfig {
@@ -54,8 +55,18 @@ public class GameConfig {
 		//TODO Geef 10 random kaart types vanuit db
 	}
 	
+	public int getPlayers() {
+		return players;
+	}
+	
 	public List<String> getActionCards() {
 		return actionCardTypes;
+	}
+	
+	public JSONObject getAsJson() {
+		return new JSONObject()
+				.accumulate("players", getPlayers())
+				.accumulate("actionCards", getActionCards());
 	}
 
 }

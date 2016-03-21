@@ -52,7 +52,7 @@ public class Test extends HttpServlet {
 					if(g == null) {
 						res.getWriter().append("Invalid request: No local game running");
 					} else {
-						res.getWriter().append("local game found with id: " + req.getSession().getId());
+						res.getWriter().append(g.getAsJson().toString());
 					}
 					return;
 				}
