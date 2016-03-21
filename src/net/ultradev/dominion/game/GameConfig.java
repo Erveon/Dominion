@@ -23,7 +23,9 @@ public class GameConfig {
 		Option option = Option.valueOf(key.toUpperCase());
 		switch(option) {
 			case PLAYERS:
-				setPlayers(Integer.parseInt(value));
+				try {
+					setPlayerCount(Integer.parseInt(value));
+				} catch(Exception ignored) {}
 				break;
 			case ADDCARD:
 				addActionCard(value);
@@ -36,7 +38,7 @@ public class GameConfig {
 		}
 	}
 	
-	public void setPlayers(int players) {
+	public void setPlayerCount(int players) {
 		this.players = players;
 		Utils.debug("Local game has set playercount to " + players);
 	}
@@ -55,7 +57,7 @@ public class GameConfig {
 		//TODO Geef 10 random kaart types vanuit db
 	}
 	
-	public int getPlayers() {
+	public int getPlayerCount() {
 		return players;
 	}
 	
@@ -65,7 +67,7 @@ public class GameConfig {
 	
 	public JSONObject getAsJson() {
 		return new JSONObject()
-				.accumulate("players", getPlayers())
+				.accumulate("players", getPlayerCount())
 				.accumulate("actionCards", getActionCards());
 	}
 
