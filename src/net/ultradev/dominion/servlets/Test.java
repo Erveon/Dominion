@@ -30,32 +30,47 @@ public class Test extends HttpServlet {
 		res.setContentType("application/json");
 		res.setCharacterEncoding("utf-8");
 		
-		if(req.getParameter("action") == null) {
-			res.getWriter().append("Invalid request 1");
+		if(req.getParameter("action") == null || req.getParameter("type") == null) {
+			res.getWriter().append("Invalid request: need action & type");
 			return;
 		}
 		
-		String type = req.getParameter("type");;
+		String action = req.getParameter("action").toLowerCase();
+		String type = req.getParameter("type").toLowerCase();
 		
-		switch(req.getParameter("action").toLowerCase()) {
+		switch(action) {
 			case "create":
-				if(type != null && type.toLowerCase().equals("local")) {
+				if(type.equals("local")) {
 					LocalGame.createGame(req.getSession());
 					res.getWriter().append("OK");
 					return;
 				}
 			case "info":
-				type = req.getParameter("type");
-				if(type != null && type.toLowerCase().equals("local")) {
+				if(type.equals("local")) {
 					LocalGame g = LocalGame.getGame(req.getSession());
+					//TODO return game info
 					if(g == null) {
-						res.getWriter().append("No local game running");
+						res.getWriter().append("Invalid request: No local game running");
 					} else {
 						res.getWriter().append("local game found with id: " + req.getSession().getId());
 					}
 					return;
 				}
-				
+			case "setconfig":
+				if(type.equals("local")) {
+					if(req.getParameter("key") == null || req.getParameter("value") == null) {
+						res.getWriter().append("Invalid request: need key & value pair");
+						return;
+					}
+					LocalGame g = LocalGame.getGame(req.getSession());
+					if(g == null) {
+						res.getWriter().append("Invalid request: No local game running");
+					} else {
+						g.getConfig().handle(req.getParameter("key"), req.getParameter("value"));
+						res.getWriter().append("OK");
+					}
+					return;
+				}
 		}
 		
 		res.getWriter().append("Invalid request: EOL");

@@ -12,6 +12,7 @@ public class LocalGame {
 	//AJAX CALLS
 		// Create game > ?action=create&type=local
 		// Check if a game is running > ?action=info&type=local
+		// Set config > ?action=setconfig&type=local&key=players&value=4
 	
 	//TODO voor AJAX
 		// > Set config properties

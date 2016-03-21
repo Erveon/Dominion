@@ -3,7 +3,11 @@ package net.ultradev.dominion.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.ultradev.dominion.game.utils.Utils;
+
 public class GameConfig {
+	
+	public enum Option { PLAYERS, ADDCARD, REMOVECARD };
 	
 	int players;
 	List<String> actionCardTypes;
@@ -14,8 +18,26 @@ public class GameConfig {
 		this.actionCardTypes = new ArrayList<>();
 	}
 	
+	public void handle(String key, String value) {
+		Option option = Option.valueOf(key.toUpperCase());
+		switch(option) {
+			case PLAYERS:
+				setPlayers(Integer.parseInt(value));
+				break;
+			case ADDCARD:
+				addActionCard(value);
+				break;
+			case REMOVECARD:
+				removeActionCard(value);
+				break;
+			default:
+				break;
+		}
+	}
+	
 	public void setPlayers(int players) {
 		this.players = players;
+		Utils.debug("Local game has set playercount to " + players);
 	}
 	
 	public void addActionCard(String actionCard) {
