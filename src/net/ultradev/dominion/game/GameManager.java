@@ -25,9 +25,21 @@ public class GameManager {
 	public static JSONObject handleLocalRequest(Map<String, String> map, LocalGame g, HttpSession session) {
 		JSONObject response = new JSONObject();
 		String action = map.get("action");
+		
+		// Parameters that need a game to be running
+		if(action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer")) {
+			if(g == null)
+				return response
+						.accumulate("response", "invalid")
+						.accumulate("reason", "No game running");
+		}
+		
 		switch(action) {
 			case "create":
 				LocalGame.createGame(session);
+				return response.accumulate("response", "OK");
+			case "destroy":
+				LocalGame.destroyFor(session);
 				return response.accumulate("response", "OK");
 			case "info":
 				return response
@@ -38,14 +50,22 @@ public class GameManager {
 					return response
 							.accumulate("response", "invalid")
 							.accumulate("reason", "No key & value pair given for config");
-				if(g == null) {
+				String key = map.get("key");
+				if(g.getConfig().handle(key, map.get("value")))
+					return response.accumulate("response", "OK");
+				else
 					return response
 							.accumulate("response", "invalid")
-							.accumulate("reason", "No game running");
-				} else {
-					g.getConfig().handle(map.get("key"), map.get("value"));
-					return response.accumulate("response", "OK");
+							.accumulate("reason", "Invalid key in setconfig: " + key);
+			case "addplayer":
+				if(!map.containsKey("name")) {
+					return response
+							.accumulate("response", "invalid")
+							.accumulate("reason", "Need a name to add the player");
 				}
+				String name = map.get("name");
+				g.addPlayer(name);
+				return response.accumulate("response", "OK");
 			default:
 				return response
 						.accumulate("response", "invalid")
