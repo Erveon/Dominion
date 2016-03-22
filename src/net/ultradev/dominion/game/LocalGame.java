@@ -14,12 +14,7 @@ import net.ultradev.dominion.game.utils.Utils;
 
 public class LocalGame {
 	
-	//AJAX CALLS
-		// Create game > ?action=create&type=local
-		// Check if a game is running > ?action=info&type=local
-		// Set config > ?action=setconfig&type=local&key=players&value=4
-	
-	public String[] RandomNames = {
+	public static String[] RandomNames = {
 			"Albert", "Fernando", "Pedro", "Alfred", "Mohammed", "Freddy", "André", "Maria", "Annemie", 
 			"Lieselot", "Brecht", "Lara", "Dirk", "Jill", "Ethan", "Spongebob", "Sandy", "Sarah",
 			"Lisa", "Gertrude", "Homer", "Bart", "Marge", "Maggie", "Ahmed", "Nick", "Ruben", "Gilles", "Tim",
@@ -89,6 +84,7 @@ public class LocalGame {
 		return null;
 	}
 	
+	// If null, it's a java front-end game
 	public static void createGame(HttpSession session) {
 		games.put(session, new LocalGame());
 	}
