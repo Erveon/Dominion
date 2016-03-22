@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.GameManager;
 import net.ultradev.dominion.game.LocalGame;
+import net.ultradev.dominion.game.card.CardManager;
 
 /**
  * Servlet implementation class Test
@@ -29,12 +30,17 @@ public class API extends HttpServlet {
 		// Game info > ?action=info&type=local
 		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
 		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
+		// Start game > ?action=start&type=local
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public API() {
         super();
+    }
+    
+    public void init() throws ServletException {
+        CardManager.setup();
     }
 
 	/**

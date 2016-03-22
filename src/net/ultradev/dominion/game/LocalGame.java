@@ -18,6 +18,7 @@ public class LocalGame {
 	
 	private GameConfig config;
 	private List<Player> players;
+	private Board board = null;
 	
 	private List<Card> trash;
 	
@@ -25,7 +26,26 @@ public class LocalGame {
 		this.config = new GameConfig();
 		this.players = new ArrayList<>();
 		this.trash = new ArrayList<>();
+		this.board = new Board();
 		Utils.debug("A local game has been made");
+	}
+	
+	/**
+	 * Start the game. Done with an ajax call after all the settings have been configured.
+	 */
+	public void start() {
+		init();
+	}
+	
+	/**
+	 * Set variables when the game has been configured
+	 */
+	public void init() {
+		getBoard().initSupplies(getPlayers().size());
+	}
+	
+	public Board getBoard() {
+		return board;
 	}
 	
 	//We're also returning the player because we'll be feeding the profile back to the front-end
@@ -33,10 +53,6 @@ public class LocalGame {
 	public void addPlayer(String name) {
 		Player p = new Player(name);
 		getPlayers().add(p);
-	}
-	
-	public void removePlayer(Player p) {
-		players.remove(p);
 	}
 	
 	public Player getPlayerByName(String name) {
@@ -52,7 +68,6 @@ public class LocalGame {
 	}
 	
 	public static void destroyFor(HttpSession session) {
-		//TODO create an ajax call to destroy the game
 		if(!games.containsKey(session))
 			return;
 		games.remove(session);
@@ -74,7 +89,8 @@ public class LocalGame {
 	public JSONObject getAsJson() {
 		return new JSONObject()
 				.accumulate("config", getConfig().getAsJson())
-				.accumulate("players", getPlayersAsJson());
+				.accumulate("players", getPlayersAsJson())
+				.accumulate("board", getBoard().getAsJson());
 	}
 	
 	public static LocalGame getGame(HttpSession session) {

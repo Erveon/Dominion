@@ -24,10 +24,10 @@ public class GameManager {
 	
 	public static JSONObject handleLocalRequest(Map<String, String> map, LocalGame g, HttpSession session) {
 		JSONObject response = new JSONObject();
-		String action = map.get("action");
+		String action = map.get("action").toLowerCase();
 		
 		// Parameters that need a game to be running
-		if(action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer")) {
+		if(action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") || action.equals("start")) {
 			if(g == null)
 				return response
 						.accumulate("response", "invalid")
@@ -40,6 +40,9 @@ public class GameManager {
 				return response.accumulate("response", "OK");
 			case "destroy":
 				LocalGame.destroyFor(session);
+				return response.accumulate("response", "OK");
+			case "start":
+				g.start();
 				return response.accumulate("response", "OK");
 			case "info":
 				return response
