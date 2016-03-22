@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.GameManager;
 import net.ultradev.dominion.game.LocalGame;
+import net.ultradev.dominion.game.card.CardManager;
 
 /**
  * Servlet implementation class Test
@@ -25,14 +26,21 @@ public class API extends HttpServlet {
 
 	//AJAX CALLS
 		// Create game > ?action=create&type=local
+		// Destroy game > ?action=destroy&type=local
 		// Game info > ?action=info&type=local
-		// Set config > ?action=setconfig&type=local&key=players&value=4
+		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
+		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
+		// Start game > ?action=start&type=local
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public API() {
         super();
+    }
+    
+    public void init() throws ServletException {
+        CardManager.setup();
     }
 
 	/**
@@ -42,10 +50,11 @@ public class API extends HttpServlet {
 		res.setContentType("application/json");
 		res.setCharacterEncoding("utf-8");
 		
-		if(req.getParameter("action") == null || req.getParameter("type") == null) {
+		if(req == null || req.getParameter("action") == null || req.getParameter("type") == null) {
 			res.getWriter().append(new JSONObject()
 									.accumulate("response", "invalid")
 									.accumulate("reason", "Need a type & action").toString());
+			return;
 		}
 		
 		String type = req.getParameter("type").toLowerCase();

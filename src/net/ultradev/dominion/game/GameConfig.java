@@ -16,8 +16,18 @@ public class GameConfig {
 		this.actionCardTypes = new ArrayList<>();
 	}
 	
-	public void handle(String key, String value) {
-		Option option = Option.valueOf(key.toUpperCase());
+	/**
+	 * @param key
+	 * @param value
+	 * @return whether the handle is valid or not
+	 */
+	public boolean handle(String key, String value) {
+		Option option = null;
+		try { 
+			option = Option.valueOf(key.toUpperCase()); 
+		} catch(Exception ignored) { }
+		if(option == null)
+			return false;
 		switch(option) {
 			case ADDCARD:
 				addActionCard(value);
@@ -28,6 +38,7 @@ public class GameConfig {
 			default:
 				break;
 		}
+		return true;
 	}
 	
 	public void addActionCard(String actionCard) {
