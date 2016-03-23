@@ -44,7 +44,7 @@ public class Board {
 	
 	// Kingdom cards
 	public void addActionCard(Card card) {
-		actionsupply.put(card, 25);
+		actionsupply.put(card, 10);
 	}
 	
 	private JSONObject getSupplyAsJson(String which) {
