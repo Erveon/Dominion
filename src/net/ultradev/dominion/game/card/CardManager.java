@@ -13,15 +13,15 @@ public class CardManager {
 		//TODO init cards (fetch from db)
 		
 		//Temporary cards to make the board work:
-		getCards().put("copper", new Card("copper", new String[] {"test card"}, 1));
-		getCards().put("silver", new Card("silver", new String[] {"test card"}, 1));
-		getCards().put("gold", new Card("gold", new String[] {"test card"}, 1));
+		getCards().put("copper", new Card("copper", "test card", 1));
+		getCards().put("silver", new Card("silver", "test card", 1));
+		getCards().put("gold", new Card("gold", "test card", 1));
 
-		getCards().put("estate", new Card("estate", new String[] {"test card"}, 1));
-		getCards().put("duchy", new Card("duchy", new String[] {"test card"}, 1));
-		getCards().put("province", new Card("province", new String[] {"test card"}, 1));
+		getCards().put("estate", new Card("estate", "test card", 1));
+		getCards().put("duchy", new Card("duchy", "test card", 1));
+		getCards().put("province", new Card("province", "test card", 1));
 
-		getCards().put("curse", new Card("curse", new String[] {"test card"}, 1));
+		getCards().put("curse", new Card("curse", "test card", 1));
 	}
 	
 	private static Map<String, Card> getCards() {

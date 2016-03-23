@@ -25,8 +25,9 @@ public class Board {
 	 * @param playercount
 	 */
 	public void initSupplies(int playercount) {
-		// Treasure supply
-		treasuresupply.put(CardManager.get("copper"), 60);
+		// Treasure supply (Coppers - 7 per speler)
+		int coppers = 60 - (7 * playercount);
+		treasuresupply.put(CardManager.get("copper"), coppers);
 		treasuresupply.put(CardManager.get("silver"), 40);
 		treasuresupply.put(CardManager.get("gold"), 30);
 		
