@@ -10,10 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.GameManager;
-import net.ultradev.dominion.game.LocalGame;
 import net.ultradev.dominion.game.card.CardManager;
+import net.ultradev.dominion.game.local.LocalGame;
 
 /**
  * Servlet implementation class Test
@@ -31,6 +30,7 @@ public class API extends HttpServlet {
 		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
 		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
 		// Start game > ?action=start&type=local
+		// End turn > ?action=endturn&type=local
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -51,9 +51,7 @@ public class API extends HttpServlet {
 		res.setCharacterEncoding("utf-8");
 		
 		if(req == null || req.getParameter("action") == null || req.getParameter("type") == null) {
-			res.getWriter().append(new JSONObject()
-									.accumulate("response", "invalid")
-									.accumulate("reason", "Need a type & action").toString());
+			res.getWriter().append(GameManager.getInvalid("Need a type & action").toString());
 			return;
 		}
 		
@@ -64,9 +62,7 @@ public class API extends HttpServlet {
 			return;
 		}
 		
-		res.getWriter().append(new JSONObject()
-				.accumulate("response", "invalid")
-				.accumulate("reason", "Unhandled game type: " + type).toString());
+		res.getWriter().append(GameManager.getInvalid("Unhandled game type: " + type).toString());
 	}
 	
 	public Map<String, String> getParameters(HttpServletRequest req) {

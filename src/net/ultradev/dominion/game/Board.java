@@ -20,13 +20,27 @@ public class Board {
 		cursesupply = new HashMap<>();
 	}
 	
+	public boolean hasEndCondition() {
+		int emptyActionPiles = 0;
+		for(int count : actionsupply.values()) {
+			if(count == 0)
+				emptyActionPiles++;
+		}
+		if(emptyActionPiles >= 3)
+			return true;
+		// If there's enough piles left, whether the province supply ran out
+		// or not will determine if there's an end condition. If it's not empty, the game goes on. (false)
+		return victorysupply.get(CardManager.get("province")) == 0;
+	}
+	
 	/**
 	 * Called when the game has been configured (the playercount is known)
 	 * @param playercount
 	 */
 	public void initSupplies(int playercount) {
-		// Treasure supply
-		treasuresupply.put(CardManager.get("copper"), 60);
+		// Treasure supply (Coppers - 7 per speler)
+		int coppers = 60 - (7 * playercount);
+		treasuresupply.put(CardManager.get("copper"), coppers);
 		treasuresupply.put(CardManager.get("silver"), 40);
 		treasuresupply.put(CardManager.get("gold"), 30);
 		
@@ -43,7 +57,7 @@ public class Board {
 	
 	// Kingdom cards
 	public void addActionCard(Card card) {
-		actionsupply.put(card, 25);
+		actionsupply.put(card, 10);
 	}
 	
 	private JSONObject getSupplyAsJson(String which) {
