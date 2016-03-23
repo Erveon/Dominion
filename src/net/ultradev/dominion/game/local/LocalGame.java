@@ -129,11 +129,8 @@ public class LocalGame {
 		return winnerList;
 	}
 	
-	//We're also returning the player because we'll be feeding the profile back to the front-end
-	//It would be somewhat counter productive to split this particular case up
 	public void addPlayer(String name) {
-		Player p = new Player(name);
-		getPlayers().add(p);
+		getPlayers().add(new Player(name));
 	}
 	
 	public Player getPlayerByName(String name) {
@@ -152,7 +149,7 @@ public class LocalGame {
 		if(!games.containsKey(session))
 			return;
 		games.remove(session);
-		System.gc();
+		System.gc(); // Free the memory!!
 		Utils.debug("A local game has been destroyed");
 	}
 	

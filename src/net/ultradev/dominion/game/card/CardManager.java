@@ -3,6 +3,7 @@ package net.ultradev.dominion.game.card;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.ultradev.dominion.game.card.action.actions.TrashCardAction;
 import net.ultradev.dominion.game.player.Player;
 
 public class CardManager {
@@ -24,6 +25,11 @@ public class CardManager {
 		getCards().put("province", new Card("province", "test card", 1));
 
 		getCards().put("curse", new Card("curse", "test card", 1));
+
+		Card chapel = new Card("chapel", "test card", 1);
+		//TODO HOE KRIJG JE DEZE STUFF VAN DE DATABASE?????????????????????????????????
+		chapel.addAction(new TrashCardAction("trash", "Trash 4 cards", 4));
+		getCards().put("chapel", chapel);
 	}
 	
 	private static Map<String, Card> getCards() {
