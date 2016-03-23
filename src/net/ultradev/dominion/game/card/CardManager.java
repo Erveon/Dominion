@@ -3,6 +3,8 @@ package net.ultradev.dominion.game.card;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.ultradev.dominion.game.player.Player;
+
 public class CardManager {
 	
 	// Static because we only need 1 instance of these
@@ -32,6 +34,20 @@ public class CardManager {
 		if(cards.containsKey(identifier))
 			return getCards().get(identifier);
 		throw new CardNotFoundException(identifier);
+	}
+	
+	public static int getVictoryPointsFor(Card c, Player p) {
+		switch(c.getName().toLowerCase()) {
+			case "estate":
+				return 1;
+			case "duchy":
+				return 2;
+			case "province":
+				return 3;
+			case "gardens": // Every 10 cards is worth 1 point, rounded down
+				return (int) Math.floor(p.getTotalCardCount() / 10);
+		}
+		return 0;
 	}
 
 }

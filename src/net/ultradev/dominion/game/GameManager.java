@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.local.LocalGame;
 
 public class GameManager {
 
@@ -26,12 +27,11 @@ public class GameManager {
 		JSONObject response = new JSONObject();
 		String action = map.get("action").toLowerCase();
 		
-		// Parameters that need a game to be running
-		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") || action.equals("start")) {
+		// Actions that need a game to be running
+		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") 
+				|| action.equals("start") || action.equals("endturn")) {
 			if(g == null)
-				return response
-						.accumulate("response", "invalid")
-						.accumulate("reason", "No game running");
+				return getInvalid("No game running");
 		}
 		
 		switch(action) {
@@ -64,6 +64,9 @@ public class GameManager {
 				}
 				String name = map.get("name");
 				g.addPlayer(name);
+				return response.accumulate("response", "OK");
+			case "endturn":
+				g.endTurn();
 				return response.accumulate("response", "OK");
 			default:
 				return getInvalid("Action not recognized: " + action);

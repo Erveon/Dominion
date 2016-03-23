@@ -16,11 +16,14 @@ public class Player {
 	private List<Card> deck;
 	private List<Card> hand;
 	
+	int rounds;
+	
 	public Player(String displayname) {
 		this.displayname = displayname;
 		this.discard = new ArrayList<>();
 		this.deck = new ArrayList<>();
 		this.hand = new ArrayList<>();
+		this.rounds = 0;
 	}
 	
 	public void setDisplayname(String displayname) {
@@ -59,9 +62,40 @@ public class Player {
 		return cards;
 	}
 	
-	public void drawCardFromDeck() {
+	/**
+	 * @return if the draw works
+	 */
+	public boolean drawCardFromDeck() {
+		if(getDeck().size() == 0)
+			return false;
 		Card c = getDeck().remove(0);
 		getHand().add(c);
+		return true;
+	}
+	
+	public void transferDiscardToDeck() {
+		getDeck().addAll(getDiscard());
+		getDiscard().clear();
+		shuffle(getDeck());
+	}
+	
+	public int getVictoryPoints() {
+		int points = 0;
+		for(Card c : getHand())
+			points += CardManager.getVictoryPointsFor(c, this);
+		return points;
+	}
+	
+	public int getTotalCardCount() {
+		return getHand().size() + getDeck().size() + getDiscard().size();
+	}
+
+	public void increaseRounds() {
+		this.rounds++;
+	}
+	
+	public int getRounds() {
+		return rounds;
 	}
 	
 	private List<JSONObject> getCardsAsJson(List<Card> cards) {
