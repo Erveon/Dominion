@@ -31,7 +31,7 @@ public class CardManager {
 	public static Card get(String identifier) {
 		if(cards.containsKey(identifier))
 			return getCards().get(identifier);
-		return null;
+		throw new CardNotFoundException(identifier);
 	}
 
 }

@@ -1,10 +1,12 @@
 package net.ultradev.dominion.game.card;
 
+import net.ultradev.dominion.game.player.Player;
+
 public interface Action {
 
 	public String getIdentifier();
 	public String getDescripton();
-	public void play();
+	public void play(Player p);
 	
 	// DRAW CARD ACTION
 	public class DrawCardAction implements Action {
@@ -30,8 +32,9 @@ public interface Action {
 		}
 
 		@Override
-		public void play() {
-			//TODO draw 'amount' cards
+		public void play(Player p) {
+			for(int i = 0; i < amount; i++)
+				p.drawCardFromDeck();
 		}
 		
 	}
@@ -77,7 +80,7 @@ public interface Action {
 		}
 
 		@Override
-		public void play() {
+		public void play(Player p) {
 			//TODO trash 'amount' cards
 		}
 		

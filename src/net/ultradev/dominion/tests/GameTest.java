@@ -1,12 +1,7 @@
 package net.ultradev.dominion.tests;
 
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import net.ultradev.dominion.game.*;
 import net.ultradev.dominion.game.card.*;
-
 
 public class GameTest {
 	
@@ -25,11 +20,7 @@ public class GameTest {
 		if(coppers != 60 - 7 * playerAmount)
 			System.out.println("Error: aanmakenCoppers op lijn 21");
 	}
-	
-	
-	
-	
-	
+
 	public static void main(String[] args){
 		System.out.println("Starting test");
 		GameTest gt = new GameTest();

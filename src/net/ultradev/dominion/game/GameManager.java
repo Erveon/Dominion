@@ -27,7 +27,7 @@ public class GameManager {
 		String action = map.get("action").toLowerCase();
 		
 		// Parameters that need a game to be running
-		if(action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") || action.equals("start")) {
+		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") || action.equals("start")) {
 			if(g == null)
 				return response
 						.accumulate("response", "invalid")
@@ -42,38 +42,38 @@ public class GameManager {
 				LocalGame.destroyFor(session);
 				return response.accumulate("response", "OK");
 			case "start":
+				if(g.getPlayers().size() < 2)
+					return getInvalid("You need at least 2 players to start a game");
 				g.start();
 				return response.accumulate("response", "OK");
 			case "info":
 				return response
 						.accumulate("response", "OK")
-						.accumulate("game", g == null ? "null" : g.getAsJson());
+						.accumulate("game", g.getAsJson());
 			case "setconfig":
 				if(!map.containsKey("key") || !map.containsKey("value"))
-					return response
-							.accumulate("response", "invalid")
-							.accumulate("reason", "No key & value pair given for config");
+					return getInvalid("No key & value pair given for config");
 				String key = map.get("key");
 				if(g.getConfig().handle(key, map.get("value")))
 					return response.accumulate("response", "OK");
 				else
-					return response
-							.accumulate("response", "invalid")
-							.accumulate("reason", "Invalid key in setconfig: " + key);
+					return getInvalid("Invalid key in setconfig: " + key);
 			case "addplayer":
 				if(!map.containsKey("name")) {
-					return response
-							.accumulate("response", "invalid")
-							.accumulate("reason", "Need a name to add the player");
+					return getInvalid("Need a name to add the player");
 				}
 				String name = map.get("name");
 				g.addPlayer(name);
 				return response.accumulate("response", "OK");
 			default:
-				return response
-						.accumulate("response", "invalid")
-						.accumulate("reason", "Action not recognized: " + action);
+				return getInvalid("Action not recognized: " + action);
 		}
+	}
+	
+	public static JSONObject getInvalid(String reason) {
+		return new JSONObject()
+				.accumulate("response", "invalid")
+				.accumulate("reason", reason);
 	}
 	
 }

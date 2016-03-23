@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpSession;
 
@@ -29,12 +30,24 @@ public class LocalGame {
 		this.board = new Board();
 		Utils.debug("A local game has been made");
 	}
-	
+
 	/**
 	 * Start the game. Done with an ajax call after all the settings have been configured.
+	 * Player null means a random player starts
 	 */
 	public void start() {
+		start(getPlayers());
+	}
+	
+	/**
+	 * Loser of the previous game starts the next one
+	 * Player(s) to start is an array because a tie is possible
+	 * @param p Eligible to start
+	 */
+	public void start(List<Player> p) {
 		init();
+		Player start = p.get(new Random().nextInt(p.size()));
+		//TODO start game with the 'start' player
 	}
 	
 	/**
@@ -42,6 +55,8 @@ public class LocalGame {
 	 */
 	public void init() {
 		getBoard().initSupplies(getPlayers().size());
+		for(Player p : getPlayers())
+			p.setup();
 	}
 	
 	public Board getBoard() {
