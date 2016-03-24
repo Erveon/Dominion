@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.ultradev</groupId>
   <artifactId>Dominion</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.8</version>
   <packaging>war</packaging>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -23,6 +23,21 @@
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
       </plugin>
+      <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-shade-plugin</artifactId>
+		<executions>
+			<execution>
+				<phase>package</phase>
+				<goals>
+					<goal>shade</goal>
+				</goals>
+			</execution>
+		</executions>
+		<configuration>
+			<finalName>${artifactId}-${version}</finalName>
+		</configuration>
+	  </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -32,5 +47,10 @@
   		<version>2.4</version>
   		<classifier>jdk15</classifier>
   	</dependency>
+  	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>javax.servlet-api</artifactId>
+		<version>3.1.0</version>
+	</dependency>
   </dependencies>
 </project>

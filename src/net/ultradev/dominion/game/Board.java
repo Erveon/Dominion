@@ -60,6 +60,19 @@ public class Board {
 		actionsupply.put(card, 10);
 	}
 	
+	/**
+	 * Removes a single card from a supply
+	 * @param supply that will be altered
+	 * @param card
+	 * @return The updated supply
+	 */
+	public Map<Card, Integer> removeOneFrom(Map<Card, Integer> supply, Card card) {
+		if(!supply.containsKey(card))
+			return supply;
+		supply.put(card, supply.get(card) - 1);
+		return supply;
+	}
+	
 	private JSONObject getSupplyAsJson(String which) {
 		JSONObject json = new JSONObject();
 		Map<Card, Integer> supply;
