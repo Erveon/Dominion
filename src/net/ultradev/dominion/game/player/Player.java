@@ -20,6 +20,7 @@ public class Player {
 	private GameServer gs;
 	
 	public Player(GameServer gs, String displayname) {
+		this.gs = gs;
 		this.displayname = displayname;
 		this.discard = new ArrayList<>();
 		this.deck = new ArrayList<>();

@@ -18,6 +18,7 @@ import net.ultradev.dominion.game.player.Player;
 
 public class CardManager {
 	
+	private Map<String, Card> cards;
 	private GameServer gs;
 	
 	public CardManager(GameServer gs) {
@@ -27,9 +28,6 @@ public class CardManager {
 	public GameServer getGameServer() {
 		return gs;
 	}
-	
-	// Static because we only need 1 instance of these
-	private static Map<String, Card> cards;
 	
 	public void setup() {
 		cards = new HashMap<>();
@@ -47,22 +45,35 @@ public class CardManager {
 
 		//Temporary cards to make the board work:
 		Card chapel = new Card("chapel", "Trash up to 4 cards from your hand.", 2);
-		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
 		getCards().put("chapel", chapel);
 		
 		Card village = new Card("village", "+1 Card; +2 Actions.", 3);
-		village.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
-		village.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
 		getCards().put("village", village);
 		
 		Card woodcutter = new Card("woodcutter", "+1 Card; +2 Actions.", 3);
-		woodcutter.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
-		woodcutter.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
 		getCards().put("woodcutter", woodcutter);
 		
 		Card moneylender = new Card("moneylender", "Trash a Copper from your hand. If you do, +$3.", 3);
-		moneylender.addAction(parseAction("trash_range", "Ability to trash a single copper for $3", "min=0;max=1;restrict=copper"));
 		getCards().put("moneylender", moneylender);
+		
+		addActions();
+	}
+	
+	// We'll do this later so all cards are inited already, some actions rely on other cards
+	public void addActions() {
+		Card chapel = getCards().get("chapel");
+		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
+		
+		Card village = getCards().get("village");
+		village.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
+		village.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
+		
+		Card woodcutter = getCards().get("woodcutter");
+		woodcutter.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
+		woodcutter.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+		
+		Card moneylender = getCards().get("moneylender");
+		moneylender.addAction(parseAction("trash_range", "Ability to trash a single copper for $3", "min=0;max=1;restrict=copper"));
 	}
 	
 	private Action parseAction(String identifier, String description, String variables) {

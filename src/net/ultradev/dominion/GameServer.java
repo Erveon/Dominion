@@ -11,6 +11,7 @@ public class GameServer {
 	public GameServer() {
 		this.cm = new CardManager(this);
 		this.gm = new GameManager(this);
+		setup();
 	}
 	
 	public void setup() {
