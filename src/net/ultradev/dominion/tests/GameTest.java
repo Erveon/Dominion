@@ -13,19 +13,18 @@ public class GameTest {
 	public GameTest() {
 		gs = new GameServer();
 		System.out.println("Starting test");
-		GameTest gt = new GameTest();
 		//Test alle functies die niet afhankelijk zijn van het aantal spelers
-		gt.initTest();
-		gt.testAmountOfActionCards();
+		initTest();
+		testAmountOfActionCards();
 		//Test alle functies die afhankelijk zijn van het aantal spelers
 		for(int i = 2;  i <= 4; i++) {
-			gt.playerAmount1 = i;
-			gt.initLoop();
-			gt.testAanmakenCoppers();
-			gt.testAantalEstates();
-			gt.testAantalDuchies();
-			gt.testAantalProvinces();
-			gt.testAantalCurses();
+			playerAmount1 = i;
+			initLoop();
+			testAanmakenCoppers();
+			testAantalEstates();
+			testAantalDuchies();
+			testAantalProvinces();
+			testAantalCurses();
 		}
 		System.out.println("Test ended");
 	}
