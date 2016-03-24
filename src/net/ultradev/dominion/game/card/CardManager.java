@@ -3,6 +3,7 @@ package net.ultradev.dominion.game.card;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.IllegalActionVariableException;
 import net.ultradev.dominion.game.card.action.MissingVariableException;
@@ -17,10 +18,20 @@ import net.ultradev.dominion.game.player.Player;
 
 public class CardManager {
 	
+	private GameServer gs;
+	
+	public CardManager(GameServer gs) {
+		this.gs = gs;
+	}
+	
+	public GameServer getGameServer() {
+		return gs;
+	}
+	
 	// Static because we only need 1 instance of these
 	private static Map<String, Card> cards;
 	
-	public static void setup() {
+	public void setup() {
 		cards = new HashMap<>();
 		//TODO init cards (fetch from db)
 		
@@ -54,7 +65,7 @@ public class CardManager {
 		getCards().put("moneylender", moneylender);
 	}
 	
-	private static Action parseAction(String identifier, String description, String variables) {
+	private Action parseAction(String identifier, String description, String variables) {
 		Map<String, String> params = getMappedVariables(identifier, variables);
 		switch(identifier.toLowerCase()) {
 			case "draw_cards":
@@ -62,13 +73,13 @@ public class CardManager {
 					return DrawCardAction.parse(identifier, description, params.get("amount"));
 			case "trash_specific":
 				if(containsKeys(params, identifier, "amount"))
-					return TrashCardAction.parse(identifier, description, params, TrashType.SPECIFIC_AMOUNT);
+					return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.SPECIFIC_AMOUNT);
 			case "trash_choose":
 				// No parameters
-				return TrashCardAction.parse(identifier, description, params, TrashType.CHOOSE_AMOUNT);
+				return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.CHOOSE_AMOUNT);
 			case "trash_range":
 				if(containsKeys(params, identifier, "min", "max"))
-					return TrashCardAction.parse(identifier, description, params, TrashType.RANGE);
+					return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.RANGE);
 			case "add_actions":
 				if(containsKeys(params, identifier, "amount"))
 					return GainActionsAction.parse(identifier, description, params.get("amount"));
@@ -82,7 +93,7 @@ public class CardManager {
 		return null;
 	}
 	
-	private static boolean containsKeys(Map<String, String> params, String identifier, String... variables) {
+	private boolean containsKeys(Map<String, String> params, String identifier, String... variables) {
 		for(String var : variables) {
 			if(!params.containsKey(var))
 				throw new MissingVariableException(identifier, var);
@@ -90,7 +101,7 @@ public class CardManager {
 		return true;
 	}
 	
-	public static Map<String, String> getMappedVariables(String identifier, String variables) {
+	public Map<String, String> getMappedVariables(String identifier, String variables) {
 		Map<String, String> mappedVariables = new HashMap<>();
 		if(variables.isEmpty() || variables.equals(""))
 			return mappedVariables;
@@ -106,17 +117,17 @@ public class CardManager {
 		return mappedVariables;
 	}
 	
-	private static Map<String, Card> getCards() {
+	private Map<String, Card> getCards() {
 		return cards;
 	}
 	
-	public static Card get(String identifier) {
+	public Card get(String identifier) {
 		if(cards.containsKey(identifier))
 			return getCards().get(identifier);
 		throw new CardNotFoundException(identifier);
 	}
 	
-	public static int getVictoryPointsFor(Card c, Player p) {
+	public int getVictoryPointsFor(Card c, Player p) {
 		switch(c.getName().toLowerCase()) {
 			case "estate":
 				return 1;

@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.card.Card;
-import net.ultradev.dominion.game.card.CardManager;
 
 public class Player {
 	
@@ -16,14 +16,19 @@ public class Player {
 	private List<Card> deck;
 	private List<Card> hand;
 	
-	int rounds;
+	private int rounds;
+	private GameServer gs;
 	
-	public Player(String displayname) {
+	public Player(GameServer gs, String displayname) {
 		this.displayname = displayname;
 		this.discard = new ArrayList<>();
 		this.deck = new ArrayList<>();
 		this.hand = new ArrayList<>();
 		this.rounds = 0;
+	}
+	
+	public GameServer getGameServer() {
+		return gs;
 	}
 	
 	public void setDisplayname(String displayname) {
@@ -48,9 +53,9 @@ public class Player {
 	
 	public void setup() {
 		for(int i = 0; i < 7; i++)
-			getDeck().add(CardManager.get("copper"));
+			getDeck().add(getGameServer().getCardManager().get("copper"));
 		for(int i = 0; i < 3; i++)
-			getDeck().add(CardManager.get("estate"));
+			getDeck().add(getGameServer().getCardManager().get("estate"));
 		this.deck = shuffle(getDeck());
 		
 		for(int i = 0; i < 5; i++)
@@ -82,7 +87,7 @@ public class Player {
 	public int getVictoryPoints() {
 		int points = 0;
 		for(Card c : getHand())
-			points += CardManager.getVictoryPointsFor(c, this);
+			points += getGameServer().getCardManager().getVictoryPointsFor(c, this);
 		return points;
 	}
 	

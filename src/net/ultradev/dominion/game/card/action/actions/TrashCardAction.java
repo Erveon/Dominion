@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
-import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.utils.Utils;
 
@@ -58,7 +58,7 @@ public class TrashCardAction extends Action {
 		//TODO trash 'amount' cards
 	}
 	
-	public static Action parse(String identifier, String description, Map<String, String> params, TrashType type) {
+	public static Action parse(GameServer gs, String identifier, String description, Map<String, String> params, TrashType type) {
 		TrashCardAction action = null;
 		switch(type) {
 			case CHOOSE_AMOUNT:
@@ -77,7 +77,7 @@ public class TrashCardAction extends Action {
 		if(params.containsKey("restrict")) {
 			String[] toRestrict = params.get("restrict").split(",");
 			for(String restrict : toRestrict)
-				action.addRestriction(CardManager.get(restrict));
+				action.addRestriction(gs.getCardManager().get(restrict));
 		}
 		return action;
 	}
