@@ -25,7 +25,7 @@ public class CardTest {
 	
 	public static void main(String[] args){
 		System.out.println("Starting test");
-		CardTest ct = new CardTest();
+		//CardTest ct = new CardTest();
 		System.out.println("Test ended");
 	}
 
