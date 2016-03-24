@@ -1,6 +1,6 @@
 package net.ultradev.dominion.game;
 
-import net.ultradev.dominion.game.card.Action;
+import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.player.Player;
 
 public class SubTurn {

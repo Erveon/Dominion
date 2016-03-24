@@ -5,19 +5,25 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.card.Card;
-import net.ultradev.dominion.game.card.CardManager;
 
 public class Board {
 	
 	// Define all of those with the same type
 	public Map<Card, Integer> actionsupply, victorysupply, treasuresupply, cursesupply;
+	private GameServer gs;
 	
-	public Board() {
+	public Board(GameServer gs) {
+		this.gs = gs;
 		actionsupply = new HashMap<>();
 		victorysupply = new HashMap<>();
 		treasuresupply = new HashMap<>();
 		cursesupply = new HashMap<>();
+	}
+	
+	public GameServer getGameServer() {
+		return gs;
 	}
 	
 	public boolean hasEndCondition() {
@@ -30,7 +36,7 @@ public class Board {
 			return true;
 		// If there's enough piles left, whether the province supply ran out
 		// or not will determine if there's an end condition. If it's not empty, the game goes on. (false)
-		return victorysupply.get(CardManager.get("province")) == 0;
+		return victorysupply.get(getGameServer().getCardManager().get("province")) == 0;
 	}
 	
 	/**
@@ -40,24 +46,37 @@ public class Board {
 	public void initSupplies(int playercount) {
 		// Treasure supply (Coppers - 7 per speler)
 		int coppers = 60 - (7 * playercount);
-		treasuresupply.put(CardManager.get("copper"), coppers);
-		treasuresupply.put(CardManager.get("silver"), 40);
-		treasuresupply.put(CardManager.get("gold"), 30);
+		treasuresupply.put(getGameServer().getCardManager().get("copper"), coppers);
+		treasuresupply.put(getGameServer().getCardManager().get("silver"), 40);
+		treasuresupply.put(getGameServer().getCardManager().get("gold"), 30);
 		
 		// Victory supply (is the playercount 2? have 8, else 12)
 		int victoryamount = (playercount == 2 ? 8 : 12);
-		victorysupply.put(CardManager.get("estate"), victoryamount);
-		victorysupply.put(CardManager.get("duchy"), victoryamount);
-		victorysupply.put(CardManager.get("province"), victoryamount);
+		victorysupply.put(getGameServer().getCardManager().get("estate"), victoryamount);
+		victorysupply.put(getGameServer().getCardManager().get("duchy"), victoryamount);
+		victorysupply.put(getGameServer().getCardManager().get("province"), victoryamount);
 		
 		// Curse supply (2 = 10, 3 = 20, 4 = 30)
 		int curseamount = (Math.max(playercount, 2) - 1) * 10;
-		cursesupply.put(CardManager.get("curse"), curseamount);
+		cursesupply.put(getGameServer().getCardManager().get("curse"), curseamount);
 	}
 	
 	// Kingdom cards
 	public void addActionCard(Card card) {
 		actionsupply.put(card, 10);
+	}
+	
+	/**
+	 * Removes a single card from a supply
+	 * @param supply that will be altered
+	 * @param card
+	 * @return The updated supply
+	 */
+	public Map<Card, Integer> removeOneFrom(Map<Card, Integer> supply, Card card) {
+		if(!supply.containsKey(card))
+			return supply;
+		supply.put(card, supply.get(card) - 1);
+		return supply;
 	}
 	
 	private JSONObject getSupplyAsJson(String which) {

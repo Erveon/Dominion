@@ -1,14 +1,11 @@
 package net.ultradev.dominion.game.local;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import javax.servlet.http.HttpSession;
-
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.Turn;
@@ -17,8 +14,6 @@ import net.ultradev.dominion.game.player.Player;
 import net.ultradev.dominion.game.utils.Utils;
 
 public class LocalGame {
-	
-	public static Map<HttpSession, LocalGame> games = new HashMap<>();
 	
 	private GameConfig config;
 	private List<Player> players;
@@ -30,12 +25,19 @@ public class LocalGame {
 	//In case there is a tie, this will determine who wins (least amount of turns)
 	private Player started;
 	
-	public LocalGame() {
+	GameServer gs;
+	
+	public LocalGame(GameServer gs) {
+		this.gs = gs;
 		this.config = new GameConfig();
 		this.players = new ArrayList<>();
 		this.trash = new ArrayList<>();
-		this.board = new Board();
+		this.board = new Board(gs);
 		Utils.debug("A local game has been made");
+	}
+	
+	public GameServer getGameServer() {
+		return gs;
 	}
 
 	/**
@@ -129,11 +131,8 @@ public class LocalGame {
 		return winnerList;
 	}
 	
-	//We're also returning the player because we'll be feeding the profile back to the front-end
-	//It would be somewhat counter productive to split this particular case up
 	public void addPlayer(String name) {
-		Player p = new Player(name);
-		getPlayers().add(p);
+		getPlayers().add(new Player(getGameServer(), name));
 	}
 	
 	public Player getPlayerByName(String name) {
@@ -146,14 +145,6 @@ public class LocalGame {
 	
 	public List<Player> getPlayers() {
 		return players;
-	}
-	
-	public static void destroyFor(HttpSession session) {
-		if(!games.containsKey(session))
-			return;
-		games.remove(session);
-		System.gc();
-		Utils.debug("A local game has been destroyed");
 	}
 	
 	public GameConfig getConfig() {
@@ -173,17 +164,6 @@ public class LocalGame {
 				.accumulate("players", getPlayersAsJson())
 				.accumulate("board", getBoard().getAsJson())
 				.accumulate("turn", getTurn() == null ? "null" : getTurn().getAsJson());
-	}
-	
-	public static LocalGame getGame(HttpSession session) {
-		if(games.containsKey(session))
-			return games.get(session);
-		return null;
-	}
-	
-	// If null, it's a java front-end game
-	public static void createGame(HttpSession session) {
-		games.put(session, new LocalGame());
 	}
 	
 	public List<Card> getTrash() {

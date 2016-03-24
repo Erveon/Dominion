@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.ultradev.dominion.game.GameManager;
-import net.ultradev.dominion.game.card.CardManager;
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.local.LocalGame;
 
 /**
@@ -31,6 +30,8 @@ public class API extends HttpServlet {
 		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
 		// Start game > ?action=start&type=local
 		// End turn > ?action=endturn&type=local
+	
+	GameServer gs;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -40,7 +41,11 @@ public class API extends HttpServlet {
     }
     
     public void init() throws ServletException {
-        CardManager.setup();
+        this.gs = new GameServer();
+    }
+    
+    public GameServer getGameServer() {
+    	return gs;
     }
 
 	/**
@@ -51,18 +56,18 @@ public class API extends HttpServlet {
 		res.setCharacterEncoding("utf-8");
 		
 		if(req == null || req.getParameter("action") == null || req.getParameter("type") == null) {
-			res.getWriter().append(GameManager.getInvalid("Need a type & action").toString());
+			res.getWriter().append(getGameServer().getGameManager().getInvalid("Need a type & action").toString());
 			return;
 		}
 		
 		String type = req.getParameter("type").toLowerCase();
 		if(type.equals("local")) {
-			LocalGame g = LocalGame.getGame(req.getSession());
-			res.getWriter().append(GameManager.handleLocalRequest(getParameters(req), g, req.getSession()).toString());
+			LocalGame g = getGameServer().getGameManager().getGame(req.getSession());
+			res.getWriter().append(getGameServer().getGameManager().handleLocalRequest(getParameters(req), g, req.getSession()).toString());
 			return;
 		}
 		
-		res.getWriter().append(GameManager.getInvalid("Unhandled game type: " + type).toString());
+		res.getWriter().append(getGameServer().getGameManager().getInvalid("Unhandled game type: " + type).toString());
 	}
 	
 	public Map<String, String> getParameters(HttpServletRequest req) {

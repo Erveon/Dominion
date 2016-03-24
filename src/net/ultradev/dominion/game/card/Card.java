@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.card.action.Action;
 
 public class Card {
 	
@@ -22,14 +23,14 @@ public class Card {
 	String description;
 	int cost;
 	List<Action> actions;
-	List<String> subtypes;
+	List<String> types;
 	
 	public Card(String name, String description, int cost) {
 		this.name = name;
 		this.cost = cost;
 		this.description = description;
 		this.actions = new ArrayList<>();
-		this.subtypes = new ArrayList<>();
+		this.types = new ArrayList<>();
 	}
 	
 	public String getName() {
@@ -52,18 +53,18 @@ public class Card {
 		this.actions.add(action);
 	}
 	
-	public List<String> getSubtypes() {
-		return subtypes;
+	public List<String> getTypes() {
+		return types;
 	}
 	
-	public void addSubtype(String subtype) {
-		this.subtypes.add(subtype);
+	public void addType(String type) {
+		this.types.add(type);
 	}
 	
-	public String getSubtypesFormatted() {
+	public String getTypesFormatted() {
 		boolean first = true;
 		StringBuilder sb = new StringBuilder();
-		for(String s : getSubtypes()) {
+		for(String s : getTypes()) {
 			if(first) {
 				sb.append(s);
 				first = false;
@@ -84,7 +85,7 @@ public class Card {
 		return new JSONObject()
 				.accumulate("name", getName())
 				.accumulate("cost", getCost())
-				.accumulate("type", getSubtypesFormatted())
+				.accumulate("type", getTypesFormatted())
 				.accumulate("description", getDescription())
 				.accumulate("actions", getActionDescriptions());
 	}

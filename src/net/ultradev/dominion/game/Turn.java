@@ -10,12 +10,16 @@ public class Turn {
 	private Player player;
 	private int buycount;
 	private int actioncount;
+	private int extraBuypower;
+	private int buypowerMultiplier;
 	
 	public Turn(LocalGame game, Player player) {
 		this.game = game;
 		this.player = player;
 		this.buycount = 1;
 		this.actioncount = 1;
+		this.extraBuypower = 0;
+		this.buypowerMultiplier = 1;
 	}
 	
 	public LocalGame getGame() {
@@ -32,6 +36,22 @@ public class Turn {
 	
 	public void addActions(int amount) {
 		this.actioncount += amount;
+	}
+	
+	public void addBuypower(int amount) {
+		this.extraBuypower += amount;
+	}
+	
+	public void addMultiplierBuypower(int amount) {
+		this.buypowerMultiplier += amount;
+	}
+	
+	public int getExtraBuypower() {
+		return extraBuypower;
+	}
+	
+	public int getFinalBuypower(int buypower) {
+		return (buypower + extraBuypower) * buypowerMultiplier;
 	}
 	
 	public int getBuys() {

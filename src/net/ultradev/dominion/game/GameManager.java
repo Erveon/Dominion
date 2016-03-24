@@ -1,15 +1,48 @@
 package net.ultradev.dominion.game;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.local.LocalGame;
+import net.ultradev.dominion.game.utils.Utils;
 
 public class GameManager {
-
-	public static JSONObject handleLocalRequest(Map<String, String> map) {
+	
+	GameServer gs;
+	private Map<HttpSession, LocalGame> games = new HashMap<>();
+	
+	public GameManager(GameServer gs) {
+		this.gs = gs;
+	}
+	
+	public GameServer getGameServer() {
+		return gs;
+	}
+	
+	public LocalGame getGame(HttpSession session) {
+		if(games.containsKey(session))
+			return games.get(session);
+		return null;
+	}
+	
+	// If null, it's a java front-end game
+	public void createGame(HttpSession session) {
+		games.put(session, new LocalGame(getGameServer()));
+	}
+	
+	public void destroyFor(HttpSession session) {
+		if(!games.containsKey(session))
+			return;
+		games.remove(session);
+		System.gc(); // Free the memory!!
+		Utils.debug("A local game has been destroyed");
+	}
+	
+	public JSONObject handleLocalRequest(Map<String, String> map) {
 		return handleLocalRequest(map, null, null);
 	}
 	
@@ -19,11 +52,11 @@ public class GameManager {
 	 * @param g Game, may be null
 	 * @return Response
 	 */
-	public static JSONObject handleLocalRequest(Map<String, String> map, LocalGame g) {
+	public JSONObject handleLocalRequest(Map<String, String> map, LocalGame g) {
 		return handleLocalRequest(map, g, null);
 	}
 	
-	public static JSONObject handleLocalRequest(Map<String, String> map, LocalGame g, HttpSession session) {
+	public JSONObject handleLocalRequest(Map<String, String> map, LocalGame g, HttpSession session) {
 		JSONObject response = new JSONObject();
 		String action = map.get("action").toLowerCase();
 		
@@ -36,10 +69,10 @@ public class GameManager {
 		
 		switch(action) {
 			case "create":
-				LocalGame.createGame(session);
+				createGame(session);
 				return response.accumulate("response", "OK");
 			case "destroy":
-				LocalGame.destroyFor(session);
+				destroyFor(session);
 				return response.accumulate("response", "OK");
 			case "start":
 				if(g.getPlayers().size() < 2)
@@ -73,7 +106,7 @@ public class GameManager {
 		}
 	}
 	
-	public static JSONObject getInvalid(String reason) {
+	public JSONObject getInvalid(String reason) {
 		return new JSONObject()
 				.accumulate("response", "invalid")
 				.accumulate("reason", reason);
