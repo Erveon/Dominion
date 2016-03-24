@@ -9,20 +9,21 @@ public class CardTest {
 	
 	public void initTest(){
 		//public Card(String name, String description, int cost)
-		Card c1 = new Card("name","description",99);
+		c1 = new Card("name","description",99);
 		if(Testing){
 			System.out.println("Functie in de main toegevoegd?");
 		}
 	}
-	
+	/*
 	public void testAddAction(){
-		c1.addAction();
+		//woodcutter.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
+		c1.addAction("test_game","Test the game","test=over9000");
 	}
+	*/
 	
 	
 	
-	
-	public static void main(string[] args){
+	public static void main(String[] args){
 		System.out.println("Starting test");
 		CardTest ct = new CardTest();
 		System.out.println("Test ended");
