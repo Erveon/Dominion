@@ -16,11 +16,9 @@ import net.ultradev.dominion.game.local.LocalGame;
 /**
  * Servlet implementation class Test
  */
+@SuppressWarnings("serial")
 @WebServlet({ "/API", "/api" })
 public class API extends HttpServlet {
-	
-	//Auto generated ID
-	private static final long serialVersionUID = 1L;
 
 	//AJAX CALLS
 		// Create game > ?action=create&type=local

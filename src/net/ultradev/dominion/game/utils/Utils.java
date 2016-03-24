@@ -2,9 +2,9 @@ package net.ultradev.dominion.game.utils;
 
 public class Utils {
 	
-	public static boolean DEBUG = true;
+	public boolean DEBUG = true;
 	
-	public static void debug(String s) {
+	public void debug(String s) {
 		if(DEBUG)
 			System.out.println(s);
 	}
@@ -15,7 +15,7 @@ public class Utils {
 	 * @param fallback
 	 * @return
 	 */
-	public static int parseInt(String toParse, int fallback) {
+	public int parseInt(String toParse, int fallback) {
 		try {
 			fallback = Integer.parseInt(toParse);
 		} catch(Exception e) { e.printStackTrace(); }

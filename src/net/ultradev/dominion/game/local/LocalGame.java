@@ -11,7 +11,6 @@ import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.player.Player;
-import net.ultradev.dominion.game.utils.Utils;
 
 public class LocalGame {
 	
@@ -33,7 +32,7 @@ public class LocalGame {
 		this.players = new ArrayList<>();
 		this.trash = new ArrayList<>();
 		this.board = new Board(gs);
-		Utils.debug("A local game has been made");
+		getGameServer().getUtils().debug("A local game has been made");
 	}
 	
 	public GameServer getGameServer() {

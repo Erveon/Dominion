@@ -2,11 +2,10 @@ package net.ultradev.dominion.game.card.action.actions;
 
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
-import net.ultradev.dominion.game.utils.Utils;
 
 public class GainBuypowerAction extends Action {
 
-	public static enum GainBuypowerType { ADD, MULTIPLIER };
+	public enum GainBuypowerType { ADD, MULTIPLIER };
 	
 	int amount;
 	GainBuypowerType type;
@@ -27,11 +26,6 @@ public class GainBuypowerAction extends Action {
 				turn.addMultiplierBuypower(this.amount);
 				break;
 		}
-	}
-	
-	public static Action parse(String identifier, String description, String amountVar, GainBuypowerType type) {
-		int amount = Utils.parseInt(amountVar, 1);
-		return new GainBuypowerAction(identifier, description, amount, type);
 	}
 	
 }

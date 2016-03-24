@@ -59,7 +59,7 @@ public class CardManager {
 		addActions();
 	}
 	
-	// We'll do this later so all cards are inited already, some actions rely on other cards
+	// We'll do this later so all cards are created already because some actions rely on other cards
 	public void addActions() {
 		Card chapel = getCards().get("chapel");
 		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
@@ -81,28 +81,84 @@ public class CardManager {
 		switch(identifier.toLowerCase()) {
 			case "draw_cards":
 				if(containsKeys(params, identifier, "amount"))
-					return DrawCardAction.parse(identifier, description, params.get("amount"));
+					return parseDrawCards(identifier, description, params.get("amount"));
 			case "trash_specific":
 				if(containsKeys(params, identifier, "amount"))
-					return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.SPECIFIC_AMOUNT);
+					return parseTrash(getGameServer(), identifier, description, params, TrashType.SPECIFIC_AMOUNT);
 			case "trash_choose":
 				// No parameters
-				return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.CHOOSE_AMOUNT);
+				return parseTrash(getGameServer(), identifier, description, params, TrashType.CHOOSE_AMOUNT);
 			case "trash_range":
 				if(containsKeys(params, identifier, "min", "max"))
-					return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.RANGE);
+					return parseTrash(getGameServer(), identifier, description, params, TrashType.RANGE);
 			case "add_actions":
 				if(containsKeys(params, identifier, "amount"))
-					return GainActionsAction.parse(identifier, description, params.get("amount"));
+					return parseAddActions(identifier, description, params.get("amount"));
 			case "add_buys":
 				if(containsKeys(params, identifier, "amount"))
-					return GainBuysAction.parse(identifier, description, params.get("amount"));
+					return parseAddBuys(identifier, description, params.get("amount"));
 			case "add_buypower":
 				if(containsKeys(params, identifier, "amount"))
-					return GainBuypowerAction.parse(identifier, description, params.get("amount"), GainBuypowerType.ADD);
+					return parseAddBuypower(identifier, description, params.get("amount"), GainBuypowerType.ADD);
 		}
 		return null;
 	}
+	
+	/*************
+	 * 
+	 *  START PARSERS
+	 * 
+	 *************/
+	
+	public Action parseDrawCards(String identifier, String description, String amountVar) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new DrawCardAction(identifier, description, amount);
+	}
+	
+	public Action parseAddActions(String identifier, String description, String amountVar) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new GainActionsAction(identifier, description, amount);
+	}
+	
+	public Action parseAddBuypower(String identifier, String description, String amountVar, GainBuypowerType type) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new GainBuypowerAction(identifier, description, amount, type);
+	}
+	
+	public Action parseAddBuys(String identifier, String description, String amountVar) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new GainBuysAction(identifier, description, amount);
+	}
+	
+	public Action parseTrash(GameServer gs, String identifier, String description, Map<String, String> params, TrashType type) {
+		TrashCardAction action = null;
+		switch(type) {
+			case CHOOSE_AMOUNT:
+				action = new TrashCardAction(identifier, description);
+				break;
+			case RANGE:
+				int min = getGameServer().getUtils().parseInt(params.get("min"), 0);
+				int max = getGameServer().getUtils().parseInt(params.get("max"), 4);
+				action = new TrashCardAction(identifier, description, min, max);
+				break;
+			case SPECIFIC_AMOUNT:
+			default:
+				action = new TrashCardAction(identifier, description);
+				break;
+		}
+		if(params.containsKey("restrict")) {
+			String[] toRestrict = params.get("restrict").split(",");
+			for(String restrict : toRestrict)
+				action.addRestriction(gs.getCardManager().get(restrict));
+		}
+		return action;
+	}
+	
+	/*************
+	 * 
+	 *  END PARSERS
+	 * 
+	 *************/
 	
 	private boolean containsKeys(Map<String, String> params, String identifier, String... variables) {
 		for(String var : variables) {

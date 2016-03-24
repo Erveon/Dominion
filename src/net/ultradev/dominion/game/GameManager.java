@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.local.LocalGame;
-import net.ultradev.dominion.game.utils.Utils;
 
 public class GameManager {
 	
@@ -39,7 +38,7 @@ public class GameManager {
 			return;
 		games.remove(session);
 		System.gc(); // Free the memory!!
-		Utils.debug("A local game has been destroyed");
+		getGameServer().getUtils().debug("A local game has been destroyed");
 	}
 	
 	public JSONObject handleLocalRequest(Map<String, String> map) {
