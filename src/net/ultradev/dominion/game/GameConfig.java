@@ -42,7 +42,7 @@ public class GameConfig {
 	}
 	
 	public void addActionCard(String actionCard) {
-		if(actionCardTypes.size() < 10)
+		if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10)
 			actionCardTypes.add(actionCard);
 	}
 	

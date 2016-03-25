@@ -29,7 +29,9 @@ public class API extends HttpServlet {
 		// Start game > ?action=start&type=local
 		// End phase(action/buys/turn) > ?action=endphase&type=local
 	
+	// AJAX CALLS TODO
 		// Play card > ?action=playcard&type=local&card=copper
+		// Buy card > ?action=buycard&type=local&card=copper
 	
 	GameServer gs;
        
@@ -52,7 +54,8 @@ public class API extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		res.setHeader("Access-Control-Allow-Origin", "*");
+		res.addHeader("Access-Control-Allow-Origin", "*");
+	    
 		res.setContentType("application/json");
 		res.setCharacterEncoding("utf-8");
 		

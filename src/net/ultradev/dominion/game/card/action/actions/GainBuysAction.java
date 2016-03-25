@@ -2,6 +2,7 @@ package net.ultradev.dominion.game.card.action.actions;
 
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.ActionResult;
 
 public class GainBuysAction extends Action {
 	
@@ -13,8 +14,9 @@ public class GainBuysAction extends Action {
 	}
 
 	@Override
-	public void play(Turn turn) {
+	public ActionResult play(Turn turn) {
 		turn.addBuys(this.amount);
+		return ActionResult.DONE;
 	}
 
 }

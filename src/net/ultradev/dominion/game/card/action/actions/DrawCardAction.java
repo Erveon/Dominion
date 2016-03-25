@@ -2,6 +2,7 @@ package net.ultradev.dominion.game.card.action.actions;
 
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.ActionResult;
 
 public class DrawCardAction extends Action {
 	
@@ -13,9 +14,10 @@ public class DrawCardAction extends Action {
 	}
 
 	@Override
-	public void play(Turn turn) {
+	public ActionResult play(Turn turn) {
 		for(int i = 0; i < amount; i++)
 			turn.getPlayer().drawCardFromDeck();
+		return ActionResult.DONE;
 	}
 	
 }

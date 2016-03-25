@@ -19,6 +19,6 @@ public abstract class Action {
 		return description;
 	}
 	
-	public abstract void play(Turn turn);
+	public abstract ActionResult play(Turn turn);
 	
 }

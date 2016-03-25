@@ -1,12 +1,20 @@
 package net.ultradev.dominion.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.card.Card;
+import net.ultradev.dominion.game.card.CardManager;
+import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.local.LocalGame;
 import net.ultradev.dominion.game.player.Player;
 
 public class Turn {
 	
 	public enum Phase { ACTION, BUY, CLEANUP };
+	private enum BuyResponse { CANTAFFORD, BOUGHT };
 	
 	private LocalGame game;
 	private Player player;
@@ -62,6 +70,16 @@ public class Turn {
 		this.buycount += amount;
 	}
 	
+	public void removeBuy() {
+		this.buycount--;
+		if(this.buycount == 0)
+			endPhase();
+	}
+	
+	public void removeAction() {
+		this.actioncount--;
+	}
+	
 	public void addActions(int amount) {
 		this.actioncount += amount;
 	}
@@ -113,6 +131,43 @@ public class Turn {
 		p.discardHand();
 		for(int i = 0; i < 5; i++)
 			p.drawCardFromDeck();
+	}
+	
+	public JSONObject buyCard(String cardid) {
+		if(!getPhase().equals(Phase.BUY))
+			return getGame().getGameServer().getGameManager().getInvalid("Tried buying a card when not in the buy phase..");
+		CardManager cm = getGame().getGameServer().getCardManager();
+		if(!cm.exists(cardid))
+			return getGame().getGameServer().getGameManager().getInvalid("Card not found:" + cardid);
+		JSONObject response = new JSONObject().accumulate("response", "OK");
+		Card card = cm.get(cardid);
+		if(getBuypower() >= card.getCost()) {
+			getPlayer().getDeck().add(card);
+			removeBuy();
+			return response.accumulate("result", BuyResponse.BOUGHT);
+		}
+		// In other cases
+		return response.accumulate("result", BuyResponse.CANTAFFORD);
+	}
+	
+	//TODO make this mess work better
+	public JSONObject playCard(String cardid) {
+		if(!getPhase().equals(Phase.ACTION))
+			return getGame().getGameServer().getGameManager().getInvalid("Tried playing a card when not in the action phase..");
+		CardManager cm = getGame().getGameServer().getCardManager();
+		if(!cm.exists(cardid))
+			return getGame().getGameServer().getGameManager().getInvalid("Card not found:" + cardid);
+		JSONObject response = new JSONObject().accumulate("response", "OK");
+		Card card = cm.get(cardid);
+		List<String> afterAction = new ArrayList<>();
+		for(Action action : card.getActions()) {
+			ActionResult result = action.play(this);
+			if(!result.equals(ActionResult.DONE))
+				afterAction.add(result.toString());
+		}
+		if(!afterAction.isEmpty())
+		response.accumulate("after", afterAction);
+		return response;
 	}
 	
 	/**

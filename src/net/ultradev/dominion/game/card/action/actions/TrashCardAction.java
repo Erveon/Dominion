@@ -5,6 +5,7 @@ import java.util.List;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.ActionResult;
 
 public class TrashCardAction extends Action {
 	
@@ -50,8 +51,9 @@ public class TrashCardAction extends Action {
 	}
 
 	@Override
-	public void play(Turn turn) {
+	public ActionResult play(Turn turn) {
 		//TODO trash 'amount' cards
+		return ActionResult.SELECT_CARDS;
 	}
 	
 }
