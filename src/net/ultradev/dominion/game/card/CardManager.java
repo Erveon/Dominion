@@ -61,6 +61,16 @@ public class CardManager {
 	
 	// We'll do this later so all cards are created already because some actions rely on other cards
 	public void addActions() {
+		Card copper = getCards().get("copper");
+		copper.addAction(parseAction("add_buypower", "Adds 1 coin to your turn", "amount=1"));
+
+		Card silver = getCards().get("silver");
+		silver.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+
+		Card gold = getCards().get("gold");
+		gold.addAction(parseAction("add_buypower", "Adds 3 coins to your turn", "amount=3"));
+		
+		//TODO FETCH FROM DB
 		Card chapel = getCards().get("chapel");
 		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
 		
@@ -186,6 +196,10 @@ public class CardManager {
 	
 	private Map<String, Card> getCards() {
 		return cards;
+	}
+	
+	public boolean exists(String identifier) {
+		return cards.containsKey(identifier);
 	}
 	
 	public Card get(String identifier) {

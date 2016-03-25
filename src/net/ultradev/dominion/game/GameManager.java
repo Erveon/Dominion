@@ -97,8 +97,13 @@ public class GameManager {
 				String name = map.get("name");
 				g.addPlayer(name);
 				return response.accumulate("response", "OK");
-			case "endturn":
-				g.endTurn();
+			case "endphase":
+				g.endPhase();
+				return response.accumulate("response", "OK");
+			case "playcard":
+				if(!map.containsKey("card"))
+					return getInvalid("Uhmm.. I need to know which card you'll be playing. (card parameter doesn't exist)");
+				//TODO play the motherfucking card
 				return response.accumulate("response", "OK");
 			default:
 				return getInvalid("Action not recognized: " + action);

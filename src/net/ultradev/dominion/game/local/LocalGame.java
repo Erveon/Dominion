@@ -9,7 +9,10 @@ import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.Turn;
+import net.ultradev.dominion.game.Turn.Phase;
 import net.ultradev.dominion.game.card.Card;
+import net.ultradev.dominion.game.card.CardManager;
+import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.player.Player;
 
 public class LocalGame {
@@ -80,10 +83,14 @@ public class LocalGame {
 		getTurn().getPlayer().increaseRounds();
 		if(getBoard().hasEndCondition())
 			endGame();
-		else {
-			getTurn().end();
+		else
 			setTurn(getTurn().getNextTurn());
-		}
+	}
+	
+	public void endPhase() {
+		getTurn().endPhase();
+		if(getTurn().getPhase().equals(Phase.CLEANUP))
+			endTurn();
 	}
 	
 	public void setTurn(Turn turn) {
@@ -128,6 +135,17 @@ public class LocalGame {
 			}
 		}
 		return winnerList;
+	}
+	
+	public JSONObject playCardResponse(String cardid) {
+		CardManager cm = getGameServer().getCardManager();
+		if(!cm.exists(cardid)) 
+			return getGameServer().getGameManager().getInvalid("Card " + cardid + " does not exist");
+		Card card = cm.get(cardid);
+		for(Action action : card.getActions())
+			action.play(getTurn());
+		//TODO
+		return null;
 	}
 	
 	public void addPlayer(String name) {

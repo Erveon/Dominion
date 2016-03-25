@@ -6,20 +6,24 @@ import net.ultradev.dominion.game.player.Player;
 
 public class Turn {
 	
+	public enum Phase { ACTION, BUY, CLEANUP };
+	
 	private LocalGame game;
 	private Player player;
 	private int buycount;
 	private int actioncount;
-	private int extraBuypower;
+	private int buypower;
 	private int buypowerMultiplier;
-	
+	private Phase phase;
+
 	public Turn(LocalGame game, Player player) {
 		this.game = game;
 		this.player = player;
 		this.buycount = 1;
 		this.actioncount = 1;
-		this.extraBuypower = 0;
+		this.buypower = 0;
 		this.buypowerMultiplier = 1;
+		this.phase = Phase.ACTION;
 	}
 	
 	public LocalGame getGame() {
@@ -28,6 +32,30 @@ public class Turn {
 	
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public Phase getPhase() {
+		return phase;
+	}
+	
+	public void setPhase(Phase phase) {
+		this.phase = phase;
+	}
+	
+	public void endPhase() {
+		switch(getPhase()) {
+			case ACTION:
+				this.actioncount = 0;
+				setPhase(Phase.BUY);
+				break;
+			case BUY:
+				end();
+				setPhase(Phase.CLEANUP);
+				break;
+			case CLEANUP:
+			default:
+				break;
+		}
 	}
 	
 	public void addBuys(int amount) {
@@ -39,19 +67,15 @@ public class Turn {
 	}
 	
 	public void addBuypower(int amount) {
-		this.extraBuypower += amount;
+		this.buypower += amount;
 	}
 	
 	public void addMultiplierBuypower(int amount) {
 		this.buypowerMultiplier += amount;
 	}
 	
-	public int getExtraBuypower() {
-		return extraBuypower;
-	}
-	
-	public int getFinalBuypower(int buypower) {
-		return (buypower + extraBuypower) * buypowerMultiplier;
+	public int getBuypower() {
+		return buypower * buypowerMultiplier;
 	}
 	
 	public int getBuys() {
@@ -86,15 +110,9 @@ public class Turn {
 
 	public void end() {
 		Player p = getPlayer();
-		p.getDiscard().addAll(p.getHand());
-		p.getHand().clear();
-		for(int i = 0; i < 5; i++) {
-			// Draws a card and fires when the deck is empty
-			if(!p.drawCardFromDeck()) {
-				p.transferDiscardToDeck();
-				p.drawCardFromDeck();
-			}
-		}
+		p.discardHand();
+		for(int i = 0; i < 5; i++)
+			p.drawCardFromDeck();
 	}
 	
 	/**
@@ -108,7 +126,9 @@ public class Turn {
 		return new JSONObject()
 				.accumulate("player", getPlayer().getDisplayname())
 				.accumulate("buysleft", getBuys())
-				.accumulate("actionsleft", getActions());
+				.accumulate("actionsleft", getActions())
+				.accumulate("buypower", getBuypower())
+				.accumulate("phase", getPhase().toString());
 	}
 	
 }
