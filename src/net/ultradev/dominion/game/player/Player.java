@@ -116,6 +116,11 @@ public class Player {
 		return json;
 	}
 	
+	public void trashCard(Card card) {
+		if(getHand().contains(card))
+			getHand().remove(card);
+	}
+	
 	public JSONObject getAsJson() {
 		return new JSONObject()
 				.accumulate("displayname", getDisplayname())

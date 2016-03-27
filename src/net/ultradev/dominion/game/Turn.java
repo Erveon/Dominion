@@ -1,8 +1,5 @@
 package net.ultradev.dominion.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.CardManager;
@@ -23,6 +20,9 @@ public class Turn {
 	private int buypower;
 	private int buypowerMultiplier;
 	private Phase phase;
+	private SubTurn subturn;
+	
+	Card activeCard;
 
 	public Turn(LocalGame game, Player player) {
 		this.game = game;
@@ -134,13 +134,14 @@ public class Turn {
 	}
 	
 	public JSONObject buyCard(String cardid) {
-		if(!getPhase().equals(Phase.BUY))
-			return getGame().getGameServer().getGameManager().getInvalid("Tried buying a card when not in the buy phase..");
-		CardManager cm = getGame().getGameServer().getCardManager();
-		if(!cm.exists(cardid))
-			return getGame().getGameServer().getGameManager().getInvalid("Card not found:" + cardid);
+		if(!canPerform(Phase.BUY, cardid))
+			return getGame().getGameServer().getGameManager()
+					.getInvalid("Unable to perform purchase. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid");
+		
 		JSONObject response = new JSONObject().accumulate("response", "OK");
+		CardManager cm = getGame().getGameServer().getCardManager();
 		Card card = cm.get(cardid);
+		
 		if(getBuypower() >= card.getCost()) {
 			getPlayer().getDeck().add(card);
 			removeBuy();
@@ -150,31 +151,66 @@ public class Turn {
 		return response.accumulate("result", BuyResponse.CANTAFFORD);
 	}
 	
-	//TODO make this mess work better
 	public JSONObject playCard(String cardid) {
-		if(!getPhase().equals(Phase.ACTION))
-			return getGame().getGameServer().getGameManager().getInvalid("Tried playing a card when not in the action phase..");
-		CardManager cm = getGame().getGameServer().getCardManager();
-		if(!cm.exists(cardid))
-			return getGame().getGameServer().getGameManager().getInvalid("Card not found:" + cardid);
-		JSONObject response = new JSONObject().accumulate("response", "OK");
-		Card card = cm.get(cardid);
-		List<String> afterAction = new ArrayList<>();
-		for(Action action : card.getActions()) {
-			ActionResult result = action.play(this);
-			if(!result.equals(ActionResult.DONE))
-				afterAction.add(result.toString());
-		}
-		if(!afterAction.isEmpty())
-		response.accumulate("after", afterAction);
+		if(!canPerform(Phase.ACTION, cardid))
+			return getGame().getGameServer().getGameManager()
+					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
+		
+		Card card = getGame().getGameServer().getCardManager().get(cardid);
+		JSONObject response = playActions(card);
+		
 		return response;
 	}
 	
+	protected boolean canPerform(Phase phase, String cardid) {
+		if(!getPhase().equals(phase))
+			return false;
+		CardManager cm = getGame().getGameServer().getCardManager();
+		if(!cm.exists(cardid))
+			return false;
+		return true;
+	}
+	
+	private JSONObject playActions(Card card) {
+		this.activeCard = card;
+		boolean ignore = true;
+		for(Action action : card.getActions()) {
+			// Here we're going to continue the actions where we left off in the subturn
+			if(inSubTurn() && ignore) {
+				// We found the action for the current subturn, let's execute the next action
+				if(getSubTurn().getAction().equals(action)) {
+					this.phase = Phase.ACTION;
+					ignore = false;
+				}
+				continue;
+			}
+			JSONObject actionResponse = action.play(this);
+			ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
+			if(!result.equals(ActionResult.DONE)) {
+				this.subturn = new SubTurn(this, action);
+				return actionResponse;
+			}
+		}
+		this.phase = Phase.ACTION;
+		this.subturn = null;
+		return new JSONObject().accumulate("response", "OK")
+							   .accumulate("result", ActionResult.DONE);
+	}
+	
+	public boolean inSubTurn() {
+		return getSubTurn() != null;
+	}
+	
 	/**
-	 * When an action has to be performed by a player, resulting from an actioncard played
+	 * To check whether there is an active subturn
+	 * @return the current subturn,, null if none
 	 */
-	public void createSubturns() {
-		//TODO Maybe define which action as parameter?
+	public SubTurn getSubTurn() {
+		return this.subturn;
+	}
+	
+	public Card getActiveCard() {
+		return activeCard;
 	}
 	
 	public JSONObject getAsJson() {

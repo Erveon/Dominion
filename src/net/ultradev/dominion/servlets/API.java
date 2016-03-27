@@ -28,10 +28,11 @@ public class API extends HttpServlet {
 		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
 		// Start game > ?action=start&type=local
 		// End phase(action/buys/turn) > ?action=endphase&type=local
+		// Buy card > ?action=buycard&type=local&card=copper
+		// Select card > ?action=selectcard&type=local&card=copper
 	
 	// AJAX CALLS TODO
 		// Play card > ?action=playcard&type=local&card=copper
-		// Buy card > ?action=buycard&type=local&card=copper
 	
 	GameServer gs;
        

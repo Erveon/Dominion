@@ -2,6 +2,9 @@ package net.ultradev.dominion.game.card.action.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.SubTurn;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action;
@@ -14,6 +17,8 @@ public class TrashCardAction extends Action {
 	int amount;
 	int min, max;
 	TrashType type;
+	
+	int cardsTrashed;
 	
 	List<Card> restriction;
 	
@@ -51,9 +56,53 @@ public class TrashCardAction extends Action {
 	}
 
 	@Override
-	public ActionResult play(Turn turn) {
-		//TODO trash 'amount' cards
-		return ActionResult.SELECT_CARDS;
+	public JSONObject play(Turn turn) {
+		// Reset trashed card amount from possible previous trash performed by the same kind of card
+		this.cardsTrashed = 0;
+		return getResponse(turn);
+	}
+	
+	public JSONObject selectCard(SubTurn subturn, Card card) {
+		subturn.getPlayer().trashCard(card);
+		this.cardsTrashed++;
+		return getResponse(subturn.getTurn());
+	}
+	
+	public boolean hasForceSelect() {
+		switch(type) {
+			case CHOOSE_AMOUNT:
+				return false;
+			case RANGE:
+				return this.cardsTrashed < this.min;
+			case SPECIFIC_AMOUNT:
+				return this.cardsTrashed == this.amount;
+			default:
+				return false;
+		}
+	}
+	
+	public boolean canSelectMore() {
+		switch(type) {
+			case CHOOSE_AMOUNT:
+				return true;
+			case RANGE:
+				return this.cardsTrashed < this.max;
+			case SPECIFIC_AMOUNT:
+				return this.cardsTrashed != this.amount;
+			default:
+				return false;
+		}
+	}
+	
+	public JSONObject getResponse(Turn turn) {
+		JSONObject response = new JSONObject().accumulate("response", "OK");
+		if(canSelectMore()) {
+			response.accumulate("result", ActionResult.SELECT_CARD);
+			response.accumulate("force", hasForceSelect());
+		} else {
+			return turn.playCard(turn.getActiveCard().getName());
+		}
+		return response;
 	}
 	
 }

@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action;
-import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
 

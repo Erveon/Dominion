@@ -61,7 +61,8 @@ public class GameManager {
 		
 		// Actions that need a game to be running
 		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") 
-				|| action.equals("start") || action.equals("endturn") || action.equals("buycard") || action.equals("playcard")) {
+				|| action.equals("start") || action.equals("endturn") || action.equals("buycard") || action.equals("playcard")
+				|| action.equals("selectcard")) {
 			if(g == null)
 				return getInvalid("No game running");
 		}
@@ -102,12 +103,18 @@ public class GameManager {
 				return response.accumulate("response", "OK");
 			case "playcard":
 				if(!map.containsKey("card"))
-					return getInvalid("Uhmm.. I need to know which card you'll be playing. (card parameter doesn't exist)");
+					return getInvalid("Card parameter doesn't exist");
 				return g.getTurn().playCard(map.get("card"));
 			case "buycard":
 				if(!map.containsKey("card"))
-					return getInvalid("Uhmm.. I need to know which card you'll be buying. (card parameter doesn't exist)");
+					return getInvalid("Card parameter doesn't exist");
 				return g.getTurn().buyCard(map.get("card"));
+			case "selectcard":
+				if(!map.containsKey("card"))
+					return getInvalid("Card parameter doesn't exist");
+				if(g.getTurn().getSubTurn() != null)
+					return g.getTurn().getSubTurn().selectCard(map.get("card"));
+				return getInvalid("Cannot select card, not handled in the game's current state");
 			default:
 				return getInvalid("Action not recognized: " + action);
 		}
