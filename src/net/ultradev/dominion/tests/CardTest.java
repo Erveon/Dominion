@@ -13,6 +13,15 @@ public class CardTest {
 	public Card c2;
 	public boolean Testing = true;
 	
+	public CardTest() {
+		System.out.println("Starting test");
+		initTest();
+		testAddAction();
+		testAddType();
+		testGetTypesFormatted();
+		System.out.println("\nTest ended");
+	}
+	
 	public void initTest(){
 		//public Card(String name, String description, int cost)
 		c1 = new Card("name","description",99);
@@ -55,13 +64,7 @@ public class CardTest {
 	
 	
 	public static void main(String[] args){
-		System.out.println("Starting test");
-		CardTest ct = new CardTest();
-		ct.initTest();
-		ct.testAddAction();
-		ct.testAddType();
-		ct.testGetTypesFormatted();
-		System.out.println("\nTest ended");
+		new CardTest();
 	}
 
 }
