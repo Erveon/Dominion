@@ -1,6 +1,7 @@
 @import 'normalize.css'
 @import 'fonts.css'
 @import 'colors.sass'
+@import '../../library/fullpage/jquery.fullpage.min.css'
 
 html
   background-image: url('../images/bg.png')
@@ -13,7 +14,7 @@ html
 body
   background-color: $bgColor
 
-header
+#header
   width: 100%
   height: 60px
   background-color: $mainColor
@@ -74,7 +75,7 @@ header
         font-size: 1.1rem
         color: $treasureCardColor
 
-main
+#main
   width: 100%
   height: 900px
 
@@ -447,3 +448,81 @@ div#hand
 
         div.card-info
           background-color: $curseCardColor
+
+h1.config, h2.config, h3.config
+  font-family: 'RobotoBold'
+  text-align: center
+  font-size: 2rem
+  margin-bottom: 105px
+  color: $lightTextColor
+
+h3.config
+  margin-top: 300px
+
+h1.config
+  font-size: 3rem
+
+.headroom
+  padding-top: 80px
+
+button.config
+  background-color: $accentColor2
+  border: none
+  color: $lightTextColor
+  text-transform: uppercase
+  font-family: 'RobotoBold'
+  padding: 10px
+  font-size: 0.9rem
+  display: block
+  width: 200px
+  margin: 5px auto
+  -webkit-transition: all 150ms ease-in-out
+  -moz-transition: all 150ms ease-in-out
+  transition: all 150ms ease-in-out
+
+button.config:hover
+  background-color: $accentColor4
+  cursor: pointer
+  -webkit-transition: all 150ms ease-in-out
+  -moz-transition: all 150ms ease-in-out
+  transition: all 150ms ease-in-out
+
+button.config:focus
+  outline: none
+
+#game
+  margin: 0
+  padding: 0
+
+#game-config
+  width: 400px
+  display: block
+  margin: 0 auto 50px
+
+#game-config div.form-column
+  width: 200px
+  float: left
+
+#game-config:after
+  content: ''
+  clear: both
+  display: table
+
+#game-config label
+  font-family: 'RobotoBold'
+  text-transform: uppercase
+  color: $lightTextColor
+  display: inline-block
+  margin: 0 5px 10px
+
+#game-config select,
+#game-config input
+  display: block
+  width: 190px
+  margin: 0 5px 20px
+  box-sizing: border-box
+  font-family: 'Roboto'
+
+#game-config div.form-column input.hidden,
+#game-config div.form-column label.hidden
+  display: none
