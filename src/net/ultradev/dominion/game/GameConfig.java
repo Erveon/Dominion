@@ -51,10 +51,6 @@ public class GameConfig {
 			actionCardTypes.remove(actionCard);
 	}
 	
-	public void assignRandomActionCards() {
-		//TODO Geef 10 random kaart types vanuit db
-	}
-	
 	public List<String> getActionCards() {
 		return actionCardTypes;
 	}

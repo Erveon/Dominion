@@ -2,10 +2,14 @@ package net.ultradev.dominion.game.utils;
 
 public class Utils {
 	
-	public boolean DEBUG = true;
+	public boolean debugging;
+	
+	public void setDebugging(boolean debugging) {
+		this.debugging = debugging;
+	}
 	
 	public void debug(String s) {
-		if(DEBUG)
+		if(debugging)
 			System.out.println(s);
 	}
 	

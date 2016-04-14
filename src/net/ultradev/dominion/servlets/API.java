@@ -3,7 +3,6 @@ package net.ultradev.dominion.servlets;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +16,7 @@ import net.ultradev.dominion.game.local.LocalGame;
  * Servlet implementation class Test
  */
 @SuppressWarnings("serial")
-@WebServlet({ "/API", "/api" })
+@WebServlet(urlPatterns = {"/API", "/api"}, asyncSupported = true)
 public class API extends HttpServlet {
 
 	//AJAX CALLS
@@ -45,6 +44,7 @@ public class API extends HttpServlet {
     
     public void init() throws ServletException {
         this.gs = new GameServer();
+        gs.getUtils().setDebugging(true);
     }
     
     public GameServer getGameServer() {
@@ -55,8 +55,6 @@ public class API extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		res.addHeader("Access-Control-Allow-Origin", "*");
-	    
 		res.setContentType("application/json");
 		res.setCharacterEncoding("utf-8");
 		
@@ -70,6 +68,8 @@ public class API extends HttpServlet {
 			LocalGame g = getGameServer().getGameManager().getGame(req.getSession());
 			res.getWriter().append(getGameServer().getGameManager().handleLocalRequest(getParameters(req), g, req.getSession()).toString());
 			return;
+		} else if(type.equals("online")) {
+			res.getWriter().append(getGameServer().getGameManager().getInvalid("Multiplayer is unsupported at this time").toString());
 		}
 		
 		res.getWriter().append(getGameServer().getGameManager().getInvalid("Unhandled game type: " + type).toString());

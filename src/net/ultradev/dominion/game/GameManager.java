@@ -29,8 +29,10 @@ public class GameManager {
 	}
 	
 	// If null, it's a java front-end game
-	public void createGame(HttpSession session) {
-		games.put(session, new LocalGame(getGameServer()));
+	public LocalGame createGame(HttpSession session) {
+		LocalGame game = new LocalGame(getGameServer());
+		games.put(session, game);
+		return game;
 	}
 	
 	public void destroyFor(HttpSession session) {

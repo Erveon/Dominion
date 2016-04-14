@@ -136,7 +136,10 @@ public class LocalGame {
 	}
 	
 	public void addPlayer(String name) {
+		if(getPlayerByName(name) != null)
+			return;
 		getPlayers().add(new Player(getGameServer(), name));
+		getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
 	}
 	
 	public Player getPlayerByName(String name) {

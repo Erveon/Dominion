@@ -17,7 +17,7 @@ public class GameServer {
 		setup();
 	}
 	
-	public void setup() {
+	private void setup() {
 		getCardManager().setup();
 	}
 	
