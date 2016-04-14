@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dominion</title>
+
+        <link rel="stylesheet" type="text/css" href="assets/css/landing.css">
+    </head>
+
+    <body>
+        <main id="fullpage">
+            <div class="fp-section">
+                <h2>Online play is currently unavailable.</h2>
+
+                <button class="page-down">Back To Menu</button>
+            </div>
+
+            <div class="fp-section active">
+                <h1>Dominion</h1>
+
+                <button class="page-up">Play Online</button>
+                <button class="page-down">Play Local</button>
+            </div>
+
+            <div class="fp-section">
+                <div class="fp-slide active">
+                    <h2>Game Configuration</h2>
+
+                    <form id="game-config">
+                        <div class="form-column">
+                            <label for="player-amount">Players</label>
+                            <select name="player-amount" id="player-amount">
+                                <option value="2" active>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+
+                            <div class="player-names">
+                                <label for="player1">Name Player 1</label>
+                                <input id="player1" class="player" type="text" name="player1">
+                                <label for="player2">Name Player 2</label>
+                                <input id="player2" class="player" type="text" name="player2">
+                            </div>
+                        </div>
+
+                        <div class="form-column">
+                            <label for="card-set">Card Set</label>
+                            <select name="card-set" id="card-set">
+                                <option value="first-game" active>First Game</option>
+                                <option value="big-money" active>Big Money</option>
+                                <option value="interaction" active>Interaction</option>
+                                <option value="size-distortion" active>Size Distortion</option>
+                                <option value="village-square" active>Village Square</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <button class="page-right start-game">Play</button>
+                    <button class="page-up">Back To Menu</button>
+                </div>
+
+                <div class="fp-slide">
+                    <h3>Loading...</h3>
+                </div>
+            </div>
+        </main>
+
+        <script type="text/javascript" src="library/jquery/jquery-2.2.2.min.js"></script>
+        <script type="text/javascript" src="library/fullpage/jquery.fullpage.min.js"></script>
+        <script type="text/javascript" src="assets/js/modules/DominionUI.js"></script>
+        <script type="text/javascript" src="assets/js/modules/Dominion.js"></script>
+        <script type="text/javascript" src="assets/js/landing.js"></script>
+    </body>
+</html>
