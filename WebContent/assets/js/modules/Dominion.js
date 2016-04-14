@@ -7,7 +7,7 @@ var Dominion = (function($) {
         this.api = api;
     };
 
-    Api.prototype.call = function(callData, callback, multi) {
+    Api.prototype.doCall = function(callData, callback, multi) {
         var call = this.api;
         call += multi ? 'type=mp&' : 'type=local&';
 
@@ -38,7 +38,7 @@ var Dominion = (function($) {
     };
 
     Game.prototype.addPlayer = function(name) {
-        this.Api.call({'action': 'addplayer', 'name': name},
+        this.Api.doCall({'action': 'addplayer', 'name': name},
             function() {
                 console.log(name + ' was added to the game');
             }
@@ -51,13 +51,17 @@ var Dominion = (function($) {
     };
 
     Game.prototype.initGame = function() {
-        var self = this;
-        this.Api.call({'action': 'create'},
+        var that = this;
+        this.Api.doCall({'action': 'create'},
             function() {
                 console.log('game created');
-                self.addAllPlayers();
+                that.addAllPlayers();
             }
         );
+    };
+
+    var CardSet = function (name) {
+        this.name = name;
     };
 
     return {
