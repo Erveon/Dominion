@@ -1,6 +1,8 @@
 package net.ultradev.dominion.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -12,6 +14,7 @@ public class Board {
 	
 	// Define all of those with the same type
 	public Map<Card, Integer> actionsupply, victorysupply, treasuresupply, cursesupply;
+	List<Card> trash;
 	private GameServer gs;
 	
 	public Board(GameServer gs) {
@@ -20,10 +23,15 @@ public class Board {
 		victorysupply = new HashMap<>();
 		treasuresupply = new HashMap<>();
 		cursesupply = new HashMap<>();
+		trash = new ArrayList<>();
 	}
 	
 	public GameServer getGameServer() {
 		return gs;
+	}
+	
+	public void addTrash(Card card) {
+		trash.add(card);
 	}
 	
 	public boolean hasEndCondition() {
@@ -108,7 +116,8 @@ public class Board {
 				.accumulate("action", getSupplyAsJson("action"))
 				.accumulate("treasure", getSupplyAsJson("treasure"))
 				.accumulate("victory", getSupplyAsJson("victory"))
-				.accumulate("curse", getSupplyAsJson("curse"));
+				.accumulate("curse", getSupplyAsJson("curse"))
+				.accumulate("trash", trash);
 	}
 
 }

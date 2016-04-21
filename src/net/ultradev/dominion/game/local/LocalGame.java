@@ -10,7 +10,6 @@ import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.Turn.Phase;
-import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.player.Player;
 
 public class LocalGame {
@@ -19,7 +18,6 @@ public class LocalGame {
 	private List<Player> players;
 	private Board board = null;
 	
-	private List<Card> trash;
 	private Turn turn;
 	
 	//In case there is a tie, this will determine who wins (least amount of turns)
@@ -31,7 +29,6 @@ public class LocalGame {
 		this.gs = gs;
 		this.config = new GameConfig();
 		this.players = new ArrayList<>();
-		this.trash = new ArrayList<>();
 		this.board = new Board(gs);
 		getGameServer().getUtils().debug("A local game has been made");
 	}
@@ -138,7 +135,7 @@ public class LocalGame {
 	public void addPlayer(String name) {
 		if(getPlayerByName(name) != null)
 			return;
-		getPlayers().add(new Player(getGameServer(), name));
+		getPlayers().add(new Player(this, name));
 		getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
 	}
 	
@@ -171,10 +168,6 @@ public class LocalGame {
 				.accumulate("players", getPlayersAsJson())
 				.accumulate("board", getBoard().getAsJson())
 				.accumulate("turn", getTurn() == null ? "null" : getTurn().getAsJson());
-	}
-	
-	public List<Card> getTrash() {
-		return trash;
 	}
 
 }

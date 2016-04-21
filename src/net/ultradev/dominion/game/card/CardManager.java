@@ -110,9 +110,21 @@ public class CardManager {
 		Card moneylender = getCards().get("moneylender");
 		moneylender.addAction(parseAction("trash_range", "Ability to trash a single copper for $3", "min=0;max=1;restrict=copper"));
 		
+		//TODO fetch callbacks for cards from db
 		Card cellar = getCards().get("cellar");
 		cellar.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
-		cellar.addAction(parseAction("discard_choose", "Discard any number of cards. +1 Card per card discarded.", ""));
+		Action cellarAddcard = parseAction("discard_choose", "Discard any number of cards. +1 Card per card discarded.", "");
+		cellarAddcard.addCallback(parseAction("draw_cards", "Draw 1 card", "amount=1"));
+		cellar.addAction(cellarAddcard);
+		
+		Card market = getCards().get("market");
+		market.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
+		market.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
+		market.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
+		market.addAction(parseAction("add_buypower", "Adds 1 coin to your turn", "amount=1"));
+
+		Card militia = getCards().get("militia");
+		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
 	}
 	
 	private Action parseAction(String identifier, String description, String variables) {

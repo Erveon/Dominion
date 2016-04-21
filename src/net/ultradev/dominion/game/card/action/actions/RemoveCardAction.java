@@ -97,6 +97,10 @@ public class RemoveCardAction extends Action {
 			default:
 				break;
 		}
+		
+		for(Action action : getCallbacks())
+			action.play(subturn.getTurn(), session);
+		
 		cardsRemoved.put(session, removedCards(session) + 1);
 		return getResponse(subturn.getTurn(), session);
 	}
