@@ -13,13 +13,8 @@ var DominionUI = (function($) {
     var setFullpageConfig = function() {
         $('#fullpage').fullpage({
             verticalCentered: false,
-            sectionsColor: ['rgba(118, 53, 104, 0.9)', 'rgba(44, 62, 80, 0.9)', 'rgba(118, 53, 104, 0.9)'],
+            sectionsColor: ['rgba(118, 53, 104, 0.75)', 'rgba(44, 62, 80, 0.75)', 'rgba(118, 53, 104, 0.75)'],
             controlArrows: false,
-            afterSlideLoad: function (anchorLink, index, slideIndex) {
-                if (index === 3 && slideIndex === 1) {
-                    //window.location = 'play.html';
-                }
-            }
         });
     };
 
@@ -73,6 +68,7 @@ var DominionUI = (function($) {
         setFullpageConfig();
         disableScroll();
         addListeners();
+        preventImageDragging();
     };
 
     var preventImageDragging = function () {

@@ -1,70 +1,67 @@
 package net.ultradev.dominion.tests;
 
-import java.util.List;
+import static org.junit.Assert.*;
+import org.junit.Test;
+import net.ultradev.dominion.game.card.*;
+import net.ultradev.dominion.game.card.action.*;
+import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 
-import net.ultradev.dominion.game.card.Card;
-import net.ultradev.dominion.game.card.action.Action;
-import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
-import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
+import java.util.List;
 
 public class CardTest {
 	
-	public Card c1;
-	public Card c2;
-	public boolean Testing = true;
-	
-	public CardTest() {
-		System.out.println("Starting test");
-		initTest();
-		testAddAction();
-		testAddType();
-		testGetTypesFormatted();
-		System.out.println("\nTest ended");
-	}
-	
-	public void initTest(){
-		//public Card(String name, String description, int cost)
-		c1 = new Card("name","description",99);
-		c2 = new Card("name2","description2",98);
+	private Card c;
+	private boolean Testing = true;
+
+	@Test
+	public void initTest() {
 		if(Testing){
 			System.out.println("Functie in de main toegevoegd?\n");
 		}
 	}
 	
-	public void testAddAction(){
-		Action action = new GainBuypowerAction("test_game","test something",9001, GainBuypowerType.ADD);
-		c1.addAction(action);
-		List<Action> actions = c1.getActions();
+	@Test
+	public void testAddAction() {
+		c = new Card("Test card","This is a test card",824);
+		Action action = new GainActionsAction("Gain_Actions","I Gained 99 actions...",99);
+		c.addAction(action);
+		List<Action> actions = c.getActions();
 		if(!(actions.contains(action))) {
-			System.out.println("Error: testAddAction");
-		};
+			fail("testAddAction failed:\n"+ actions + " doesn't contain " + "action");
+		}
 	}
 	
+	@Test
 	public void testAddType(){
-		String type = "TestCard";
-		c1.addType(type);
-		List<String> types = c1.getTypes();
+		c = new Card("Test card","This is a test card",824);
+		String type = "Testing card";
+		c.addType(type);
+		List<String> types = c.getTypes();
 		if(!(types.contains(type))) {
-			System.out.println("Error: testAddType");
+			fail("testAddType failed:\n" + types + " doesn't contain " + type);
 		}
+		
 	}
 	
+	@Test
 	public void testGetTypesFormatted() {
-		String type = "anotherType";
-		String type2 = "yetAnotherType";
-		c2.addType(type);
-		c2.addType(type2);
-		String arrangedTypes = c2.getTypesFormatted();
-		if(!(arrangedTypes.equals("anotherType - yetAnotherType"))) {   //Strings nooit vergelijken met "==" maar met [STRING].equals([STRING])
-			System.out.println("Error: testGetTypesFormatted");
+		c = new Card("Test card","This is a test card",824);
+		String type1 = "Test-it";
+		String type2 = "Testing card";
+		String format = type1 + " - " + type2;
+		c.addType(type1);
+		c.addType(type2);
+		String formatted = c.getTypesFormatted();
+		if(!(formatted.equals(format))) {
+			fail("testGetTypesFormatted failed:\n" + formatted + "\nIs not equal to:\n" + format);
 		}
 	}
-	
-	
-	
-	
-	public static void main(String[] args){
-		new CardTest();
-	}
-
 }
+
+
+
+
+
+
+
+

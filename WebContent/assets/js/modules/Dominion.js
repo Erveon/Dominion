@@ -3,12 +3,12 @@ var Dominion = (function($) {
 
     var dominionApi = '//localhost:8080/Dominion/api?';
 
-    var Api = function(api) {
-        this.api = api;
+    var Api = function(Api) {
+        this.Api = Api;
     };
 
     Api.prototype.doCall = function(callData, callback, multi) {
-        var call = this.api;
+        var call = this.Api;
         call += multi ? 'type=mp&' : 'type=local&';
 
         for (var key in callData)
@@ -50,18 +50,36 @@ var Dominion = (function($) {
             this.addPlayer(this.players[playerIndex]);
     };
 
+    Game.prototype.startGame = function () {
+        var that = this;
+        this.Api.doCall({'action': 'start'},
+            function () {
+                console.log("Game started!");
+                that.generateGameData();
+                //console.log(that.GameData.turn);
+            }
+        );
+    };
+
+    Game.prototype.generateGameData = function () {
+        var data = {};
+        this.Api.doCall({'action': 'info'},
+            function (returnData) {
+                console.log(returnData);
+            }
+        );
+        return data;
+    };
+
     Game.prototype.initGame = function() {
         var that = this;
         this.Api.doCall({'action': 'create'},
             function() {
                 console.log('game created');
                 that.addAllPlayers();
+                that.startGame();
             }
         );
-    };
-
-    var CardSet = function (name) {
-        this.name = name;
     };
 
     return {
