@@ -34,6 +34,8 @@ var Dominion = (function($) {
         this.players = initData.players;
         this.cardSet = initData.cardSet;
         this.Api = new Api(dominionApi);
+        this.gameData = null;
+        this.currentPlayer = null;
         this.initGame();
     };
 
@@ -51,24 +53,93 @@ var Dominion = (function($) {
     };
 
     Game.prototype.startGame = function () {
-        var that = this;
+    	var that = this;
         this.Api.doCall({'action': 'start'},
             function () {
                 console.log("Game started!");
-                that.generateGameData();
-                //console.log(that.GameData.turn);
+                that.refreshUI();
             }
         );
     };
 
-    Game.prototype.generateGameData = function () {
-        var data = {};
+    Game.prototype.refreshUI = function () {
+    	var that = this;
         this.Api.doCall({'action': 'info'},
-            function (returnData) {
-                console.log(returnData);
+            function (data) {
+        		that.updatePlayerDisplayNames(data);
+        		that.updatePlayerCounters(data);
+        		that.updateDeckCounter(data);
+                that.updateBoardCounters(data);
+                that.updateTurnDisplay(data);
+                that.addListeners();
+                console.log('addlisteners called');
+        	}
+        );
+    };
+
+    Game.prototype.addListeners= function () {
+        $('.endPhase').click(function () {
+            console.log('endPhase called');
+            this.endPhase();
+        });
+    }
+
+    Game.prototype.updatePlayerDisplayNames = function (data) {
+    	for (var player in data.game.players) {
+    		if (data.game.turn.player === data.game.players[player].displayname){
+    			$('.players').append("<p class='player active'>" + data.game.players[player].displayname + "</p>");
+    		} else { 
+    			$('.players').append("<p class='player'>" + data.game.players[player].displayname + "</p>");
+    		}
+    	}
+    };
+
+    Game.prototype.updatePlayerCounters = function (data) {
+    	$('span.actionC').text(data.game.turn.actionsleft);
+    	$('span.buyC').text(data.game.turn.buysleft);
+    	$('span.coinC').text(data.game.turn.buypower);
+    };
+
+    Game.prototype.updateDeckCounter = function (data) {
+    	for (var player in data.game.players) {
+    		if (data.game.turn.player === data.game.players[player].displayname){
+    			$('.deckcounter').text(data.game.players[player].deck.length);
+    		}
+    	}
+    };
+
+    Game.prototype.updateBoardCounters = function (data) {
+        $('.curseCount').text(data.game.board.curse.curse);
+        $('.copperCount').text(data.game.board.treasure.copper);
+        $('.silverCount').text(data.game.board.treasure.silver);
+        $('.goldCount').text(data.game.board.treasure.gold);
+        $('.estateCount').text(data.game.board.victory.estate);
+        $('.duchyCount').text(data.game.board.victory.duchy);
+        $('.provinceCount').text(data.game.board.victory.province);
+    };
+    
+    Game.prototype.updateTurnDisplay = function (data) {
+    	switch (data.game.turn.phase) {
+    		case 'ACTION':
+    			$('.actionDisp').addClass('.activePhase');
+    			break;
+    		case 'BUY':
+    			$('.buyDisp').addClass('.buyPhase');
+    			break;
+    		case 'CLEANUP':
+    			$('.cleanupDisp').addClass('.cleanupPhase');
+    			break;
+     	}
+    };
+
+    Game.prototype.endPhase = function () {
+        var that = this;
+        this.Api.doCall({'action': 'endphase'},
+            function () {
+                console.log("Phase Ended!");
+                that.refreshUI();
             }
         );
-        return data;
     };
 
     Game.prototype.initGame = function() {

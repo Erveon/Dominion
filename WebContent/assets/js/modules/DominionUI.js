@@ -1,7 +1,7 @@
 var DominionUI = (function($) {
     'use strict';
 
-    function startGame() {
+    var startGame = function() {
         var gameConfig = {
             players: getPlayerNames(),
             cardSet: getCardSet()

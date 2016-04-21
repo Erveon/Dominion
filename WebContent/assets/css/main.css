@@ -255,9 +255,10 @@ div#field {
       margin: 1px 5px;
       background-color: #ecf0f1;
       float: right; }
-    div#field div#controls .circle:last-of-type {
-      margin-left: 14px;
+    div#field div#controls .activePhase {
       background-color: #f1c40f; }
+    div#field div#controls .circle:last-of-type {
+      margin-left: 14px; }
 
 a.prev {
   float: left; }
