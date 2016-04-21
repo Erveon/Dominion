@@ -120,6 +120,11 @@ public class Player {
 		if(getHand().contains(card))
 			getHand().remove(card);
 	}
+
+	public void discardCard(Card card) {
+		getDiscard().add(card);
+		getHand().remove(card);
+	}
 	
 	public JSONObject getAsJson() {
 		return new JSONObject()

@@ -1,5 +1,7 @@
 package net.ultradev.dominion.game;
 
+import javax.servlet.http.HttpSession;
+
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.CardManager;
@@ -151,13 +153,13 @@ public class Turn {
 		return response.accumulate("result", BuyResponse.CANTAFFORD);
 	}
 	
-	public JSONObject playCard(String cardid) {
+	public JSONObject playCard(String cardid, HttpSession session) {
 		if(!canPerform(Phase.ACTION, cardid))
 			return getGame().getGameServer().getGameManager()
 					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		JSONObject response = playActions(card);
+		JSONObject response = playActions(card, session);
 		
 		return response;
 	}
@@ -171,10 +173,11 @@ public class Turn {
 		return true;
 	}
 	
-	private JSONObject playActions(Card card) {
+	private JSONObject playActions(Card card, HttpSession session) {
 		this.activeCard = card;
 		boolean ignore = true;
 		for(Action action : card.getActions()) {
+			
 			// Here we're going to continue the actions where we left off in the subturn
 			if(inSubTurn() && ignore) {
 				// We found the action for the current subturn, let's execute the next action
@@ -184,7 +187,7 @@ public class Turn {
 				}
 				continue;
 			}
-			JSONObject actionResponse = action.play(this);
+			JSONObject actionResponse = action.play(this, session);
 			ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
 			if(!result.equals(ActionResult.DONE)) {
 				this.subturn = new SubTurn(this, action);

@@ -106,7 +106,7 @@ public class GameManager {
 			case "playcard":
 				if(!map.containsKey("card"))
 					return getInvalid("Card parameter doesn't exist");
-				return g.getTurn().playCard(map.get("card"));
+				return g.getTurn().playCard(map.get("card"), session);
 			case "buycard":
 				if(!map.containsKey("card"))
 					return getInvalid("Card parameter doesn't exist");
@@ -115,7 +115,7 @@ public class GameManager {
 				if(!map.containsKey("card"))
 					return getInvalid("Card parameter doesn't exist");
 				if(g.getTurn().getSubTurn() != null)
-					return g.getTurn().getSubTurn().selectCard(map.get("card"));
+					return g.getTurn().getSubTurn().selectCard(map.get("card"), session);
 				return getInvalid("Cannot select card, not handled in the game's current state");
 			default:
 				return getInvalid("Action not recognized: " + action);

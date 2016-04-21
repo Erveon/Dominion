@@ -1,5 +1,7 @@
 package net.ultradev.dominion.game.card.action.actions;
 
+import javax.servlet.http.HttpSession;
+
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
@@ -19,7 +21,7 @@ public class GainBuypowerAction extends Action {
 	}
 
 	@Override
-	public JSONObject play(Turn turn) {
+	public JSONObject play(Turn turn, HttpSession session) {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
 		switch(type) {
 			case ADD:
