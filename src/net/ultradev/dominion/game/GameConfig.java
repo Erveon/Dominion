@@ -42,17 +42,13 @@ public class GameConfig {
 	}
 	
 	public void addActionCard(String actionCard) {
-		if(actionCardTypes.size() < 10)
+		if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10)
 			actionCardTypes.add(actionCard);
 	}
 	
 	public void removeActionCard(String actionCard) {
 		if(actionCardTypes.contains(actionCard))
 			actionCardTypes.remove(actionCard);
-	}
-	
-	public void assignRandomActionCards() {
-		//TODO Geef 10 random kaart types vanuit db
 	}
 	
 	public List<String> getActionCards() {

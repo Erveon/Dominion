@@ -9,9 +9,9 @@ import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.Turn;
+import net.ultradev.dominion.game.Turn.Phase;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.player.Player;
-import net.ultradev.dominion.game.utils.Utils;
 
 public class LocalGame {
 	
@@ -33,7 +33,7 @@ public class LocalGame {
 		this.players = new ArrayList<>();
 		this.trash = new ArrayList<>();
 		this.board = new Board(gs);
-		Utils.debug("A local game has been made");
+		getGameServer().getUtils().debug("A local game has been made");
 	}
 	
 	public GameServer getGameServer() {
@@ -81,10 +81,14 @@ public class LocalGame {
 		getTurn().getPlayer().increaseRounds();
 		if(getBoard().hasEndCondition())
 			endGame();
-		else {
-			getTurn().end();
+		else
 			setTurn(getTurn().getNextTurn());
-		}
+	}
+	
+	public void endPhase() {
+		getTurn().endPhase();
+		if(getTurn().getPhase().equals(Phase.CLEANUP))
+			endTurn();
 	}
 	
 	public void setTurn(Turn turn) {
@@ -132,7 +136,10 @@ public class LocalGame {
 	}
 	
 	public void addPlayer(String name) {
+		if(getPlayerByName(name) != null)
+			return;
 		getPlayers().add(new Player(getGameServer(), name));
+		getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
 	}
 	
 	public Player getPlayerByName(String name) {

@@ -3,7 +3,6 @@ package net.ultradev.dominion.servlets;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,11 +15,9 @@ import net.ultradev.dominion.game.local.LocalGame;
 /**
  * Servlet implementation class Test
  */
-@WebServlet({ "/API", "/api" })
+@SuppressWarnings("serial")
+@WebServlet(urlPatterns = {"/API", "/api"}, asyncSupported = true)
 public class API extends HttpServlet {
-	
-	//Auto generated ID
-	private static final long serialVersionUID = 1L;
 
 	//AJAX CALLS
 		// Create game > ?action=create&type=local
@@ -29,7 +26,12 @@ public class API extends HttpServlet {
 		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
 		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
 		// Start game > ?action=start&type=local
-		// End turn > ?action=endturn&type=local
+		// End phase(action/buys/turn) > ?action=endphase&type=local
+		// Buy card > ?action=buycard&type=local&card=copper
+		// Select card > ?action=selectcard&type=local&card=copper
+	
+	// AJAX CALLS TODO
+		// Play card > ?action=playcard&type=local&card=copper
 	
 	GameServer gs;
        
@@ -42,6 +44,7 @@ public class API extends HttpServlet {
     
     public void init() throws ServletException {
         this.gs = new GameServer();
+        gs.getUtils().setDebugging(true);
     }
     
     public GameServer getGameServer() {
@@ -65,6 +68,8 @@ public class API extends HttpServlet {
 			LocalGame g = getGameServer().getGameManager().getGame(req.getSession());
 			res.getWriter().append(getGameServer().getGameManager().handleLocalRequest(getParameters(req), g, req.getSession()).toString());
 			return;
+		} else if(type.equals("online")) {
+			res.getWriter().append(getGameServer().getGameManager().getInvalid("Multiplayer is unsupported at this time").toString());
 		}
 		
 		res.getWriter().append(getGameServer().getGameManager().getInvalid("Unhandled game type: " + type).toString());

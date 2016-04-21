@@ -1,12 +1,15 @@
 package net.ultradev.dominion.game.card.action.actions;
 
+import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
-import net.ultradev.dominion.game.utils.Utils;
+import net.ultradev.dominion.game.card.action.ActionResult;
 
 public class GainBuypowerAction extends Action {
 
-	public static enum GainBuypowerType { ADD, MULTIPLIER };
+	public enum GainBuypowerType { ADD, MULTIPLIER };
 	
 	int amount;
 	GainBuypowerType type;
@@ -18,7 +21,8 @@ public class GainBuypowerAction extends Action {
 	}
 
 	@Override
-	public void play(Turn turn) {
+	public JSONObject play(Turn turn, HttpSession session) {
+		JSONObject response = new JSONObject().accumulate("response", "OK");
 		switch(type) {
 			case ADD:
 				turn.addBuypower(this.amount);
@@ -27,11 +31,8 @@ public class GainBuypowerAction extends Action {
 				turn.addMultiplierBuypower(this.amount);
 				break;
 		}
-	}
-	
-	public static Action parse(String identifier, String description, String amountVar, GainBuypowerType type) {
-		int amount = Utils.parseInt(amountVar, 1);
-		return new GainBuypowerAction(identifier, description, amount, type);
+		response.accumulate("result", ActionResult.DONE);
+		return response;
 	}
 	
 }

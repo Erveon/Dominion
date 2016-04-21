@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.local.LocalGame;
-import net.ultradev.dominion.game.utils.Utils;
 
 public class GameManager {
 	
@@ -30,8 +29,10 @@ public class GameManager {
 	}
 	
 	// If null, it's a java front-end game
-	public void createGame(HttpSession session) {
-		games.put(session, new LocalGame(getGameServer()));
+	public LocalGame createGame(HttpSession session) {
+		LocalGame game = new LocalGame(getGameServer());
+		games.put(session, game);
+		return game;
 	}
 	
 	public void destroyFor(HttpSession session) {
@@ -39,7 +40,7 @@ public class GameManager {
 			return;
 		games.remove(session);
 		System.gc(); // Free the memory!!
-		Utils.debug("A local game has been destroyed");
+		getGameServer().getUtils().debug("A local game has been destroyed");
 	}
 	
 	public JSONObject handleLocalRequest(Map<String, String> map) {
@@ -62,7 +63,8 @@ public class GameManager {
 		
 		// Actions that need a game to be running
 		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") 
-				|| action.equals("start") || action.equals("endturn")) {
+				|| action.equals("start") || action.equals("endturn") || action.equals("buycard") || action.equals("playcard")
+				|| action.equals("selectcard")) {
 			if(g == null)
 				return getInvalid("No game running");
 		}
@@ -98,9 +100,23 @@ public class GameManager {
 				String name = map.get("name");
 				g.addPlayer(name);
 				return response.accumulate("response", "OK");
-			case "endturn":
-				g.endTurn();
+			case "endphase":
+				g.endPhase();
 				return response.accumulate("response", "OK");
+			case "playcard":
+				if(!map.containsKey("card"))
+					return getInvalid("Card parameter doesn't exist");
+				return g.getTurn().playCard(map.get("card"), session);
+			case "buycard":
+				if(!map.containsKey("card"))
+					return getInvalid("Card parameter doesn't exist");
+				return g.getTurn().buyCard(map.get("card"));
+			case "selectcard":
+				if(!map.containsKey("card"))
+					return getInvalid("Card parameter doesn't exist");
+				if(g.getTurn().getSubTurn() != null)
+					return g.getTurn().getSubTurn().selectCard(map.get("card"), session);
+				return getInvalid("Cannot select card, not handled in the game's current state");
 			default:
 				return getInvalid("Action not recognized: " + action);
 		}

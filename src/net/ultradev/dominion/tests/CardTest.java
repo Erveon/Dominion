@@ -1,32 +1,67 @@
 package net.ultradev.dominion.tests;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
 import net.ultradev.dominion.game.card.*;
+import net.ultradev.dominion.game.card.action.*;
+import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
+
+import java.util.List;
 
 public class CardTest {
 	
-	public Card c1;
-	public boolean Testing = true;
-	
-	public void initTest(){
-		//public Card(String name, String description, int cost)
-		c1 = new Card("name","description",99);
+	private Card c;
+	private boolean Testing = true;
+
+	@Test
+	public void initTest() {
 		if(Testing){
-			System.out.println("Functie in de main toegevoegd?");
+			System.out.println("Functie in de main toegevoegd?\n");
 		}
 	}
-	/*
-	public void testAddAction(){
-		//woodcutter.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
-		c1.addAction("test_game","Test the game","test=over9000");
+	
+	@Test
+	public void testAddAction() {
+		c = new Card("Test card","This is a test card",824);
+		Action action = new GainActionsAction("Gain_Actions","I Gained 99 actions...",99);
+		c.addAction(action);
+		List<Action> actions = c.getActions();
+		if(!(actions.contains(action))) {
+			fail("testAddAction failed:\n"+ actions + " doesn't contain " + "action");
+		}
 	}
-	*/
 	
-	
-	
-	public static void main(String[] args){
-		System.out.println("Starting test");
-		//CardTest ct = new CardTest();
-		System.out.println("Test ended");
+	@Test
+	public void testAddType(){
+		c = new Card("Test card","This is a test card",824);
+		String type = "Testing card";
+		c.addType(type);
+		List<String> types = c.getTypes();
+		if(!(types.contains(type))) {
+			fail("testAddType failed:\n" + types + " doesn't contain " + type);
+		}
+		
 	}
-
+	
+	@Test
+	public void testGetTypesFormatted() {
+		c = new Card("Test card","This is a test card",824);
+		String type1 = "Test-it";
+		String type2 = "Testing card";
+		String format = type1 + " - " + type2;
+		c.addType(type1);
+		c.addType(type2);
+		String formatted = c.getTypesFormatted();
+		if(!(formatted.equals(format))) {
+			fail("testGetTypesFormatted failed:\n" + formatted + "\nIs not equal to:\n" + format);
+		}
+	}
 }
+
+
+
+
+
+
+
+

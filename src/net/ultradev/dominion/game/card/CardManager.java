@@ -12,8 +12,9 @@ import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
 import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
-import net.ultradev.dominion.game.card.action.actions.TrashCardAction;
-import net.ultradev.dominion.game.card.action.actions.TrashCardAction.TrashType;
+import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
+import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveCount;
+import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
 import net.ultradev.dominion.game.player.Player;
 
 public class CardManager {
@@ -31,7 +32,6 @@ public class CardManager {
 	
 	public void setup() {
 		cards = new HashMap<>();
-		//TODO init cards (fetch from db)
 		
 		getCards().put("copper", new Card("copper", "A copper coin", 0));
 		getCards().put("silver", new Card("silver", "A silver coin", 3));
@@ -43,6 +43,7 @@ public class CardManager {
 
 		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1));
 
+		//TODO fetch from db
 		//Temporary cards to make the board work:
 		Card chapel = new Card("chapel", "Trash up to 4 cards from your hand.", 2);
 		getCards().put("chapel", chapel);
@@ -56,11 +57,45 @@ public class CardManager {
 		Card moneylender = new Card("moneylender", "Trash a Copper from your hand. If you do, +$3.", 3);
 		getCards().put("moneylender", moneylender);
 		
+		Card cellar = new Card("cellar", "+1 Action. Discard any number of cards, +1 Card per card discarded.", 2);
+		getCards().put("cellar", cellar);
+		
+		Card market = new Card("market", "+1 Card. +1 Action. +1 Buy. +1 coin.", 5);
+		getCards().put("market", market);
+		
+		Card militia = new Card("militia", "+2 coins. Each player discards down to 3 cards in his hand.", 4);
+		getCards().put("militia", militia);
+		
+		Card mine = new Card("mine", "Trash a Treasure card from your hand. Gain a Treasure card costing up to 3 coins more; put it into your hand.", 5);
+		getCards().put("mine", mine);
+		
+		Card moat = new Card("moat", "+2 Cards. When another player plays an Attack card, you may reveal this from your hand. If you do, you are unaffected by that Attack.", 2);
+		getCards().put("moat", moat);
+		
+		Card remodel = new Card("remodel", "Trash a card from your hand. Gain a card costing up to 2 coins more than the trashed card.", 4);
+		getCards().put("remodel", remodel);
+		
+		Card smithy = new Card("smithy", "+3 Cards.", 4);
+		getCards().put("smithy", smithy);
+		
+		Card workshop = new Card("workshop", "Gain a card costing up to 4 coins.", 3);
+		getCards().put("workshop", workshop);
+		
 		addActions();
 	}
 	
-	// We'll do this later so all cards are inited already, some actions rely on other cards
+	// We'll do this later so all cards are created already because some actions rely on other cards
 	public void addActions() {
+		Card copper = getCards().get("copper");
+		copper.addAction(parseAction("add_buypower", "Adds 1 coin to your turn", "amount=1"));
+
+		Card silver = getCards().get("silver");
+		silver.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+
+		Card gold = getCards().get("gold");
+		gold.addAction(parseAction("add_buypower", "Adds 3 coins to your turn", "amount=3"));
+		
+		//TODO FETCH FROM DB
 		Card chapel = getCards().get("chapel");
 		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
 		
@@ -74,6 +109,10 @@ public class CardManager {
 		
 		Card moneylender = getCards().get("moneylender");
 		moneylender.addAction(parseAction("trash_range", "Ability to trash a single copper for $3", "min=0;max=1;restrict=copper"));
+		
+		Card cellar = getCards().get("cellar");
+		cellar.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
+		cellar.addAction(parseAction("discard_choose", "Discard any number of cards. +1 Card per card discarded.", ""));
 	}
 	
 	private Action parseAction(String identifier, String description, String variables) {
@@ -81,28 +120,110 @@ public class CardManager {
 		switch(identifier.toLowerCase()) {
 			case "draw_cards":
 				if(containsKeys(params, identifier, "amount"))
-					return DrawCardAction.parse(identifier, description, params.get("amount"));
+					return parseDrawCards(identifier, description, params.get("amount"));
+				
 			case "trash_specific":
 				if(containsKeys(params, identifier, "amount"))
-					return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.SPECIFIC_AMOUNT);
+					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
 			case "trash_choose":
-				// No parameters
-				return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.CHOOSE_AMOUNT);
+				return parseRemove(getGameServer(), identifier, description, params, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
 			case "trash_range":
 				if(containsKeys(params, identifier, "min", "max"))
-					return TrashCardAction.parse(getGameServer(), identifier, description, params, TrashType.RANGE);
+					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.RANGE, RemoveType.TRASH);
+				
+			case "discard_specific":
+				if(containsKeys(params, identifier, "amount"))
+					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
+			case "discard_choose":
+				return parseRemove(getGameServer(), identifier, description, params, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
+			case "discard_range":
+				if(containsKeys(params, identifier, "min", "max"))
+					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.RANGE, RemoveType.DISCARD);
+			case "discard_min":
+				if(containsKeys(params, identifier, "min"))
+					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.MINIMUM, RemoveType.DISCARD);
+			case "discard_max":
+				if(containsKeys(params, identifier, "max"))
+					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.MAXIMUM, RemoveType.DISCARD);
+				
 			case "add_actions":
 				if(containsKeys(params, identifier, "amount"))
-					return GainActionsAction.parse(identifier, description, params.get("amount"));
+					return parseAddActions(identifier, description, params.get("amount"));
+				
 			case "add_buys":
 				if(containsKeys(params, identifier, "amount"))
-					return GainBuysAction.parse(identifier, description, params.get("amount"));
+					return parseAddBuys(identifier, description, params.get("amount"));
+				
 			case "add_buypower":
 				if(containsKeys(params, identifier, "amount"))
-					return GainBuypowerAction.parse(identifier, description, params.get("amount"), GainBuypowerType.ADD);
+					return parseAddBuypower(identifier, description, params.get("amount"), GainBuypowerType.ADD);
 		}
 		return null;
 	}
+	
+	/*************
+	 * 
+	 *  START PARSERS
+	 * 
+	 *************/
+	
+	public Action parseDrawCards(String identifier, String description, String amountVar) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new DrawCardAction(identifier, description, amount);
+	}
+	
+	public Action parseAddActions(String identifier, String description, String amountVar) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new GainActionsAction(identifier, description, amount);
+	}
+	
+	public Action parseAddBuypower(String identifier, String description, String amountVar, GainBuypowerType type) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new GainBuypowerAction(identifier, description, amount, type);
+	}
+	
+	public Action parseAddBuys(String identifier, String description, String amountVar) {
+		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
+		return new GainBuysAction(identifier, description, amount);
+	}
+	
+	public Action parseRemove(GameServer gs, String identifier, String description, Map<String, String> params, RemoveCount count, RemoveType type) {
+		RemoveCardAction action = null;
+		switch(count) {
+			case CHOOSE_AMOUNT:
+				action = new RemoveCardAction(type, identifier, description);
+				break;
+			case RANGE:
+				int minrange = getGameServer().getUtils().parseInt(params.get("min"), 0);
+				int maxrange = getGameServer().getUtils().parseInt(params.get("max"), 4);
+				action = new RemoveCardAction(type, identifier, description, minrange, maxrange);
+				break;
+			case MINIMUM:
+				int min = getGameServer().getUtils().parseInt(params.get("min"), 0);
+				action = new RemoveCardAction(type, identifier, description, min, true);
+				break;
+			case MAXIMUM:
+				int max = getGameServer().getUtils().parseInt(params.get("max"), 4);
+				action = new RemoveCardAction(type, identifier, description, max, false);
+				break;
+			case SPECIFIC_AMOUNT:
+			default:
+				action = new RemoveCardAction(type, identifier, description);
+				break;
+		}
+		if(params.containsKey("restrict")) {
+			String[] toRestrict = params.get("restrict").split(",");
+			for(String restrict : toRestrict)
+				action.addRestriction(gs.getCardManager().get(restrict));
+		}
+		return action;
+	}
+	
+	/*************
+	 * 
+	 *  END PARSERS
+	 * 
+	 *************/
 	
 	private boolean containsKeys(Map<String, String> params, String identifier, String... variables) {
 		for(String var : variables) {
@@ -130,6 +251,10 @@ public class CardManager {
 	
 	private Map<String, Card> getCards() {
 		return cards;
+	}
+	
+	public boolean exists(String identifier) {
+		return cards.containsKey(identifier);
 	}
 	
 	public Card get(String identifier) {

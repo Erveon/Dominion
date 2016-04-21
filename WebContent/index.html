@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dominion</title>
+
+        <link rel="stylesheet" type="text/css" href="assets/css/main.css">
+    </head>
+
+    <body>
+        <main id="fullpage">
+            <div class="fp-section headroom">
+                <h2 class="config">Online play is currently unavailable.</h2>
+
+                <button class="config page-down">Back To Menu</button>
+            </div>
+
+            <div class="fp-section active headroom">
+                <h1 class="config">Dominion</h1>
+
+                <button class="config page-up">Play Online</button>
+                <button class="config page-down">Play Local</button>
+            </div>
+
+            <div class="fp-section">
+                <div class="fp-slide headroom">
+                    <h2 class="config">Game Configuration</h2>
+
+                    <form id="game-config">
+                        <div class="form-column">
+                            <label for="player-amount">Players</label>
+                            <select name="player-amount" id="player-amount">
+                                <option value="2" active>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+
+                            <div class="player-names">
+                                <label for="player1">Name Player 1</label>
+                                <input id="player1" class="player" type="text" name="player1">
+                                <label for="player2">Name Player 2</label>
+                                <input id="player2" class="player" type="text" name="player2">
+                            </div>
+                        </div>
+
+                        <div class="form-column">
+                            <label for="card-set">Card Set</label>
+                            <select name="card-set" id="card-set">
+                                <option value="first-game" active>First Game</option>
+                                <option value="big-money" active>Big Money</option>
+                                <option value="interaction" active>Interaction</option>
+                                <option value="size-distortion" active>Size Distortion</option>
+                                <option value="village-square" active>Village Square</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <button class="config page-right start-game">Play</button>
+                    <button class="config page-up">Back To Menu</button>
+                </div>
+
+                <div id="game" class="fp-slide">
+                    <div id="header">
+                        <div id="topStatus">
+                            <h1 class="heading">Dominion</h1>
+                            <ul>
+                                <li>Actions <span class="actionC counter"></span></li>
+                                <li>Buys <span class="buyC counter"></span></li>
+                                <li>Coins <span class="coinC counter"></span></li>
+                            </ul>
+                            <a href="#" class="menu"><i class="material-icons">menu</i></a>
+                        </div>
+                    </div>
+
+                    <div id="main">
+                        <div id="market">
+                            <ul id="mainPile">
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                                <li class="wideCard">
+                                    <p class="wideCard-title"></p>
+                                    <div class="wideCard-info">
+                                        <p class="wideCard-cost"></p>
+                                        <p class="wideCard-count"></p>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div id="altCards">
+                                <ul id="discardDeckPile">
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Discard</p>
+                                    </li>
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Deck</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-counter deckcounter"></p>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <ul id="treasurePile">
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Copper</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">0</p>
+                                            <p class="wideCard-count copperCount"></p>
+                                        </div>
+                                    </li>
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Silver</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">3</p>
+                                            <p class="wideCard-count silverCount"></p>
+                                        </div>
+                                    </li>
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Gold</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">6</p>
+                                            <p class="wideCard-count goldCount"></p>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <ul id="victoryPile">
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Estate</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">2</p>
+                                            <p class="wideCard-count estateCount"></p>
+                                        </div>
+                                    </li>
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Duchy</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">5</p>
+                                            <p class="wideCard-count duchyCount"></p>
+                                        </div>
+                                    </li>
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Province</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">8</p>
+                                            <p class="wideCard-count provinceCount"></p>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <ul id="trashCursePile">
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Curse</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-cost">0</p>
+                                            <p class="wideCard-count curseCount"></p>
+                                        </div>
+                                    </li>
+                                    <li class="wideCard">
+                                        <p class="wideCard-title">Trash</p>
+                                        <div class="wideCard-info">
+                                            <p class="wideCard-counter"></p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="field">
+                            <div id="playedCardContainer">
+                                <a href="#" class="arrow prev"><i class="material-icons">chevron_left</i></a>
+                                <ul id="playedCards">
+                                    <li class="miniCard">
+                                        <p class="miniCard-title">Smithy</p>
+                                        <img src="assets/images/cards/smithy.jpg" width="100%">
+                                    </li>
+                                    <li class="miniCard">
+                                        <p class="miniCard-title">Smithy</p>
+                                        <img src="assets/images/cards/smithy.jpg" width="100%">
+                                    </li>
+                                    <li class="miniCard">
+                                        <p class="miniCard-title">Smithy</p>
+                                        <img src="assets/images/cards/smithy.jpg" width="100%">
+                                    </li>
+                                    <li class="miniCard">
+                                        <p class="miniCard-title">Smithy</p>
+                                        <img src="assets/images/cards/smithy.jpg" width="100%">
+                                    </li>
+                                    <li class="miniCard">
+                                        <p class="miniCard-title">Smithy</p>
+                                        <img src="assets/images/cards/smithy.jpg" width="100%">
+                                    </li>
+                                </ul>
+                                <a href="#" class="arrow next"><i class="material-icons">chevron_right</i></a>
+                            </div>
+
+                            <div id="controls">
+                                <div class="actionBtn players">
+                                    Players
+                                </div>
+                                <div class="actionBtn phase">
+                                    Phase
+                                    <div class="circle cleanupDisp"></div>
+                                    <div class="circle buyDisp"></div>
+                                    <div class="circle actionDisp"></div>
+                                </div>
+                                <a href="#" class="actionBtn mainAction endTurn">End turn</a>
+                                <a href="#" class="actionBtn mainAction endPhase">Play Treasures</a>
+                            </div>
+                        </div>
+
+                        <div id="hand">
+                            <div id="handContainer">
+                                <a href="#" class="arrow prev"><i class="material-icons">chevron_left</i></a>
+                                <ul id="handPile">
+                                    <li class="card">
+                                        <div class="card-header">
+                                            <p class="card-title">Smithy</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <img src="assets/images/cards/smithy.jpg" alt="smithy" width="100%">
+                                            <div class="card-actionList">
+                                                <ul class="card-actions">
+                                                    <li class="card-action">+3 Cards</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-info">
+                                            <p class="card-cost">4</p>
+                                            <p class="card-type">Action</p>
+                                        </div>
+                                    </li>
+                                    <li class="card">
+                                        <div class="card-header">
+                                            <p class="card-title">Cellar</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <img src="assets/images/cards/cellar.jpg" alt="cellar" width="100%">
+                                            <div class="card-actionList">
+                                                <ul class="card-actions">
+                                                    <li class="card-action">+1 Action</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-info">
+                                            <p class="card-cost">2</p>
+                                            <p class="card-type">Action</p>
+                                        </div>
+                                    </li>
+                                    <li class="card victory">
+                                        <div class="card-header">
+                                            <p class="card-title">Estate</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <img src="assets/images/cards/estate.jpg" alt="estate" width="100%">
+                                            <div class="card-actionList">
+                                                <ul class="card-actions">
+                                                    <li class="card-action">1 Victory Point</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-info">
+                                            <p class="card-cost">2</p>
+                                            <p class="card-type">Victory</p>
+                                        </div>
+                                    </li>
+                                    <li class="card treasure">
+                                        <div class="card-header">
+                                            <p class="card-title">Copper</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <img src="assets/images/cards/copper.jpg" alt="copper" width="100%">
+                                            <div class="card-actionList">
+                                                <ul class="card-actions">
+                                                    <li class="card-action">1 Coin</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-info">
+                                            <p class="card-cost">0</p>
+                                            <p class="card-type">Treasure</p>
+                                        </div>
+                                    </li>
+                                    <li class="card treasure">
+                                        <div class="card-header">
+                                            <p class="card-title">Copper</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <img src="assets/images/cards/copper.jpg" alt="copper" width="100%">
+                                            <div class="card-actionList">
+                                                <ul class="card-actions">
+                                                    <li class="card-action">1 Coin</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-info">
+                                            <p class="card-cost">0</p>
+                                            <p class="card-type">Treasure</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <a href="#" class="arrow next"><i class="material-icons">chevron_right</i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script type="text/javascript" src="library/jquery/jquery-2.2.2.min.js"></script>
+        <script type="text/javascript" src="library/fullpage/jquery.fullpage.min.js"></script>
+        <script type="text/javascript" src="assets/js/modules/DominionUI.js"></script>
+        <script type="text/javascript" src="assets/js/modules/Dominion.js"></script>
+        <script type="text/javascript" src="assets/js/main.js"></script>
+    </body>
+</html>

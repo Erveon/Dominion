@@ -71,18 +71,18 @@ public class Player {
 	/**
 	 * @return if the draw works
 	 */
-	public boolean drawCardFromDeck() {
-		if(getDeck().size() == 0)
-			return false;
+	public void drawCardFromDeck() {
+		if(getDeck().size() == 0 && getDiscard().size() != 0) {
+			transferDiscardToDeck();
+			drawCardFromDeck();
+		}
 		Card c = getDeck().remove(0);
 		getHand().add(c);
-		return true;
 	}
 	
 	public void transferDiscardToDeck() {
-		getDeck().addAll(getDiscard());
+		this.deck = shuffle(getDiscard());
 		getDiscard().clear();
-		shuffle(getDeck());
 	}
 	
 	public int getVictoryPoints() {
@@ -104,11 +104,26 @@ public class Player {
 		return rounds;
 	}
 	
+	public void discardHand() {
+		getDiscard().addAll(getHand());
+		getHand().clear();
+	}
+	
 	private List<JSONObject> getCardsAsJson(List<Card> cards) {
 		List<JSONObject> json = new ArrayList<>();
 		for(Card c : cards)
 			json.add(c.getAsJson());
 		return json;
+	}
+	
+	public void trashCard(Card card) {
+		if(getHand().contains(card))
+			getHand().remove(card);
+	}
+
+	public void discardCard(Card card) {
+		getDiscard().add(card);
+		getHand().remove(card);
 	}
 	
 	public JSONObject getAsJson() {

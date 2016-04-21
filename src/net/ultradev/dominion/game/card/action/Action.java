@@ -1,5 +1,8 @@
 package net.ultradev.dominion.game.card.action;
 
+import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 
 public abstract class Action {
@@ -19,6 +22,6 @@ public abstract class Action {
 		return description;
 	}
 	
-	public abstract void play(Turn turn);
+	public abstract JSONObject play(Turn turn, HttpSession session);
 	
 }

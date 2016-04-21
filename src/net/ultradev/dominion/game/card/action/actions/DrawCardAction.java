@@ -1,8 +1,11 @@
 package net.ultradev.dominion.game.card.action.actions;
 
+import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
-import net.ultradev.dominion.game.utils.Utils;
+import net.ultradev.dominion.game.card.action.ActionResult;
 
 public class DrawCardAction extends Action {
 	
@@ -14,14 +17,12 @@ public class DrawCardAction extends Action {
 	}
 
 	@Override
-	public void play(Turn turn) {
+	public JSONObject play(Turn turn, HttpSession session) {
+		JSONObject response = new JSONObject().accumulate("response", "OK");
 		for(int i = 0; i < amount; i++)
 			turn.getPlayer().drawCardFromDeck();
-	}
-	
-	public static Action parse(String identifier, String description, String amountVar) {
-		int amount = Utils.parseInt(amountVar, 1);
-		return new DrawCardAction(identifier, description, amount);
+		response.accumulate("result", ActionResult.DONE);
+		return response;
 	}
 	
 }
