@@ -1,7 +1,7 @@
-(function($, Dominion, DominionUI) {
+(function($, Dominion) {
     'use strict';
 
     $('document').ready(function() {
-        DominionUI.init();
+        Dominion.start();
     });
-}($, Dominion, DominionUI));
+}(jQuery, Dominion));
