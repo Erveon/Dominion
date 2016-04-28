@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
+import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.card.Card;
 
 public class Player {
@@ -17,10 +18,10 @@ public class Player {
 	private List<Card> hand;
 	
 	private int rounds;
-	private GameServer gs;
+	private Game g;
 	
-	public Player(GameServer gs, String displayname) {
-		this.gs = gs;
+	public Player(Game game, String displayname) {
+		this.g = game;
 		this.displayname = displayname;
 		this.discard = new ArrayList<>();
 		this.deck = new ArrayList<>();
@@ -28,8 +29,12 @@ public class Player {
 		this.rounds = 0;
 	}
 	
+	public Game getGame() {
+		return g;
+	}
+	
 	public GameServer getGameServer() {
-		return gs;
+		return getGame().getGameServer();
 	}
 	
 	public void setDisplayname(String displayname) {
@@ -117,8 +122,10 @@ public class Player {
 	}
 	
 	public void trashCard(Card card) {
-		if(getHand().contains(card))
+		if(getHand().contains(card)) {
 			getHand().remove(card);
+			getGame().getBoard().addTrash(card);
+		}
 	}
 
 	public void discardCard(Card card) {

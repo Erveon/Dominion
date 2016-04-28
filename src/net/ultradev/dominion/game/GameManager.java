@@ -79,7 +79,12 @@ public class GameManager {
 			case "start":
 				if(g.getPlayers().size() < 2)
 					return getInvalid("You need at least 2 players to start a game");
+				if(g.getWhoStarted() != null) 
+					return getInvalid("The game has already been started");
+				if(!g.getConfig().hasValidActionCards())
+					return getInvalid("Invalid actioncards");
 				g.start();
+				response.accumulate("who", g.getTurn().getPlayer().getDisplayname());
 				return response.accumulate("response", "OK");
 			case "info":
 				return response
@@ -106,7 +111,7 @@ public class GameManager {
 			case "playcard":
 				if(!map.containsKey("card"))
 					return getInvalid("Card parameter doesn't exist");
-				return g.getTurn().playCard(map.get("card"), session);
+				return g.getTurn().playCard(map.get("card"));
 			case "buycard":
 				if(!map.containsKey("card"))
 					return getInvalid("Card parameter doesn't exist");
@@ -114,9 +119,7 @@ public class GameManager {
 			case "selectcard":
 				if(!map.containsKey("card"))
 					return getInvalid("Card parameter doesn't exist");
-				if(g.getTurn().getSubTurn() != null)
-					return g.getTurn().getSubTurn().selectCard(map.get("card"), session);
-				return getInvalid("Cannot select card, not handled in the game's current state");
+				return g.getTurn().selectCard(map.get("card"));
 			default:
 				return getInvalid("Action not recognized: " + action);
 		}

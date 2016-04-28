@@ -7,9 +7,6 @@ html
   background-image: url('../images/bg.png')
   background-size: cover
   overflow: hidden
-  -webkit-user-select: none
-  -moz-user-select: none
-  user-select: none
 
 body
   background-color: $bgColor
@@ -295,6 +292,9 @@ div#field
         font-family: "RobotoItalic"
         text-transform: none
 
+      .player:last-of-type
+        padding-left: 10px
+
       p.active
         color: $treasureCardColor
 
@@ -358,7 +358,7 @@ div#hand
         width: 220px
         height: 320px
         margin: 2.5px 2.5px
-        display: inline-block
+        display: none
         background-color: $accentColor1
         -webkit-transition: all 150ms ease-in-out
         -moz-transition: all 150ms ease-in-out
