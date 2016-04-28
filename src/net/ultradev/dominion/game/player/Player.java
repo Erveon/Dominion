@@ -69,18 +69,14 @@ public class Player {
 	}
 	
 	public List<Card> shuffle(List<Card> cards) {
-		Collections.shuffle(cards);
-		return cards;
+		List<Card> shuffled = new ArrayList<>(cards);
+		Collections.shuffle(shuffled);
+		return shuffled;
 	}
 	
-	/**
-	 * @return if the draw works
-	 */
 	public void drawCardFromDeck() {
-		if(getDeck().size() == 0 && getDiscard().size() != 0) {
+		if(getDeck().size() == 0 && getDiscard().size() != 0)
 			transferDiscardToDeck();
-			drawCardFromDeck();
-		}
 		Card c = getDeck().remove(0);
 		getHand().add(c);
 	}
