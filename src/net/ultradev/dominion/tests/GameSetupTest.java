@@ -10,7 +10,7 @@ import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.GameConfig;
 
 
-public class GameTest {
+public class GameSetupTest {
 	
 	private int playerAmount;
 	private GameServer gs = new GameServer();
