@@ -49,6 +49,8 @@ public class Turn {
 	
 	public void setPhase(Phase phase) {
 		this.phase = phase;
+		if(phase.equals(Phase.CLEANUP))
+			getGame().getBoard().cleanup(getPlayer());
 	}
 	
 	public void endPhase() {
@@ -164,9 +166,11 @@ public class Turn {
 					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		if(getPlayer().getHand().contains(card))
+		if(!getPlayer().getHand().contains(card))
 			return getGame().getGameServer().getGameManager().getInvalid("Player doesn't have the selected card in their hand");
 		
+		getPlayer().getHand().remove(card);
+		getGame().getBoard().addPlayedCard(card);
 		JSONObject response = playActions(card);
 		return response;
 	}

@@ -8,13 +8,15 @@ import java.util.Map.Entry;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
+import net.ultradev.dominion.game.player.Player;
 
 public class Board {
 	
 	// Define all of those with the same type
 	public Map<Card, Integer> actionsupply, victorysupply, treasuresupply, cursesupply;
-	List<Card> trash;
+	private List<Card> trash;
 	private Game game;
+	private List<Card> playedcards;
 	
 	public Board(Game game) {
 		this.game = game;
@@ -23,6 +25,7 @@ public class Board {
 		treasuresupply = new HashMap<>();
 		cursesupply = new HashMap<>();
 		trash = new ArrayList<>();
+		playedcards = new ArrayList<>();
 	}
 	
 	public Game getGame() {
@@ -92,6 +95,24 @@ public class Board {
 		return supply;
 	}
 	
+	public List<JSONObject> getPlayedCards() {
+		List<JSONObject> json = new ArrayList<>();
+		for(Card c : playedcards)
+			json.add(c.getAsJson());
+		return json;
+	}
+	
+	public void cleanup(Player p) {
+		for(Card c : playedcards)
+			p.getDiscard().add(c);
+		playedcards.clear();
+		
+	}
+	
+	public void addPlayedCard(Card c) {
+		playedcards.add(c);
+	}
+	
 	private List<JSONObject> getSupplyAsJson(String which) {
 		List<JSONObject> json = new ArrayList<>();
 		Map<Card, Integer> supply;
@@ -122,7 +143,8 @@ public class Board {
 				.accumulate("treasure", getSupplyAsJson("treasure"))
 				.accumulate("victory", getSupplyAsJson("victory"))
 				.accumulate("curse", getSupplyAsJson("curse"))
-				.accumulate("trash", trash);
+				.accumulate("trash", trash)
+				.accumulate("playedcards", getPlayedCards());
 	}
 
 }
