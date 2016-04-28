@@ -52,7 +52,8 @@ public class Card {
 	}
 	
 	public void addAction(Action action) {
-		this.actions.add(action);
+		if(action != null)
+			this.actions.add(action);
 	}
 	
 	public CardType getType() {

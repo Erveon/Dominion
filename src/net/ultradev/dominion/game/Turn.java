@@ -2,12 +2,11 @@ package net.ultradev.dominion.game;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
-import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.Card.CardType;
+import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
-import net.ultradev.dominion.game.local.LocalGame;
 import net.ultradev.dominion.game.player.Player; 
 
 public class Turn {
@@ -15,7 +14,7 @@ public class Turn {
 	public enum Phase { ACTION, BUY, CLEANUP };
 	private enum BuyResponse { CANTAFFORD, BOUGHT };
 	
-	private LocalGame game;
+	private Game game;
 	private Player player;
 	private int buycount;
 	private int actioncount;
@@ -26,7 +25,7 @@ public class Turn {
 	Card activeCard;
 	Action activeAction;
 
-	public Turn(LocalGame game, Player player) {
+	public Turn(Game game, Player player) {
 		this.game = game;
 		this.player = player;
 		this.buycount = 1;
@@ -36,7 +35,7 @@ public class Turn {
 		this.phase = Phase.ACTION;
 	}
 	
-	public LocalGame getGame() {
+	public Game getGame() {
 		return game;
 	}
 	
@@ -141,7 +140,7 @@ public class Turn {
 	}
 	
 	public JSONObject buyCard(String cardid) {
-		if(!canPerform(Phase.BUY, cardid))
+		if(!phase.equals(Phase.BUY) || !isValidCard(cardid))
 			return getGame().getGameServer().getGameManager()
 					.getInvalid("Unable to perform purchase. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid");
 		
@@ -160,7 +159,7 @@ public class Turn {
 	}
 	
 	public JSONObject playCard(String cardid) {
-		if(!canPerform(Phase.ACTION, cardid) && !canPerform(Phase.BUY, cardid))
+		if(!canPlay(Phase.ACTION, cardid) && !canPlay(Phase.BUY, cardid))
 			return getGame().getGameServer().getGameManager()
 					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		
@@ -169,14 +168,21 @@ public class Turn {
 		return response;
 	}
 	
-	protected boolean canPerform(Phase phase, String cardid) {
-		if(!getPhase().equals(phase))
-			return false;
+	private boolean isValidCard(String cardid) {
+		return getGame().getGameServer().getCardManager().exists(cardid);
+	}
+	
+	private boolean canPlay(Phase phase, String cardid) {
 		CardManager cm = getGame().getGameServer().getCardManager();
 		if(!cm.exists(cardid))
 			return false;
-		if(phase.equals(Phase.BUY))
-			return cm.get(cardid).getType().equals(CardType.TREASURE);
+		if(cm.get(cardid).getType().equals(CardType.VICTORY)
+				|| cm.get(cardid).getType().equals(CardType.CURSE))
+			return false;
+		if(cm.get(cardid).getType().equals(CardType.TREASURE))
+			return phase.equals(Phase.BUY);
+		if(cm.get(cardid).getType().equals(CardType.ACTION))
+			return phase.equals(Phase.ACTION);
 		return true;
 	}
 	
@@ -202,7 +208,7 @@ public class Turn {
 	public JSONObject selectCard(String cardid) {
 		Action action = getActiveAction();
 		GameManager gm = getGame().getGameServer().getGameManager();
-		if(!canPerform(Phase.ACTION, cardid))
+		if(!phase.equals(Phase.ACTION) || !isValidCard(cardid))
 			return gm.getInvalid("Unable to perform action. (Not in the right phase or card '"+cardid+"' is invalid)");
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);

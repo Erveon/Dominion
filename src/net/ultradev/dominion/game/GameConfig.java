@@ -10,10 +10,16 @@ public class GameConfig {
 	public enum CardSet { TEST }
 	public enum Option { ADDCARD, REMOVECARD, SETCARDSET };
 	
-	List<String> actionCardTypes;
+	private List<String> actionCardTypes;
+	private Game game;
 	
-	public GameConfig() {
+	public GameConfig(Game game) {
+		this.game = game;
 		this.actionCardTypes = new ArrayList<>();
+	}
+	
+	public Game getGame() {
+		return game;
 	}
 	
 	/**
@@ -25,9 +31,9 @@ public class GameConfig {
 		Option option = null;
 		try { 
 			option = Option.valueOf(key.toUpperCase()); 
-		} catch(Exception ignored) { }
-		if(option == null)
-			return false;
+		} catch(Exception ignored) { 
+			return false; 
+		}
 		switch(option) {
 			case SETCARDSET:
 				setCardset(value);
@@ -80,6 +86,8 @@ public class GameConfig {
 	}
 	
 	public void addActionCard(String actionCard) {
+		if(!getGame().getGameServer().getCardManager().exists(actionCard))
+			return;
 		if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10)
 			actionCardTypes.add(actionCard);
 	}

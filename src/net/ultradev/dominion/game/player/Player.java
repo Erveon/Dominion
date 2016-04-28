@@ -6,8 +6,8 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
+import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.card.Card;
-import net.ultradev.dominion.game.local.LocalGame;
 
 public class Player {
 	
@@ -18,10 +18,10 @@ public class Player {
 	private List<Card> hand;
 	
 	private int rounds;
-	private LocalGame g;
+	private Game g;
 	
-	public Player(LocalGame g, String displayname) {
-		this.g = g;
+	public Player(Game game, String displayname) {
+		this.g = game;
 		this.displayname = displayname;
 		this.discard = new ArrayList<>();
 		this.deck = new ArrayList<>();
@@ -29,7 +29,7 @@ public class Player {
 		this.rounds = 0;
 	}
 	
-	public LocalGame getGame() {
+	public Game getGame() {
 		return g;
 	}
 	
