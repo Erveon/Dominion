@@ -5,39 +5,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
 import net.sf.json.JSONObject;
-import net.ultradev.dominion.game.SubTurn;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
+import net.ultradev.dominion.game.player.Player;
 
 public class RemoveCardAction extends Action {
 	
 	public enum RemoveCount { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, RANGE, MINIMUM, MAXIMUM };
-	public enum RemoveType { TRASH, DISCARD }
+	public enum RemoveType { TRASH, DISCARD };
 	
 	int amount;
 	int min, max;
 	RemoveCount countType;
 	RemoveType type;
 	
-	Map<HttpSession, Integer> cardsRemoved;
+	Map<Player, Integer> cardsRemoved;
 	
 	List<Card> restriction;
 	
-	public RemoveCardAction(RemoveType type, String identifier, String description) {
-		super(identifier, description);
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
+		super(identifier, description, target);
 		this.cardsRemoved = new HashMap<>();
 		this.countType = RemoveCount.CHOOSE_AMOUNT;
 		this.restriction = new ArrayList<>();
 		this.type = type;
 	}
 	
-	public RemoveCardAction(RemoveType type, String identifier, String description, int amount) {
-		super(identifier, description);
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount) {
+		super(identifier, description, target);
 		this.cardsRemoved = new HashMap<>();
 		this.amount = amount;
 		this.countType = RemoveCount.SPECIFIC_AMOUNT;
@@ -45,8 +43,8 @@ public class RemoveCardAction extends Action {
 		this.type = type;
 	}
 	
-	public RemoveCardAction(RemoveType type, String identifier, String description, int min, int max) {
-		super(identifier, description);
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int min, int max) {
+		super(identifier, description, target);
 		this.cardsRemoved = new HashMap<>();
 		this.min = min;
 		this.max = max;
@@ -55,8 +53,8 @@ public class RemoveCardAction extends Action {
 		this.type = type;
 	}
 	
-	public RemoveCardAction(RemoveType type, String identifier, String description, int amount, boolean minimum) {
-		super(identifier, description);
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount, boolean minimum) {
+		super(identifier, description, target);
 		this.cardsRemoved = new HashMap<>();
 		if(minimum) {
 			this.min = amount;
@@ -82,68 +80,71 @@ public class RemoveCardAction extends Action {
 	}
 
 	@Override
-	public JSONObject play(Turn turn, HttpSession session) {
-		return getResponse(turn, session);
+	public JSONObject play(Turn turn) {
+		return getResponse(turn);
 	}
 	
-	public JSONObject selectCard(SubTurn subturn, Card card, HttpSession session) {
+	public JSONObject selectCard(Turn turn, Card card) {
+		Player player = turn.getPlayer();
+		
 		switch(type) {
 			case DISCARD:
-				subturn.getPlayer().discardCard(card);
+				turn.getPlayer().discardCard(card);
 				break;
 			case TRASH:
-				subturn.getPlayer().trashCard(card);
+				turn.getPlayer().trashCard(card);
 				break;
 			default:
 				break;
 		}
 		
 		for(Action action : getCallbacks())
-			action.play(subturn.getTurn(), session);
+			action.play(turn);
 		
-		cardsRemoved.put(session, removedCards(session) + 1);
-		return getResponse(subturn.getTurn(), session);
+		cardsRemoved.put(turn.getPlayer(), removedCards(player) + 1);
+		return getResponse(turn);
 	}
 	
-	public int removedCards(HttpSession session) {
-		if(cardsRemoved.containsKey(session))
-			return cardsRemoved.get(session);
+	public int removedCards(Player player) {
+		if(cardsRemoved.containsKey(player))
+			return cardsRemoved.get(player);
 		return 0;
 	}
 	
-	public boolean hasForceSelect(HttpSession session) {
+	public boolean hasForceSelect(Player player) {
 		switch(countType) {
 			case CHOOSE_AMOUNT:
 				return false;
 			case RANGE:
-				return removedCards(session) < this.min;
+				return removedCards(player) < this.min;
 			case SPECIFIC_AMOUNT:
-				return removedCards(session) == this.amount;
+				return removedCards(player) == this.amount;
 			default:
 				return false;
 		}
 	}
 	
-	public boolean canSelectMore(HttpSession session) {
+	public boolean canSelectMore(Player player) {
 		switch(countType) {
 			case CHOOSE_AMOUNT:
 				return true;
 			case RANGE:
-				return removedCards(session) < this.max;
+				return removedCards(player) < this.max;
 			case SPECIFIC_AMOUNT:
-				return removedCards(session) != this.amount;
+				return removedCards(player) != this.amount;
 			default:
 				return false;
 		}
 	}
 	
-	public JSONObject getResponse(Turn turn, HttpSession session) {
+	public JSONObject getResponse(Turn turn) {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
-		if(canSelectMore(session)) {
+		if(canSelectMore(turn.getPlayer())) {
 			response.accumulate("result", ActionResult.SELECT_CARD);
-			response.accumulate("force", hasForceSelect(session));
+			response.accumulate("force", hasForceSelect(turn.getPlayer()));
 		} else {
-			return turn.playCard(turn.getActiveCard().getName(), session);
+			response.accumulate("result", ActionResult.DONE);
+			//return turn.playCard(turn.getActiveCard().getName()); wat?
 		}
 		return response;
 	}

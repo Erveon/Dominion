@@ -1,14 +1,13 @@
-package net.ultradev.dominion.game;
-
-import javax.servlet.http.HttpSession;
+package net.ultradev.dominion.game; 
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
+import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
 import net.ultradev.dominion.game.local.LocalGame;
-import net.ultradev.dominion.game.player.Player;
+import net.ultradev.dominion.game.player.Player; 
 
 public class Turn {
 	
@@ -22,9 +21,9 @@ public class Turn {
 	private int buypower;
 	private int buypowerMultiplier;
 	private Phase phase;
-	private SubTurn subturn;
 	
 	Card activeCard;
+	Action activeAction;
 
 	public Turn(LocalGame game, Player player) {
 		this.game = game;
@@ -153,13 +152,13 @@ public class Turn {
 		return response.accumulate("result", BuyResponse.CANTAFFORD);
 	}
 	
-	public JSONObject playCard(String cardid, HttpSession session) {
+	public JSONObject playCard(String cardid) {
 		if(!canPerform(Phase.ACTION, cardid))
 			return getGame().getGameServer().getGameManager()
 					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		JSONObject response = playActions(card, session);
+		JSONObject response = playActions(card);
 		
 		return response;
 	}
@@ -173,47 +172,53 @@ public class Turn {
 		return true;
 	}
 	
-	private JSONObject playActions(Card card, HttpSession session) {
+	private JSONObject playActions(Card card) {
 		this.activeCard = card;
-		boolean ignore = true;
 		for(Action action : card.getActions()) {
-			
-			// Here we're going to continue the actions where we left off in the subturn
-			if(inSubTurn() && ignore) {
-				// We found the action for the current subturn, let's execute the next action
-				if(getSubTurn().getAction().equals(action)) {
-					this.phase = Phase.ACTION;
-					ignore = false;
-				}
-				continue;
-			}
-			JSONObject actionResponse = action.play(this, session);
+			JSONObject actionResponse = action.play(this);
 			ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
 			if(!result.equals(ActionResult.DONE)) {
-				this.subturn = new SubTurn(this, action);
 				return actionResponse;
 			}
 		}
 		this.phase = Phase.ACTION;
-		this.subturn = null;
 		return new JSONObject().accumulate("response", "OK")
 							   .accumulate("result", ActionResult.DONE);
 	}
 	
-	public boolean inSubTurn() {
-		return getSubTurn() != null;
+	/**
+	 * Only used when in a sub action where a player has to select a card
+	 * @param cardid
+	 * @return response
+	 */
+	public JSONObject selectCard(String cardid) {
+		Action action = getActiveAction();
+		GameManager gm = getGame().getGameServer().getGameManager();
+		if(!canPerform(Phase.ACTION, cardid))
+			return gm.getInvalid("Unable to perform action. (Not in the right phase or card '"+cardid+"' is invalid)");
+		
+		Card card = getGame().getGameServer().getCardManager().get(cardid);
+		
+		if(action == null)
+			return gm.getInvalid("Unable to select card, no active action");
+		JSONObject response = handleCardSelection(card, action);
+		return response;
 	}
 	
-	/**
-	 * To check whether there is an active subturn
-	 * @return the current subturn,, null if none
-	 */
-	public SubTurn getSubTurn() {
-		return this.subturn;
+	private JSONObject handleCardSelection(Card card, Action action) {
+		if(action instanceof RemoveCardAction) {
+			RemoveCardAction tca = (RemoveCardAction) action;
+			return tca.selectCard(this, card);
+		}
+		return getGame().getGameServer().getGameManager().getInvalid("Action '"+ action.getIdentifier() +"' does not handle card selections");
 	}
 	
 	public Card getActiveCard() {
 		return activeCard;
+	}
+	
+	public Action getActiveAction() {
+		return activeAction;
 	}
 	
 	public JSONObject getAsJson() {

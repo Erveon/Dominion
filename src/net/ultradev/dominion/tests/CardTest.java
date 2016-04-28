@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import net.ultradev.dominion.game.card.*;
 import net.ultradev.dominion.game.card.action.*;
+import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class CardTest {
 	@Test
 	public void testAddAction() {
 		c = new Card("Test card","This is a test card",824);
-		Action action = new GainActionsAction("Gain_Actions","I Gained 99 actions...",99);
+		Action action = new GainActionsAction("Gain_Actions","I Gained 99 actions...", ActionTarget.SELF, 99);
 		c.addAction(action);
 		List<Action> actions = c.getActions();
 		if(!(actions.contains(action))) {

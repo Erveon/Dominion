@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.card.action.IllegalActionVariableException;
 import net.ultradev.dominion.game.card.action.MissingVariableException;
 import net.ultradev.dominion.game.card.action.actions.DrawCardAction;
@@ -84,7 +85,7 @@ public class CardManager {
 		addActions();
 	}
 	
-	// We'll do this later so all cards are created already because some actions rely on other cards
+	// Happens after card creation because some actions rely on other cards
 	public void addActions() {
 		Card copper = getCards().get("copper");
 		copper.addAction(parseAction("add_buypower", "Adds 1 coin to your turn", "amount=1"));
@@ -127,48 +128,72 @@ public class CardManager {
 		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
 	}
 	
+	/**
+	 * Converts database string input to an action
+	 * @param identifier
+	 * @param description
+	 * @param variables
+	 * @return an action
+	 */
 	private Action parseAction(String identifier, String description, String variables) {
 		Map<String, String> params = getMappedVariables(identifier, variables);
+		
+		ActionTarget target = ActionTarget.SELF;
+		if(params.containsKey("for")) {
+			try {
+				target = ActionTarget.valueOf(params.get("for"));
+			} catch(Exception ignored) { 
+				return null;
+			}
+		}
+		
 		switch(identifier.toLowerCase()) {
 			case "draw_cards":
 				if(containsKeys(params, identifier, "amount"))
-					return parseDrawCards(identifier, description, params.get("amount"));
+					return parseDrawCards(identifier, description, target, params.get("amount"));
 				
 			case "trash_specific":
-				if(containsKeys(params, identifier, "amount"))
-					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
+				if(containsKeys(params, identifier, "amount", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
 			case "trash_choose":
-				return parseRemove(getGameServer(), identifier, description, params, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
+				if(containsKeys(params, identifier, "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
 			case "trash_range":
-				if(containsKeys(params, identifier, "min", "max"))
-					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.RANGE, RemoveType.TRASH);
+				if(containsKeys(params, identifier, "min", "max", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
+			case "trash_min":
+				if(containsKeys(params, identifier, "min", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.TRASH);
+			case "trash_max":
+				if(containsKeys(params, identifier, "max", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.TRASH);
 				
 			case "discard_specific":
-				if(containsKeys(params, identifier, "amount"))
-					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
+				if(containsKeys(params, identifier, "amount", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
 			case "discard_choose":
-				return parseRemove(getGameServer(), identifier, description, params, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
+				return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
 			case "discard_range":
-				if(containsKeys(params, identifier, "min", "max"))
-					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.RANGE, RemoveType.DISCARD);
+				if(containsKeys(params, identifier, "min", "max", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
 			case "discard_min":
-				if(containsKeys(params, identifier, "min"))
-					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.MINIMUM, RemoveType.DISCARD);
+				if(containsKeys(params, identifier, "min", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.DISCARD);
 			case "discard_max":
-				if(containsKeys(params, identifier, "max"))
-					return parseRemove(getGameServer(), identifier, description, params, RemoveCount.MAXIMUM, RemoveType.DISCARD);
+				if(containsKeys(params, identifier, "max", "for"))
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.DISCARD);
 				
 			case "add_actions":
 				if(containsKeys(params, identifier, "amount"))
-					return parseAddActions(identifier, description, params.get("amount"));
+					return parseAddActions(identifier, description, target, params.get("amount"));
 				
 			case "add_buys":
 				if(containsKeys(params, identifier, "amount"))
-					return parseAddBuys(identifier, description, params.get("amount"));
+					return parseAddBuys(identifier, description, target, params.get("amount"));
 				
 			case "add_buypower":
 				if(containsKeys(params, identifier, "amount"))
-					return parseAddBuypower(identifier, description, params.get("amount"), GainBuypowerType.ADD);
+					return parseAddBuypower(identifier, description, target, params.get("amount"), GainBuypowerType.ADD);
 		}
 		return null;
 	}
@@ -179,48 +204,51 @@ public class CardManager {
 	 * 
 	 *************/
 	
-	public Action parseDrawCards(String identifier, String description, String amountVar) {
+	public Action parseDrawCards(String identifier, String description, ActionTarget target, String amountVar) {
 		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
-		return new DrawCardAction(identifier, description, amount);
+		return new DrawCardAction(identifier, description, target, amount);
 	}
 	
-	public Action parseAddActions(String identifier, String description, String amountVar) {
+	public Action parseAddActions(String identifier, String description, ActionTarget target, String amountVar) {
 		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
-		return new GainActionsAction(identifier, description, amount);
+		return new GainActionsAction(identifier, description, target, amount);
 	}
 	
-	public Action parseAddBuypower(String identifier, String description, String amountVar, GainBuypowerType type) {
+	public Action parseAddBuypower(String identifier, String description, ActionTarget target, String amountVar, GainBuypowerType type) {
 		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
-		return new GainBuypowerAction(identifier, description, amount, type);
+		return new GainBuypowerAction(identifier, description, target, amount, type);
 	}
 	
-	public Action parseAddBuys(String identifier, String description, String amountVar) {
+	public Action parseAddBuys(String identifier, String description, ActionTarget target, String amountVar) {
 		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
-		return new GainBuysAction(identifier, description, amount);
+		return new GainBuysAction(identifier, description, target, amount);
 	}
 	
-	public Action parseRemove(GameServer gs, String identifier, String description, Map<String, String> params, RemoveCount count, RemoveType type) {
+	public Action parseRemove(GameServer gs, String identifier, String description, Map<String, String> params, ActionTarget target,  RemoveCount count, RemoveType type) {
 		RemoveCardAction action = null;
 		switch(count) {
 			case CHOOSE_AMOUNT:
-				action = new RemoveCardAction(type, identifier, description);
+				action = new RemoveCardAction(target, type, identifier, description);
 				break;
 			case RANGE:
 				int minrange = getGameServer().getUtils().parseInt(params.get("min"), 0);
 				int maxrange = getGameServer().getUtils().parseInt(params.get("max"), 4);
-				action = new RemoveCardAction(type, identifier, description, minrange, maxrange);
+				action = new RemoveCardAction(target, type, identifier, description, minrange, maxrange);
 				break;
 			case MINIMUM:
 				int min = getGameServer().getUtils().parseInt(params.get("min"), 0);
-				action = new RemoveCardAction(type, identifier, description, min, true);
+				action = new RemoveCardAction(target, type, identifier, description, min, true);
 				break;
 			case MAXIMUM:
 				int max = getGameServer().getUtils().parseInt(params.get("max"), 4);
-				action = new RemoveCardAction(type, identifier, description, max, false);
+				action = new RemoveCardAction(target, type, identifier, description, max, false);
 				break;
 			case SPECIFIC_AMOUNT:
+				int amount = getGameServer().getUtils().parseInt(params.get("amount"), 1);
+				action = new RemoveCardAction(target, type, identifier, description, amount);
+				break;
 			default:
-				action = new RemoveCardAction(type, identifier, description);
+				action = new RemoveCardAction(target, type, identifier, description);
 				break;
 		}
 		if(params.containsKey("restrict")) {
