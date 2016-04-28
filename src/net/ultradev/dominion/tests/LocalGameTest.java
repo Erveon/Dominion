@@ -6,13 +6,16 @@ import org.junit.Test;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
+import net.ultradev.dominion.game.Game;
+import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.local.LocalGame;
+import net.ultradev.dominion.game.player.Player;
 
 
 public class LocalGameTest {
 
 	private GameServer gs = new GameServer();
-	private LocalGame lg = new LocalGame(gs);
+	private Game lg = new LocalGame(gs);
 	
 	@Test
 	public void setupGame() {
@@ -60,8 +63,11 @@ public class LocalGameTest {
 	public void testNextTurn() {
 		testBuyACard();
 		//TODO get next player
+		Player nextPlayer = lg.getTurn().getNext();
 		//TODO initiate his turn
-		//TODO ???
+		Turn turn = new Turn(lg, nextPlayer);
+		lg.setTurn(turn);
+		testBuyACard();
 	}
 
 }
