@@ -79,7 +79,12 @@ public class GameManager {
 			case "start":
 				if(g.getPlayers().size() < 2)
 					return getInvalid("You need at least 2 players to start a game");
+				if(g.getWhoStarted() != null) 
+					return getInvalid("The game has already been started");
+				if(!g.getConfig().hasValidActionCards())
+					return getInvalid("Invalid actioncards");
 				g.start();
+				response.accumulate("who", g.getTurn().getPlayer().getDisplayname());
 				return response.accumulate("response", "OK");
 			case "info":
 				return response

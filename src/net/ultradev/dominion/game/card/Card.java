@@ -8,26 +8,28 @@ import net.ultradev.dominion.game.card.action.Action;
 
 public class Card {
 	
-	/***********
-	 * 
-	 * CREATE:
-	 * 
-	 * actioncard
-	 * treasure
-	 * victory
-	 * curse
-	 * 
-	 ************/
+	public enum CardType { ACTION, TREASURE, VICTORY, CURSE }
 	
 	String name;
 	String description;
 	int cost;
 	List<Action> actions;
 	List<String> types;
+	CardType type;
+	
+	public Card(String name, String description, int cost, CardType type) {
+		this.name = name;
+		this.cost = cost;
+		this.type = type;
+		this.description = description;
+		this.actions = new ArrayList<>();
+		this.types = new ArrayList<>();
+	}
 	
 	public Card(String name, String description, int cost) {
 		this.name = name;
 		this.cost = cost;
+		this.type = CardType.ACTION;
 		this.description = description;
 		this.actions = new ArrayList<>();
 		this.types = new ArrayList<>();
@@ -51,6 +53,10 @@ public class Card {
 	
 	public void addAction(Action action) {
 		this.actions.add(action);
+	}
+	
+	public CardType getType() {
+		return type;
 	}
 	
 	public List<String> getTypes() {

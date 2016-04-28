@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.ultradev.dominion.GameServer;
+import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.card.action.IllegalActionVariableException;
@@ -34,15 +35,15 @@ public class CardManager {
 	public void setup() {
 		cards = new HashMap<>();
 		
-		getCards().put("copper", new Card("copper", "A copper coin", 0));
-		getCards().put("silver", new Card("silver", "A silver coin", 3));
-		getCards().put("gold", new Card("gold", "A golden coin", 6));
+		getCards().put("copper", new Card("copper", "A copper coin", 0, CardType.TREASURE));
+		getCards().put("silver", new Card("silver", "A silver coin", 3, CardType.TREASURE));
+		getCards().put("gold", new Card("gold", "A golden coin", 6, CardType.TREASURE));
 
-		getCards().put("estate", new Card("estate", "An estate, worth 1 victory point", 2));
-		getCards().put("duchy", new Card("duchy", "A duchy, worth 3 victory points", 5));
-		getCards().put("province", new Card("province", "A province, worth 6 victory points", 8));
+		getCards().put("estate", new Card("estate", "An estate, worth 1 victory point", 2, CardType.VICTORY));
+		getCards().put("duchy", new Card("duchy", "A duchy, worth 3 victory points", 5, CardType.VICTORY));
+		getCards().put("province", new Card("province", "A province, worth 6 victory points", 8, CardType.VICTORY));
 
-		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1));
+		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1, CardType.VICTORY));
 
 		//TODO fetch from db
 		//Temporary cards to make the board work:

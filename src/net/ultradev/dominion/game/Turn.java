@@ -3,6 +3,7 @@ package net.ultradev.dominion.game;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.CardManager;
+import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
@@ -54,7 +55,6 @@ public class Turn {
 	public void endPhase() {
 		switch(getPhase()) {
 			case ACTION:
-				this.actioncount = 0;
 				setPhase(Phase.BUY);
 				break;
 			case BUY:
@@ -79,6 +79,8 @@ public class Turn {
 	
 	public void removeAction() {
 		this.actioncount--;
+		if(this.actioncount == 0)
+			endPhase();
 	}
 	
 	public void addActions(int amount) {
@@ -158,13 +160,12 @@ public class Turn {
 	}
 	
 	public JSONObject playCard(String cardid) {
-		if(!canPerform(Phase.ACTION, cardid))
+		if(!canPerform(Phase.ACTION, cardid) && !canPerform(Phase.BUY, cardid))
 			return getGame().getGameServer().getGameManager()
 					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
 		JSONObject response = playActions(card);
-		
 		return response;
 	}
 	
@@ -174,6 +175,8 @@ public class Turn {
 		CardManager cm = getGame().getGameServer().getCardManager();
 		if(!cm.exists(cardid))
 			return false;
+		if(phase.equals(Phase.BUY))
+			return cm.get(cardid).getType().equals(CardType.TREASURE);
 		return true;
 	}
 	

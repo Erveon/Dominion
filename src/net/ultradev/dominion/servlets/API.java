@@ -29,6 +29,7 @@ public class API extends HttpServlet {
 		// End phase(action/buys/turn) > ?action=endphase&type=local
 		// Buy card > ?action=buycard&type=local&card=copper
 		// Select card > ?action=selectcard&type=local&card=copper
+		// Set card set > ?action=setconfig&type=local&key=setcardset&value=test
 	
 	// AJAX CALLS TODO
 		// Play card > ?action=playcard&type=local&card=copper
