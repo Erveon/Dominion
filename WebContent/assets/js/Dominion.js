@@ -41,10 +41,12 @@ var Dominion = (function($) {
     };
 
     Api.prototype.handleDone = function(callString, callback, returnData) {
-        if(returnData.response === 'invalid')
+        if(returnData.response === 'invalid') {
             console.log('invalid response for call: ' + callString);
-        else
-            callback(returnData);
+            console.log('reason:' + returnData.reason);
+        }
+
+        if (callback) callback(returnData);
     };
 
     Api.prototype.doCall = function(data, callback, multi) {
@@ -58,7 +60,7 @@ var Dominion = (function($) {
         this.gameInfo = null;
         this.Api = new Api();
         this.Api.setURL('//localhost:8080/Dominion/api?');
-        this.Interface = new Interface();
+        this.Interface = null;
         this.initGame();
     };
 
@@ -70,9 +72,11 @@ var Dominion = (function($) {
         );
     };
 
-    Game.prototype.addAllPlayers = function() {
+    Game.prototype.addAllPlayers = function(callback) {
         for (var playerIndex in this.players)
             this.addPlayer(this.players[playerIndex]);
+
+        callback();
     };
 
     Game.prototype.startGame = function () {
@@ -81,6 +85,7 @@ var Dominion = (function($) {
             function () {
                 console.log("Game started!");
                 that.updateGameInfo();
+                that.Interface = new Interface();
             }
         );
     };
@@ -93,6 +98,11 @@ var Dominion = (function($) {
                 that.Interface.refreshUI(that.gameData);
             }
         );
+    };
+
+    Game.prototype.addCardSet = function () {
+        var that = this;
+        this.Api.doCall({'action': 'setconfig', 'key': 'setcardset', 'value' : 'test'});
     };
 
     Game.prototype.endPhase = function () {
@@ -110,14 +120,18 @@ var Dominion = (function($) {
         this.Api.doCall({'action': 'create'},
             function() {
                 console.log('game created');
-                that.addAllPlayers();
-                that.startGame();
+                that.addCardSet();
+                that.addAllPlayers(function() {
+                    that.startGame();
+                });
             }
         );
     };
 
     var Interface = function() {
         console.log('interface created');
+        this.currentTab = 0;
+        this.carousel = [];
     };
 
     Interface.prototype.updatePlayerDisplayNames = function (data) {
@@ -142,15 +156,19 @@ var Dominion = (function($) {
         }
 
         if (hand !== undefined) {
-            //this.loadCards(hand);
-            this.addCarousel();
+            this.loadCards(hand);
+
+            if(hand.length <= 5) {
+                this.hidePrevArrow();
+                this.hideNextArrow();
+            } else this.addHandCarousel();
         }
     };
 
+    // NEEDS MORE A E S T H E T I C S
     Interface.prototype.loadCards = function(hand) {
         $('#handPile').empty();
         for (var card in hand) {
-            console.log(card[hand]);
             var cardHTML = "<li class='card'>";
             cardHTML += "<div class='card-header'>";
             cardHTML += "<p class='card-title'>" + hand[card].name + "</p></div>";
@@ -167,22 +185,108 @@ var Dominion = (function($) {
         }
     };
 
-    Interface.prototype.addCarousel = function () {
-        if (($('li.card').length) > 5) {
-            $('li.card:lt(5)').css('display', 'inline-block');
-            $('#handContainer .prev').css('opacity', '0');
-            $('#handContainer .prev').css('cursor', 'default');
-            $('#handContainer .next').on('click', function () {
-                $('li.card').css('display', 'inline-block');
-                $('li.card:lt(5)').css('display', 'none');
-            });
-        } else {
-            $('li.card').css('display', 'inline-block');
-            $('#handContainer .arrow').css('opacity', '0');
-            $('#handContainer .arrow').css('cursor', 'default');
+    Interface.prototype.addCarouselListeners = function(totalTabs) {
+        var that = this;
+        $('#handContainer a.arrow.next').on('click', function() {
+            that.nextTab(totalTabs);
+        });
+        $('#handContainer a.arrow.prev').on('click', function() {
+            that.prevTab(totalTabs);
+        });
+        this.updateArrows(totalTabs);
+    };
+
+    Interface.prototype.nextTab = function(totalTabs) {
+        console.log(this.carousel);
+        this.hideTab(this.currentTab, this.carousel);
+        this.addTab(totalTabs);
+        this.showTab(this.currentTab, this.carousel);
+        this.updateArrows(totalTabs);
+    };
+
+    Interface.prototype.prevTab = function(totalTabs) {
+        this.hideTab(this.currentTab, this.carousel);
+        this.subTab(totalTabs);
+        this.showTab(this.currentTab, this.carousel);
+        this.updateArrows(totalTabs);
+    };
+
+    Interface.prototype.updateArrows = function(totalTabs) {
+        this.showPrevArrow();
+        this.showNextArrow();
+        if(this.currentTab === 0) this.hidePrevArrow();
+        if(this.currentTab === totalTabs - 1) this.hideNextArrow();
+    };
+
+    Interface.prototype.subTab = function(totalTabs) {
+        this.currentTab--;
+        if (this.currentTab < 0)
+            this.currentTab = totalTabs - 1;
+    };
+
+    Interface.prototype.addTab = function(totalTabs) {
+        this.currentTab++;
+        if (this.currentTab >= totalTabs)
+            this.currentTab = 0;
+    };
+
+    Interface.prototype.addHandCarousel = function () {
+        var elementAmount = $('li.card').length;
+        var totalTabs = Math.ceil(elementAmount / 5);
+        this.clearCarousel(totalTabs);
+        this.spreadCards(totalTabs, elementAmount);
+        this.showTab(this.currentTab);
+        this.addCarouselListeners(totalTabs);
+    };
+
+    Interface.prototype.hideTab = function(tab) {
+        for (var card in this.carousel[tab]) {
+            this.carousel[tab][card].addClass('hidden');
         }
+    };
 
+    Interface.prototype.showTab = function(tab) {
+        for (var card in this.carousel[tab]) {
+            this.carousel[tab][card].removeClass('hidden');
+        }
+    };
 
+    Interface.prototype.showPrevArrow = function() {
+        $('#handContainer a.prev').css('opacity', '1');
+        $('#handContainer a.prev').css('pointer-events', 'all');
+    };
+
+    Interface.prototype.showNextArrow = function() {
+        $('#handContainer a.next').css('opacity', '1');
+        $('#handContainer a.next').css('pointer-events', 'all');
+    };
+
+    Interface.prototype.hidePrevArrow = function() {
+        $('#handContainer a.prev').css('opacity', '0');
+        $('#handContainer a.prev').css('pointer-events', 'none');
+    };
+
+    Interface.prototype.hideNextArrow = function() {
+        $('#handContainer a.next').css('opacity', '0');
+        $('#handContainer a.next').css('pointer-events', 'none');
+    };
+
+    Interface.prototype.clearCarousel = function(totalTabs) {
+        for (var i = 0; i < totalTabs; i++)
+            this.carousel[i] = [];
+    };
+
+    Interface.prototype.spreadCards = function(totalTabs, amount) {
+        var j = 0;
+        for (var k = 0; k < totalTabs; k++) {
+            while (j <= amount) {
+                var currElem = $('li.card').eq(j);
+                if (this.carousel[k].length < 5)
+                    this.carousel[k].push(currElem);
+                else break;
+                j++;
+            }
+        }
     };
 
     Interface.prototype.updatePlayerCounters = function (data) {
@@ -290,11 +394,6 @@ var Dominion = (function($) {
         $.fn.fullpage.moveSlideLeft();
     };
 
-    Menu.prototype.updateNameDisplay = function() {
-        $('.player-names').empty();
-        this.appendPlayers($(this).val());
-    };
-
     Menu.prototype.PlayerNameField = function(playerNo) {
         var name = '<label class="hidden" for="player' + playerNo + '">Name Player ' + playerNo + '</label>';
         name += '<input class="hidden player" id="player' + playerNo + '" type="text" name="player' + playerNo + '">';
@@ -302,9 +401,10 @@ var Dominion = (function($) {
     };
 
     Menu.prototype.appendPlayers = function(playerAmount) {
-        for(var i = 1; i <= playerAmount; i++)
-            $('.player-names').append(PlayerNameField(i));
+        for(var i = 1; i <= playerAmount; i++) {
+            $('.player-names').append(this.PlayerNameField(i));
             $('.player-names .hidden').fadeIn().css('display', 'inline-block');
+        }
     };
 
     Menu.prototype.preventImageDragging = function () {
@@ -334,7 +434,10 @@ var Dominion = (function($) {
 
     Menu.prototype.addListeners = function() {
     	var that = this;
-        $('#player-amount').on('change', this.updateNameDisplay);
+        $('#player-amount').on('change', function() {
+            $('.player-names').empty();
+            that.appendPlayers($(this).val());
+        });
         $('button.page-down').on('click', this.moveDown);
         $('button.page-up').on('click', this.moveUp);
         $('button.page-right').on('click', this.moveRight);

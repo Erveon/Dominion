@@ -1,5 +1,5 @@
 @import 'normalize.css'
-@import 'fonts.css'
+@import 'fonts.sass'
 @import 'colors.sass'
 @import '../../library/fullpage/jquery.fullpage.min.css'
 
@@ -350,15 +350,15 @@ div#hand
     ul#handPile
       width: 1142px
       margin: 0
-      padding-left: 6px
+      padding-left: 14px
       list-style-type: none
       float: left
 
-      li.card
+      .card
         width: 220px
         height: 320px
         margin: 2.5px 2.5px
-        display: none
+        display: inline-block
         background-color: $accentColor1
         -webkit-transition: all 150ms ease-in-out
         -moz-transition: all 150ms ease-in-out
@@ -450,6 +450,9 @@ div#hand
 
         div.card-info
           background-color: $curseCardColor
+
+      li.hidden
+        display: none
 
 h1.config, h2.config, h3.config
   font-family: 'RobotoBold'
