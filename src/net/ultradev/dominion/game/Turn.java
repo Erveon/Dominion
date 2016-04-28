@@ -93,6 +93,10 @@ public class Turn {
 		this.buypowerMultiplier += amount;
 	}
 	
+	public void removeBuypower(int amount) {
+		this.buypower -= amount;
+	}
+	
 	public int getBuypower() {
 		return buypower * buypowerMultiplier;
 	}
@@ -146,6 +150,7 @@ public class Turn {
 		if(getBuypower() >= card.getCost()) {
 			getPlayer().getDeck().add(card);
 			removeBuy();
+			removeBuypower(card.getCost());
 			return response.accumulate("result", BuyResponse.BOUGHT);
 		}
 		// In other cases

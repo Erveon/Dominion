@@ -98,7 +98,7 @@ public class CardManager {
 		
 		//TODO FETCH FROM DB
 		Card chapel = getCards().get("chapel");
-		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
+		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4;for=self"));
 		
 		Card village = getCards().get("village");
 		village.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
@@ -153,34 +153,34 @@ public class CardManager {
 					return parseDrawCards(identifier, description, target, params.get("amount"));
 				
 			case "trash_specific":
-				if(containsKeys(params, identifier, "amount", "for"))
+				if(containsKeys(params, identifier, "amount"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
 			case "trash_choose":
-				if(containsKeys(params, identifier, "for"))
+				if(containsKeys(params, identifier))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
 			case "trash_range":
-				if(containsKeys(params, identifier, "min", "max", "for"))
+				if(containsKeys(params, identifier, "min", "max"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
 			case "trash_min":
-				if(containsKeys(params, identifier, "min", "for"))
+				if(containsKeys(params, identifier, "min"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.TRASH);
 			case "trash_max":
-				if(containsKeys(params, identifier, "max", "for"))
+				if(containsKeys(params, identifier, "max"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.TRASH);
 				
 			case "discard_specific":
-				if(containsKeys(params, identifier, "amount", "for"))
+				if(containsKeys(params, identifier, "amount"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
 			case "discard_choose":
 				return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
 			case "discard_range":
-				if(containsKeys(params, identifier, "min", "max", "for"))
+				if(containsKeys(params, identifier, "min", "max"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
 			case "discard_min":
-				if(containsKeys(params, identifier, "min", "for"))
+				if(containsKeys(params, identifier, "min"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.DISCARD);
 			case "discard_max":
-				if(containsKeys(params, identifier, "max", "for"))
+				if(containsKeys(params, identifier, "max"))
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.DISCARD);
 				
 			case "add_actions":
