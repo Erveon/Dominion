@@ -13,7 +13,10 @@ import net.ultradev.dominion.game.player.Player;
 // Abstract in case methods differ per type
 public abstract class Game {
 
+	public static enum State { SETUP, STARTED };
+	
 	private List<Player> players;
+	private State state;
 	
 	//In case there is a tie, this will determine who wins (least amount of turns)
 	private Player started;
@@ -25,6 +28,7 @@ public abstract class Game {
 	
 	public Game(GameServer gs) {
 		this.gs = gs;
+		this.state = State.SETUP;
 		this.players = new ArrayList<>();
 		this.config = new GameConfig(this);
 		this.board = new Board(this);
@@ -32,6 +36,14 @@ public abstract class Game {
 	
 	public GameServer getGameServer() {
 		return gs;
+	}
+	
+	public State getState() {
+		return state;
+	}
+	
+	public boolean hasStarted() {
+		return state.equals(State.STARTED);
 	}
 	
 	public Board getBoard() {
@@ -99,9 +111,11 @@ public abstract class Game {
 	 * @param p Eligible to start
 	 */
 	public void start(List<Player> p) {
+		getGameServer().getUtils().debug("A game has been started");
 		init();
 		Player starter = p.get(new Random().nextInt(p.size()));
 		this.started = starter;
+		this.state = State.STARTED;
 		setTurn(new Turn(this, starter));
 	}
 	

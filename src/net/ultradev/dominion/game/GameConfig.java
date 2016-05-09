@@ -55,6 +55,7 @@ public class GameConfig {
 	}
 	
 	public void setCardset(String cardSet) {
+		getGame().getGameServer().getUtils().debug("A cardset has been chosen");
 		actionCardTypes.clear();
 		CardSet set;
 		try  {

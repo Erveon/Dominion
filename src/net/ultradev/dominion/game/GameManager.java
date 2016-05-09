@@ -28,7 +28,7 @@ public class GameManager {
 		return null;
 	}
 	
-	// If null, it's a java front-end game
+	// If null, it's a java GUI game
 	public LocalGame createGame(HttpSession session) {
 		LocalGame game = new LocalGame(getGameServer());
 		games.put(session, game);
@@ -99,10 +99,11 @@ public class GameManager {
 				else
 					return getInvalid("Invalid key in setconfig: " + key);
 			case "addplayer":
-				if(!map.containsKey("name")) {
+				if(!map.containsKey("name"))
 					return getInvalid("Need a name to add the player");
-				}
 				String name = map.get("name");
+				if(g.hasStarted())
+					return getInvalid("Game has started already");
 				g.addPlayer(name);
 				return response.accumulate("response", "OK");
 			case "endphase":

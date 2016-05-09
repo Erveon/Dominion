@@ -161,14 +161,15 @@ public class Turn {
 	}
 	
 	public JSONObject playCard(String cardid) {
-		if(!canPlay(Phase.ACTION, cardid) && !canPlay(Phase.BUY, cardid))
+		if(!canPlay(getPhase(), cardid))
 			return getGame().getGameServer().getGameManager()
 					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
 		if(!getPlayer().getHand().contains(card))
 			return getGame().getGameServer().getGameManager().getInvalid("Player doesn't have the selected card in their hand");
-		
+
+		getGame().getGameServer().getUtils().debug("Card played: " + card.getName());
 		getPlayer().getHand().remove(card);
 		getGame().getBoard().addPlayedCard(card);
 		JSONObject response = playActions(card);
@@ -183,12 +184,13 @@ public class Turn {
 		CardManager cm = getGame().getGameServer().getCardManager();
 		if(!cm.exists(cardid))
 			return false;
-		if(cm.get(cardid).getType().equals(CardType.VICTORY)
+		Card card = cm.get(cardid);
+		if(card.getType().equals(CardType.VICTORY)
 				|| cm.get(cardid).getType().equals(CardType.CURSE))
 			return false;
-		if(cm.get(cardid).getType().equals(CardType.TREASURE))
+		else if(card.getType().equals(CardType.TREASURE))
 			return phase.equals(Phase.BUY);
-		if(cm.get(cardid).getType().equals(CardType.ACTION))
+		else if(card.getType().equals(CardType.ACTION))
 			return phase.equals(Phase.ACTION);
 		return true;
 	}
@@ -227,6 +229,7 @@ public class Turn {
 	}
 	
 	private JSONObject handleCardSelection(Card card, Action action) {
+		getGame().getGameServer().getUtils().debug("Card selected: " + card.getName());
 		if(action instanceof RemoveCardAction) {
 			RemoveCardAction tca = (RemoveCardAction) action;
 			return tca.selectCard(this, card);
