@@ -36,12 +36,12 @@ public class LocalGameTest {
 	}
 	
 	@Test		//TODO should be changed when lg.endPhase() happens automatically
-	public void testPlayThreeCopper() {
+	public void testPlayTwoCopper() {
 		testPlayTreasureInActionPhase();
 		lg.endPhase();
 		JSONObject answer = null;
 		String desired = "{\"response\":\"OK\",\"result\":\"DONE\"}";
-		for(int i = 0; i < 3; i++)
+		for(int i = 0; i < 2; i++)
 		{
 			answer = lg.getTurn().playCard("copper");			
 		}
@@ -52,8 +52,8 @@ public class LocalGameTest {
 	
 	@Test
 	public void testBuyACard() {
-		testPlayThreeCopper();
-		lg.getTurn().buyCard("village");
+		testPlayTwoCopper();
+		lg.getTurn().buyCard("chapel");
 		//phase should end automatically => phase doesn't end, but you can't do anything except ending
 		lg.getTurn().end();
 		//TODO end turn?
