@@ -40,7 +40,17 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.playCard = function(card) {
-        this.Api.doCall({'action': 'playcard', 'card': card}, this.isMp);
+        var isPlayable = false;
+        
+        this.Api.doCall({'action': 'playcard', 'card': card}, this.isMp,
+            function(data) {
+                if (data.response !== "invalid") {
+                    isPlayable = true;
+                }
+            }
+        );
+
+        return isPlayable;
     };
 
     Game.prototype.updateGameInfo = function () {

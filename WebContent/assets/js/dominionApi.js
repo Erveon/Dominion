@@ -40,6 +40,22 @@ Dominion.Api = (function(Api) {
         }
     };
 
+    //Private method responsible for handling successfull AJAX requests
+    var handleDone = function(url, returnData, callback) {
+        if(that.allowDebugging) {
+            catchInvalidResponse(url, returnData);
+        }
+
+        if(callback) {
+            callback(returnData);
+        }
+    };
+
+    //Private method responsible for handling failed AJAX requests.
+    var handleFail = function(error) {
+        console.log(error);
+    };
+
     //Public method responsible for carrying out AJAX requests to the API.
     Api.prototype.doCall = function(data, multi, callback) {
         createUrl(data, multi);
@@ -50,16 +66,10 @@ Dominion.Api = (function(Api) {
 
         $.ajax(this.callString)
             .done(function(returnData) {
-                if(that.allowDebugging) {
-                    catchInvalidResponse(that.callString, returnData);
-                }
-
-                if(callback) {
-                    callback(returnData);
-                }
+                handleDone(that.callString, returnData, callback);
             })
             .fail(function(error) {
-                console.log(error);
+                handleFail(error);
             });
     };
 

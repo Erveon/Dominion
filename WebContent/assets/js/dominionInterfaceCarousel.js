@@ -1,121 +1,142 @@
 Dominion.Interface.Carousel = (function(Carousel) {
+    "use strict";
+
+    var that = null;
+
     Carousel = function(carElem) {
         this.currentTab = 0;
         this.carousel = [];
         this.carElem = carElem;
+        this.totalTabs = 0;
+        this.elementAmount = 0;
+        that = this;
+        addCarouselListeners(this.totalTabs);
     };
 
-    Carousel.prototype.addCarouselListeners = function(totalTabs) {
-        var that = this;
-        this.carElem.children('a.arrow.prev').on('click', function() {
-            that.nextTab(totalTabs);
+    var addCarouselListeners = function() {
+        that.carElem.children('a.arrow.prev').on('click', function() {
+            prevTab();
+            console.log('prevTab called');
         });
-        this.carElem.children('a.arrow.next').on('click', function() {
-            that.prevTab(totalTabs);
+        that.carElem.children('a.arrow.next').on('click', function() {
+            nextTab();
+            console.log('nextTab called');
         });
-        this.updateArrows(totalTabs);
+        updateArrows();
     };
 
-    Carousel.prototype.nextTab = function(totalTabs) {
-        this.hideTab(this.currentTab);
-        this.addTab(totalTabs);
-        this.showTab(this.currentTab);
-        this.updateArrows(totalTabs);
+    var nextTab = function() {
+        hideTab(that.currentTab);
+        addTab();
+        showTab(that.currentTab);
+        updateArrows();
     };
 
-    Carousel.prototype.prevTab = function(totalTabs) {
-        this.hideTab(this.currentTab);
-        this.subTab(totalTabs);
-        this.showTab(this.currentTab);
-        this.updateArrows(totalTabs);
+    var prevTab = function() {
+        hideTab(that.currentTab);
+        subTab();
+        showTab(that.currentTab);
+        updateArrows();
     };
 
-    Carousel.prototype.updateArrows = function(totalTabs) {
-        this.showPrevArrow();
-        this.showNextArrow();
-        if(this.currentTab === 0) this.hidePrevArrow();
-        if(this.currentTab === totalTabs) this.hideNextArrow();
-    };
+    var updateArrows = function() {
+        that.showPrevArrow();
+        that.showNextArrow();
 
-    Carousel.prototype.subTab = function(totalTabs) {
-        this.currentTab--;
-        if (this.currentTab < 0)
-            this.currentTab = totalTabs - 1;
-    };
-
-    Carousel.prototype.addTab = function(totalTabs) {
-        this.currentTab++;
-        if (this.currentTab >= totalTabs)
-            this.currentTab = 0;
-    };
-
-    Carousel.prototype.addCarousel = function() {
-        var elementAmount = this.carElem.children('#handPile').children('li.card').length;
-        var totalTabs = Math.ceil(elementAmount / 5);
-        this.clearCarousel(totalTabs);
-        this.spreadCards(totalTabs, elementAmount);
-        for (var i = 1; i <= totalTabs; i++) {
-            this.hideTab(i);
+        if(that.currentTab === 0) {
+            that.hidePrevArrow();
         }
-        this.showTab(this.currentTab);
-        this.addCarouselListeners(totalTabs);
-        console.log('Carousel Added:', this.carElem);
-        console.log('CarArray :', this.carousel);
-        console.log('CurTab:', this.currentTab);
-    };
 
-    Carousel.prototype.hideTab = function(tab) {
-        for (var card in this.carousel[tab]) {
-            this.carousel[tab][card].addClass('hidden');
+        if(that.currentTab === that.totalTabs - 1) {
+            that.hideNextArrow();
         }
     };
 
-    Carousel.prototype.showTab = function(tab) {
-        for (var card in this.carousel[tab]) {
-            this.carousel[tab][card].removeClass('hidden');
+    var subTab = function() {
+        that.currentTab--;
+
+        if (that.currentTab < 0) {
+            that.currentTab = that.totalTabs - 1;
+        }
+    };
+
+    var addTab = function() {
+        that.currentTab++;
+
+        if (that.currentTab >= that.TotalTabs) {
+            that.currentTab = 0;
+        }
+    };
+
+    var hideTab = function(tab) {
+        for (var card in that.carousel[tab]) {
+            that.carousel[tab][card].addClass('hidden');
+        }
+    };
+
+    var showTab = function(tab) {
+        for (var card in that.carousel[tab]) {
+            that.carousel[tab][card].removeClass('hidden');
+        }
+    };
+
+    var clearCarousel = function() {
+        for (var i = 0; i < that.totalTabs; i++) {
+            that.carousel[i] = [];
+        }
+    };
+
+    var spreadCards = function() {
+        var currCardNo = 0,
+            cardSelector = that.carElem.children("#handPile").children("li.card"),
+            currElem = null;
+
+        for (var currTab = 0; currTab < that.totalTabs; currTab++) {
+            while (currCardNo <= that.elementAmount) {
+                currElem = cardSelector.eq(currCardNo);
+
+                if (that.carousel[currTab].length < 5) {
+                    that.carousel[currTab].push($(currElem));
+                } else {
+                    break;
+                }
+
+                currCardNo++;
+            }
         }
     };
 
     Carousel.prototype.showPrevArrow = function() {
         this.carElem.children('a.arrow.prev').css('opacity', '1');
         this.carElem.children('a.arrow.prev').css('pointer-events', 'all');
-        console.log('showPrevArrow');
     };
 
     Carousel.prototype.showNextArrow = function() {
         this.carElem.children('a.arrow.next').css('opacity', '1');
         this.carElem.children('a.arrow.next').css('pointer-events', 'all');
-        console.log('showNextArrow');
     };
 
     Carousel.prototype.hidePrevArrow = function() {
         this.carElem.children('a.arrow.prev').css('opacity', '0');
         this.carElem.children('a.arrow.prev').css('pointer-events', 'none');
-        console.log('hidePrevArrow');
     };
 
     Carousel.prototype.hideNextArrow = function() {
         this.carElem.children('a.arrow.next').css('opacity', '0');
         this.carElem.children('a.arrow.next').css('pointer-events', 'none');
-        console.log('hideNextArrow');
     };
 
-    Carousel.prototype.clearCarousel = function(totalTabs) {
-        for (var i = 0; i < totalTabs; i++)
-            this.carousel[i] = [];
-    };
+    Carousel.prototype.addCarousel = function() {
+        this.elementAmount = this.carElem.children('#handPile').children('li.card').length;
+        this.totalTabs = Math.ceil(this.elementAmount / 5);
+        clearCarousel();
+        spreadCards();
 
-    Carousel.prototype.spreadCards = function(totalTabs, amount) {
-        var j = 0;
-        for (var k = 0; k < totalTabs; k++) {
-            while (j <= amount) {
-                var currElem = this.carElem.children('#handPile').children('li.card').eq(j);
-                if (this.carousel[k].length < 5)
-                    this.carousel[k].push($(currElem));
-                else break;
-                j++;
-            }
+        for (var i = 1; i <= this.totalTabs; i++) {
+            hideTab(i);
         }
+
+        showTab(this.currentTab);
     };
 
     return Carousel;

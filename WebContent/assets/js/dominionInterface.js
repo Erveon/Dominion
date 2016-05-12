@@ -29,7 +29,7 @@ Dominion.Interface = (function(Interface) {
         if (hand !== undefined) {
             this.loadCards(hand);
 
-            if(hand.length <= 3) {
+            if(hand.length < 5) {
                 this.handCarousel.hidePrevArrow();
                 this.handCarousel.hideNextArrow();
             } else {
@@ -45,7 +45,6 @@ Dominion.Interface = (function(Interface) {
             //that.openCardInfo($(this));
             that.playCard($(this));
         });
-        console.log('eventlisteners added');
     };
 
     Interface.prototype.playCard = function(card) {
