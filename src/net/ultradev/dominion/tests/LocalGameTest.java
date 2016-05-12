@@ -1,7 +1,8 @@
 package net.ultradev.dominion.tests;
 
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import net.sf.json.JSONObject;
@@ -28,11 +29,8 @@ public class LocalGameTest {
 	public void testPlayTreasureInActionPhase() {
 		setupGame();
 		JSONObject response = lg.getTurn().playCard("copper");
-		String notDesired =  "{\"response\":\"OK\",\"result\":\"DONE\"}";
-		if(response.toString().equals(notDesired) ){
-			//TODO fail("\nYou shouldn't be able to play coppers in the action phase, now should you?");
-			System.err.println("you failed!");
-		}
+		String Desired =  "{\"response\":\"invalid\",\"reason\":\"Unable to perform action. (Not in the right phase (ACTION) or card 'copper' is invalid)\"}";
+		assertEquals("played a copper in action phase", Desired, response.toString());
 	}
 	
 	@Test		//TODO should be changed when lg.endPhase() happens automatically
@@ -43,7 +41,8 @@ public class LocalGameTest {
 		String desired = "{\"response\":\"OK\",\"result\":\"DONE\"}";
 		for(int i = 0; i < 2; i++)
 		{
-			answer = lg.getTurn().playCard("copper");			
+			answer = lg.getTurn().playCard("copper");
+			System.out.println("function: testPlayTwoCopper\nresponse: " + answer.toString() + "\namount already completed: " + i + "\nTurn: " + lg.getTurn().getPhase() + "\n\n");
 		}
 		if(!(answer.toString().equals(desired))) {
 			fail("\nresponse was: " + answer + " and should have been " + desired);
