@@ -175,7 +175,12 @@ public class Turn {
 
 		getGame().getGameServer().getUtils().debug("Card played: " + card.getName());
 		getPlayer().getHand().remove(card);
-		removeAction();
+		if(getPhase().equals(Phase.ACTION)) {
+			removeAction();
+			if(getActions() == 0) {
+				endPhase();
+			}
+		}
 		getGame().getBoard().addPlayedCard(card);
 		JSONObject response = playActions(card);
 		return response;
