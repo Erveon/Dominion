@@ -154,6 +154,7 @@ public class Turn {
 			getPlayer().getDeck().add(card);
 			removeBuy();
 			removeBuypower(card.getCost());
+			getGame().getBoard().getSupply(CardType.ACTION).removeOne(card);
 			return response.accumulate("result", BuyResponse.BOUGHT);
 		}
 		// In other cases
@@ -161,16 +162,20 @@ public class Turn {
 	}
 	
 	public JSONObject playCard(String cardid) {
-		if(!canPlay(getPhase(), cardid))
-			return getGame().getGameServer().getGameManager()
-					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
+		GameManager gm = getGame().getGameServer().getGameManager();
+		if(!canPlay(getPhase(), cardid)) {
+			return gm.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
+		}
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		if(!getPlayer().getHand().contains(card))
-			return getGame().getGameServer().getGameManager().getInvalid("Player doesn't have the selected card in their hand");
+		
+		if(!getPlayer().getHand().contains(card)) {
+			return gm.getInvalid("Player doesn't have the selected card in their hand");
+		}
 
 		getGame().getGameServer().getUtils().debug("Card played: " + card.getName());
 		getPlayer().getHand().remove(card);
+		removeAction();
 		getGame().getBoard().addPlayedCard(card);
 		JSONObject response = playActions(card);
 		return response;

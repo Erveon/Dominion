@@ -152,10 +152,10 @@ public abstract class Game {
 	}
 	
 	public void addPlayer(String name) {
-		if(getPlayerByName(name) != null)
-			return;
-		getPlayers().add(new Player(this, name));
-		getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
+		if(getPlayerByName(name) == null) {
+			getPlayers().add(new Player(this, name));
+			getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
+		}
 	}
 	
 	public Player getPlayerByName(String name) {
@@ -168,8 +168,9 @@ public abstract class Game {
 	
 	public List<JSONObject> getPlayersAsJson() {
 		List<JSONObject> objs = new ArrayList<>();
-		for(Player p : players) 
+		for(Player p : players)  {
 			objs.add(p.getAsJson());
+		}
 		return objs;
 	}
 	
