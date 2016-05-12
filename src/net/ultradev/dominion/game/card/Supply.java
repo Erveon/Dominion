@@ -1,7 +1,7 @@
 package net.ultradev.dominion.game.card;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,7 +13,7 @@ public class Supply {
 	Map<Card, Integer> cards;
 	
 	public Supply() {
-		cards = new HashMap<>();
+		cards = new LinkedHashMap<>();
 	}
 	
 	public Map<Card, Integer> getCards() {
