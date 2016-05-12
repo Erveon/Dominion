@@ -225,7 +225,8 @@ public class Turn {
 			getPlayer().getDeck().add(card);
 			removeBuy();
 			removeBuypower(card.getCost());
-			getGame().getBoard().getSupply(card.getType()).removeOne(card);
+			Board board = getGame().getBoard();
+			board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
 			return response.accumulate("result", BuyResponse.BOUGHT);
 		}
 		// In other cases

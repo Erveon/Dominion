@@ -44,6 +44,7 @@ public class CardManager {
 		getCards().put("province", new Card("province", "A province, worth 6 victory points", 8, CardType.VICTORY));
 
 		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1, CardType.VICTORY));
+		getCards().put("gardens", new Card("gardens", "Worth 1 Victory Point for every 10 cards in your deck (rounded down).", 4, CardType.VICTORY));
 
 		//TODO fetch from db
 		//Temporary cards to make the board work:
