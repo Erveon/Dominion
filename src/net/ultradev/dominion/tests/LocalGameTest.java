@@ -26,15 +26,15 @@ public class LocalGameTest {
 	}
 	
 	@Test
-	public void testPlayTreasureInActionPhase() {
+	public void testPlayTreasureInActionPhase () {
 		setupGame();
 		JSONObject response = lg.getTurn().playCard("copper");
-		String Desired =  "{\"response\":\"invalid\",\"reason\":\"Unable to perform action. (Not in the right phase (ACTION) or card 'copper' is invalid)\"}";
-		assertEquals("played a copper in action phase", Desired, response.toString());
+		String desired =  "{\"response\":\"invalid\",\"reason\":\"Unable to perform action. (Not in the right phase (ACTION) or card 'copper' is invalid)\"}";
+		assertEquals("played a copper in action phase", desired, response.toString());
 	}
 	
 	@Test		//TODO should be changed when lg.endPhase() happens automatically
-	public void testPlayTwoCopper() {
+	public void testPlayTwoCopper () {
 		testPlayTreasureInActionPhase();
 		lg.endPhase();
 		JSONObject answer = null;
@@ -42,31 +42,35 @@ public class LocalGameTest {
 		for(int i = 0; i < 2; i++)
 		{
 			answer = lg.getTurn().playCard("copper");
-			System.out.println("function: testPlayTwoCopper\nresponse: " + answer.toString() + "\namount already completed: " + i + "\nTurn: " + lg.getTurn().getPhase() + "\n\n");
 		}
-		if(!(answer.toString().equals(desired))) {
-			fail("\nresponse was: " + answer + " and should have been " + desired);
-		}
+		assertEquals("couldn't play two copper", desired, answer.toString());
 	}
 	
 	@Test
-	public void testBuyACard() {
+	public void testBuyChapel () {
 		testPlayTwoCopper();
-		lg.getTurn().buyCard("chapel");
-		//phase should end automatically => phase doesn't end, but you can't do anything except ending
+		JSONObject answer = lg.getTurn().buyCard("chapel");
+		String desired = "{\"response\":\"OK\",\"result\":\"BOUGHT\"}";
+		assertEquals("Couldn't buy chapel (cost 2)",desired , answer.toString());
+		// TODO phase should end automatically => phase doesn't end, but you can't do anything except ending
 		lg.getTurn().end();
-		//TODO end turn?
 	}
 	
 	@Test
-	public void testNextTurn() {
-		testBuyACard();
-		//TODO get next player
+	public void testBuyTooExpensiveCard () {
+		testPlayTwoCopper();
+		JSONObject answer = lg.getTurn().buyCard("market");
+		String desired = "{\"response\":\"OK\",\"result\":\"CANTAFFORD\"}";
+		assertEquals("No \"too expensive\" error", desired, answer.toString());
+	}
+	
+	@Test
+	public void testNextTurn () {
+		testBuyChapel();
 		Player nextPlayer = lg.getTurn().getNext();
-		//TODO initiate his turn
 		Turn turn = new Turn(lg, nextPlayer);
 		lg.setTurn(turn);
-		testBuyACard();
+		testBuyChapel();
 	}
 
 }

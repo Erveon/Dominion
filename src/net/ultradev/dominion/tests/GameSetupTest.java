@@ -1,7 +1,8 @@
 package net.ultradev.dominion.tests;
 
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
@@ -50,6 +51,7 @@ public class GameSetupTest {
 		if(!(chapelCount == 10)) {
 			fail("testAmountOfActionCards failed:\n");
 		}
+		//assertEquals("testAmountOfActionCards failed",10,chapelCount);
 	}
 	
 	public void testAmountOfGardenCards(int playerCount) {
@@ -63,7 +65,7 @@ public class GameSetupTest {
 		}
 	}
 	
-	public void testHandleAddActionCards() {
+	public void testHandleAddActionCards() { //TODO FIX BUG
 		List<String> desiredResult = new ArrayList<>();
 		for(int i = 1; i <= 10; i++) {
 			String val = "card" + Integer.toString(i);
@@ -72,7 +74,7 @@ public class GameSetupTest {
 		}
 		List<String> actionCards = gc.getActionCards();
 		if(!(actionCards.equals(desiredResult))) {
-			fail("testHandleAddActionCards failed:\n   Added  cards: " + actionCards + "\nDesired result: " + desiredResult);
+			fail("testHandleAddActionCards failed:\nAdded cards:   " + actionCards + "\nDesired result: " + desiredResult);
 		}
 	}
 	
