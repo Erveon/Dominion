@@ -43,7 +43,6 @@ public class API extends HttpServlet {
     
     public void init() throws ServletException {
         this.gs = new GameServer();
-        gs.getUtils().setDebugging(true);
     }
     
     public GameServer getGameServer() {

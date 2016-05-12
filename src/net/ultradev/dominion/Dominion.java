@@ -53,8 +53,9 @@ public class Dominion {
 			case SETCARDPACK:
 				printLogo();
 				print();
-				print("Great! Let's pick the card pack we'll be using.");
+				print("Great! Let's pick the card set we'll be using.");
 				print("The available packs are:");
+				print("    0) Test");
 				print("    1) First Game");
 				print("    2) Big Money");
 				print("    3) Interaction");
@@ -62,6 +63,7 @@ public class Dominion {
 				print("    5) Village Square");
 				print();
 				print("Pick one of those by typing its number");
+				print("For more info about a set, use 'info (number)'");
 				print();
 				break;
 			default:
@@ -92,17 +94,19 @@ public class Dominion {
 		String cmd = cmds[0];
 		String[] args = Arrays.copyOfRange(command.split(" "), 1, cmds.length);
 		if(getState().equals(State.SETCARDPACK)) {
-			try {
-				int nr = Integer.parseInt(command);
-				if(nr > 0 && nr < 6) {
-					inputComplete("Yay");
-				} else {
-					inputComplete("Please provide a valid number");
+			if(command.startsWith("info")) {
+				command = command.replace("info", "");
+				if(isNumberBetween(command, 0, 6)) {
+					inputComplete("Info about the cardset");
 				}
-			} catch(Exception ignored) { 
-				inputComplete("That's not a number, silly");
+				return;
+			} else if(command.startsWith("pick")) {
+				command = command.replace("pick", "");
+				if(isNumberBetween(command, 0, 6)) {
+					inputComplete("Picked card");
+				}
+				return;
 			}
-			return;
 		}
 		switch(cmd) {
 			case "help":
@@ -115,13 +119,29 @@ public class Dominion {
 				done();
 				break;
 			case "add":
-				add(args);
+				if(getState().equals(State.ADDPLAYERS)) {
+					add(args);
+				}
 				break;
 			default:
 				print("That command was not recognized. Use 'help' if you need help.");
 				handleCommand(askInput(getInputMessage()));
 				break;
 		}
+	}
+	
+	public boolean isNumberBetween(String input, int min, int max) {
+		try {
+			int nr = Integer.parseInt(input.trim());
+			if(nr >= min && nr < max) {
+				return true;
+			} else {
+				inputComplete("Please provide a valid number");
+			}
+		} catch(Exception ignored) { 
+			inputComplete("That's not a number, silly");
+		}
+		return false;
 	}
 	
 	public void add(String[] args) {
@@ -156,7 +176,7 @@ public class Dominion {
 				}
 				setState(State.SETCARDPACK);
 				display();
-				handleCommand(askInput("Pick a cardpack"));
+				handleCommand(askInput("Pick a cardset"));
 				break;
 			case SETCARDPACK:
 				break;
