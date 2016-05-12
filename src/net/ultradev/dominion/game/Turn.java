@@ -255,9 +255,6 @@ public class Turn {
 		JSONObject response = playActions(card);
 		if(getPhase().equals(Phase.ACTION)) {
 			removeAction();
-			if(getActions() == 0) {
-				endPhase();
-			}
 		}
 		return response;
 	}
