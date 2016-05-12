@@ -81,7 +81,6 @@ public class Turn {
 				setPhase(Phase.BUY);
 				break;
 			case BUY:
-				end();
 				setPhase(Phase.CLEANUP);
 				break;
 			case CLEANUP:
