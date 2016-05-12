@@ -204,7 +204,6 @@ public class Turn {
 				return actionResponse;
 			}
 		}
-		this.phase = Phase.ACTION;
 		return new JSONObject().accumulate("response", "OK")
 							   .accumulate("result", ActionResult.DONE);
 	}
