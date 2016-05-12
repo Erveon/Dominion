@@ -12,6 +12,7 @@ import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.local.LocalGame;
+import net.ultradev.dominion.game.card.CardManager;
 
 
 public class GameSetupTest {
@@ -69,6 +70,9 @@ public class GameSetupTest {
 		List<String> desiredResult = new ArrayList<>();
 		for(int i = 1; i <= 10; i++) {
 			String val = "card" + Integer.toString(i);
+			Card testCard = new Card(val, "Test stuff", 2);
+			 //access cardManager, then execute getCards.put(val,testCard);
+			b.
 			gc.handle("addCard", val);
 			desiredResult.add(val);
 		}
@@ -76,6 +80,8 @@ public class GameSetupTest {
 		if(!(actionCards.equals(desiredResult))) {
 			fail("testHandleAddActionCards failed:\nAdded cards:   " + actionCards + "\nDesired result: " + desiredResult);
 		}
+		/*Card chapel = new Card("chapel", "Trash up to 4 cards from your hand.", 2);
+		getCards().put("chapel", chapel);*/
 	}
 	
 	public void testHandleRemoveActionCards() {		
