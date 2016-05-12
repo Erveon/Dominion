@@ -67,8 +67,8 @@ public abstract class Game {
 	 */
 	public void init() {
 		getBoard().initSupplies(getPlayers().size());
-		for(Player p : getPlayers())
-			p.setup();
+		// .setup() for every player
+		getPlayers().forEach(Player::setup);
 	}
 	
 	public List<Player> getPlayers() {
@@ -79,30 +79,24 @@ public abstract class Game {
 		return this.started;
 	}
 	
-	public List<Player> getWinningPlayer() {
-		List<Player> winnerList = new ArrayList<>();
+	public Player getWinner() {
 		Player winner = getPlayers().get(0);
 		for(Player p : getPlayers()) {
-			if(p.equals(winner))
-				continue;
-			int pVic = p.getVictoryPoints();
-			int wVic = winner.getVictoryPoints();
-			if(pVic > wVic)
-				winner = p;
-			else if(pVic == wVic) {
-				if(p.getRounds() == winner.getRounds()) { // Tie, multiple winners
-					if(!winnerList.contains(winner))
-						winnerList.add(winner);
-					if(!winnerList.contains(p))
-						winnerList.add(p);
-					winner = p; // Just in case it's a fucking threeway tie..
-				} else { // p is set to winner because they have played less rounds
-					if(p.getRounds() < winner.getRounds())
-						p = winner;
+			if(!p.equals(winner)) {
+				int pVic = p.getVictoryPoints();
+				int wVic = winner.getVictoryPoints();
+				if(pVic > wVic) {
+					winner = p;
+				} else if(pVic == wVic) {
+					// If they have the same amount of points,
+					// Check for the one with the least rounds
+					if(p.getRounds() < winner.getRounds()) {
+						winner = p;
+					}
 				}
 			}
 		}
-		return winnerList;
+		return winner;
 	}
 	
 	/**
@@ -125,16 +119,18 @@ public abstract class Game {
 	
 	public void endTurn() {
 		getTurn().getPlayer().increaseRounds();
-		if(getBoard().hasEndCondition())
+		if(getBoard().hasEndCondition()) {
 			endGame();
-		else
+		} else {
 			setTurn(getTurn().getNextTurn());
+		}
 	}
 	
 	public void endPhase() {
 		getTurn().endPhase();
-		if(getTurn().getPhase().equals(Phase.CLEANUP))
+		if(getTurn().getPhase().equals(Phase.CLEANUP)) {
 			endTurn();
+		}
 	}
 	
 	public void setTurn(Turn turn) {
@@ -142,13 +138,8 @@ public abstract class Game {
 	}
 	
 	public void endGame() {
-		List<Player> winnerlist = getWinningPlayer();
-		if(winnerlist.size() > 1) { // We've got a tie on our hands
-			//TODO tie
-		} else {
-			//Player winner = winnerlist.get(0);
-			//TODO win!
-		}
+		//Player winner = getWinner();
+		//TODO win!
 	}
 	
 	public void addPlayer(String name) {
@@ -160,23 +151,21 @@ public abstract class Game {
 	
 	public Player getPlayerByName(String name) {
 		for(Player p : getPlayers()) {
-			if(p.getDisplayname().equalsIgnoreCase(name))
+			if(p.getDisplayname().equalsIgnoreCase(name)) {
 				return p;
+			}
 		}
 		return null;
 	}
 	
 	public List<JSONObject> getPlayersAsJson() {
 		List<JSONObject> objs = new ArrayList<>();
-		for(Player p : players)  {
-			objs.add(p.getAsJson());
-		}
+		players.forEach(player -> objs.add(player.getAsJson()));
 		return objs;
 	}
 	
 	public JSONObject getAsJson() {
 		return new JSONObject()
-				//.accumulate("config", getConfig().getAsJson())
 				.accumulate("players", getPlayersAsJson())
 				.accumulate("board", getBoard().getAsJson())
 				.accumulate("turn", getTurn() == null ? "null" : getTurn().getAsJson());

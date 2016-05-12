@@ -26,7 +26,10 @@ public class Supply {
 	
 	public void removeOne(Card card) {
 		if(cards.containsKey(card)) {
-			cards.put(card, cards.get(card) - 1);
+			int amount = cards.get(card) - 1;
+			if(amount != 0) {
+				cards.put(card, amount);
+			}
 		}
 	}
 	

@@ -23,8 +23,9 @@ public class GameManager {
 	}
 	
 	public LocalGame getGame(HttpSession session) {
-		if(games.containsKey(session))
+		if(games.containsKey(session)) {
 			return games.get(session);
+		}
 		return null;
 	}
 	
@@ -36,11 +37,11 @@ public class GameManager {
 	}
 	
 	public void destroyFor(HttpSession session) {
-		if(!games.containsKey(session))
-			return;
-		games.remove(session);
-		System.gc(); // Free the memory!!
-		getGameServer().getUtils().debug("A local game has been destroyed");
+		if(games.containsKey(session)) {
+			games.remove(session);
+			System.gc(); // Free the memory!!
+			getGameServer().getUtils().debug("A local game has been destroyed");
+		}
 	}
 	
 	public JSONObject handleLocalRequest(Map<String, String> map) {
@@ -77,12 +78,13 @@ public class GameManager {
 				destroyFor(session);
 				return response.accumulate("response", "OK");
 			case "start":
-				if(g.getPlayers().size() < 2)
+				if(g.getPlayers().size() < 2) {
 					return getInvalid("You need at least 2 players to start a game");
-				if(g.getWhoStarted() != null) 
+				} else if(g.getWhoStarted() != null) {
 					return getInvalid("The game has already been started");
-				if(!g.getConfig().hasValidActionCards())
+				} else if(!g.getConfig().hasValidActionCards()) {
 					return getInvalid("Invalid actioncards");
+				}
 				g.start();
 				response.accumulate("who", g.getTurn().getPlayer().getDisplayname());
 				return response.accumulate("response", "OK");
@@ -91,35 +93,42 @@ public class GameManager {
 						.accumulate("response", "OK")
 						.accumulate("game", g.getAsJson());
 			case "setconfig":
-				if(!map.containsKey("key") || !map.containsKey("value"))
+				if(!map.containsKey("key") || !map.containsKey("value")) {
 					return getInvalid("No key & value pair given for config");
+				}
 				String key = map.get("key");
-				if(g.getConfig().handle(key, map.get("value")))
+				if(g.getConfig().handle(key, map.get("value"))) {
 					return response.accumulate("response", "OK");
+				}
 				else
 					return getInvalid("Invalid key in setconfig: " + key);
 			case "addplayer":
-				if(!map.containsKey("name"))
+				if(!map.containsKey("name")) {
 					return getInvalid("Need a name to add the player");
+				}
 				String name = map.get("name");
-				if(g.hasStarted())
+				if(g.hasStarted()) {
 					return getInvalid("Game has started already");
+				}
 				g.addPlayer(name);
 				return response.accumulate("response", "OK");
 			case "endphase":
 				g.endPhase();
 				return response.accumulate("response", "OK");
 			case "playcard":
-				if(!map.containsKey("card"))
+				if(!map.containsKey("card")) {
 					return getInvalid("Card parameter doesn't exist");
+				}
 				return g.getTurn().playCard(map.get("card"));
 			case "buycard":
-				if(!map.containsKey("card"))
+				if(!map.containsKey("card")) {
 					return getInvalid("Card parameter doesn't exist");
+				}
 				return g.getTurn().buyCard(map.get("card"));
 			case "selectcard":
-				if(!map.containsKey("card"))
+				if(!map.containsKey("card")) {
 					return getInvalid("Card parameter doesn't exist");
+				}
 				return g.getTurn().selectCard(map.get("card"));
 			default:
 				return getInvalid("Action not recognized: " + action);

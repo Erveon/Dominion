@@ -52,8 +52,9 @@ public class Card {
 	}
 	
 	public void addAction(Action action) {
-		if(action != null)
+		if(action != null) {
 			this.actions.add(action);
+		}
 	}
 	
 	public CardType getType() {
@@ -75,16 +76,16 @@ public class Card {
 			if(first) {
 				sb.append(s);
 				first = false;
-			} else
+			} else {
 				sb.append(" - " + s);
+			}
 		}
 		return sb.toString();
 	}
 	
 	private List<String> getActionDescriptions() {
 		List<String> desc = new ArrayList<>();
-		for(Action action : getActions())
-			desc.add(action.getDescripton());
+		getActions().forEach(action -> desc.add(action.getDescripton()));
 		return desc;
 	}
 	

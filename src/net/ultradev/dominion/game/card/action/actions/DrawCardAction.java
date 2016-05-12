@@ -17,8 +17,9 @@ public class DrawCardAction extends Action {
 	@Override
 	public JSONObject play(Turn turn) {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
-		for(int i = 0; i < amount; i++)
+		for(int i = 0; i < amount; i++) {
 			turn.getPlayer().drawCardFromDeck();
+		}
 		response.accumulate("result", ActionResult.DONE);
 		return response;
 	}

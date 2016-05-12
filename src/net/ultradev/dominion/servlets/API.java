@@ -78,8 +78,9 @@ public class API extends HttpServlet {
 	
 	public Map<String, String> getParameters(HttpServletRequest req) {
 		Map<String, String> params = new HashMap<>();
-		for(String s : req.getParameterMap().keySet())
+		for(String s : req.getParameterMap().keySet()) {
 			params.put(s, req.getParameter(s));
+		}
 		return params;
 	}
 

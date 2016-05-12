@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
@@ -22,9 +23,7 @@ public class Board {
 	public Board(Game game) {
 		this.game = game;
 		supplies = new HashMap<>();
-		for(CardType type : CardType.values()) {
-			supplies.put(type, new Supply());
-		}
+		Stream.of(CardType.values()).forEach(type -> supplies.put(type, new Supply()));
 		trash = new ArrayList<>();
 		playedcards = new ArrayList<>();
 	}
@@ -95,15 +94,12 @@ public class Board {
 
 	public List<JSONObject> getPlayedCards() {
 		List<JSONObject> json = new ArrayList<>();
-		for(Card c : playedcards)
-			json.add(c.getAsJson());
+		playedcards.forEach(card -> json.add(card.getAsJson()));
 		return json;
 	}
 	
 	public void cleanup(Player p) {
-		for(Card c : playedcards) {
-			p.getDiscard().add(c);
-		}
+		playedcards.forEach(card -> p.getDiscard().add(card));
 		playedcards.clear();
 	}
 	

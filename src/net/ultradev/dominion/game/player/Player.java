@@ -189,7 +189,7 @@ public class Player {
 	 */
 	private List<JSONObject> getCardsAsJson(List<Card> cards) {
 		List<JSONObject> json = new ArrayList<>();
-		cards.stream().forEach(card -> json.add(card.getAsJson()));
+		cards.forEach(card -> json.add(card.getAsJson()));
 		return json;
 	}
 	

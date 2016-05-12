@@ -2,6 +2,7 @@ package net.ultradev.dominion.game;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import net.sf.json.JSONObject;
 
@@ -82,20 +83,21 @@ public class GameConfig {
 	}
 	
 	public void addActionCards(String... cards) {
-		for(String card : cards)
-			addActionCard(card);
+		Stream.of(cards).forEach(card -> addActionCard(card));
 	}
 	
 	public void addActionCard(String actionCard) {
-		if(!getGame().getGameServer().getCardManager().exists(actionCard))
-			return;
-		if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10)
-			actionCardTypes.add(actionCard);
+		if(getGame().getGameServer().getCardManager().exists(actionCard)) {
+			if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10) {
+				actionCardTypes.add(actionCard);
+			}
+		}
 	}
 	
 	public void removeActionCard(String actionCard) {
-		if(actionCardTypes.contains(actionCard))
+		if(actionCardTypes.contains(actionCard)) {
 			actionCardTypes.remove(actionCard);
+		}
 	}
 	
 	public List<String> getActionCards() {

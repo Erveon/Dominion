@@ -103,8 +103,6 @@ public class Turn {
 	 */
 	public void removeBuy() {
 		this.buycount--;
-		if(this.buycount == 0)
-			endPhase();
 	}
 	
 	/**
@@ -112,8 +110,9 @@ public class Turn {
 	 */
 	public void removeAction() {
 		this.actioncount--;
-		if(this.actioncount == 0)
+		if(this.actioncount == 0) {
 			endPhase();
+		}
 	}
 	
 	/**
@@ -226,7 +225,7 @@ public class Turn {
 			getPlayer().getDeck().add(card);
 			removeBuy();
 			removeBuypower(card.getCost());
-			getGame().getBoard().getSupply(CardType.ACTION).removeOne(card);
+			getGame().getBoard().getSupply(card.getType()).removeOne(card);
 			return response.accumulate("result", BuyResponse.BOUGHT);
 		}
 		// In other cases
