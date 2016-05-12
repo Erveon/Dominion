@@ -1,6 +1,7 @@
 package net.ultradev.dominion.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class Board {
 	
 	public Board(Game game) {
 		this.game = game;
+		supplies = new HashMap<>();
 		for(CardType type : CardType.values()) {
 			supplies.put(type, new Supply());
 		}
