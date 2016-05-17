@@ -9,7 +9,7 @@ Dominion.Menu = (function(Menu) {
     Menu.prototype.setFullpageConfig = function() {
         $('#fullpage').fullpage({
             verticalCentered: false,
-            sectionsColor: ['rgba(118, 53, 104, 0.75)', 'rgba(44, 62, 80, 0.75)', 'rgba(118, 53, 104, 0.75)'],
+            sectionsColor: ['rgba(44, 62, 80, 0.75)', 'rgba(118, 53, 104, 0.75)'],
             controlArrows: false,
         });
     };

@@ -1,8 +1,12 @@
 Dominion.Interface = (function(Interface) {
     Interface = function() {
-        console.log('interface created');
+        console.log('The interface has been initialized.');
         this.handCarousel = null;
         this.fieldCarousel = null;
+        this.carouselAdded = false;
+        this.gameDataObj = null;
+        this.handContents = null;
+        this.playBuffer = [];
     };
 
     Interface.prototype.updatePlayerDisplayNames = function (data) {
@@ -28,29 +32,54 @@ Dominion.Interface = (function(Interface) {
 
         if (hand !== undefined) {
             this.loadCards(hand);
-
-            if(hand.length < 5) {
-                this.handCarousel.hidePrevArrow();
-                this.handCarousel.hideNextArrow();
-            } else {
-                this.handCarousel.addCarousel();
-            }
         }
+
+        this.handCarousel.addCarousel();
     };
 
     Interface.prototype.addListeners = function () {
         var that = this;
-        $('#handPile .card').on('click', function() {
-            console.log('cardPlay called');
-            //that.openCardInfo($(this));
-            that.playCard($(this));
+        $('#handPile .card').on('click', function(e) {
+            e.preventDefault();
+            that.togglePlayBuffer($(this));
         });
+        $('#controls .playCards').on('click', function(e) {
+            e.preventDefault();
+            that.flushPlayBuffer();
+        });
+        $('#controls .endPhase').on('click', function(e) {
+            e.preventDefault();
+        });
+        $('#controls .endTurn').on('click', function(e) {
+            e.preventDefault();
+        });
+
+    };
+
+    Interface.prototype.flushPlayBuffer = function () {
+        for (var i = 0; i < this.playBuffer.length; i++) {
+            this.playCard($(this.handContents[this.playBuffer[i]]));
+        }
+        this.playBuffer = [];
+    };
+
+    Interface.prototype.togglePlayBuffer = function (card) {
+        this.handContents = $("ul#handPile").children();
+
+        if(this.playBuffer.indexOf(this.handContents.index(card)) === -1) {
+            card.css('box-shadow', '0px 0px 3px 1px rgba(0, 0, 255, 0.9)');
+            this.playBuffer.push(this.handContents.index(card));
+        } else {
+            card.css('box-shadow', '');
+            this.playBuffer.splice(this.playBuffer.indexOf(this.handContents.index(card)), 1);
+        }
     };
 
     Interface.prototype.playCard = function(card) {
-        gameObj.playCard(card.children().first().children().text());
-        this.addCardToField(card);
-        card.remove();
+        if(gameObj.playCard(card.children().first().children().text())) {
+            this.addCardToField(card);
+            card.remove();
+        }
     };
 
     Interface.prototype.addCardToField = function(card) {
@@ -59,6 +88,13 @@ Dominion.Interface = (function(Interface) {
         html += "<p class='miniCard-title'>" + cardName + "</p>";
         html += "<img src='assets/images/cards/" + cardName + ".jpg' width='100%'></li>";
         $("#playedCards").append($(html));
+        this.refreshField();
+        this.refreshUI(this.gameDataObj);
+    };
+
+    Interface.prototype.refreshField = function() {
+        this.fieldCarousel.addCarousel();
+        this.handCarousel.addCarousel();
     };
 
     /*Interface.prototype.openCardInfo = function(currentCard) {
@@ -92,17 +128,18 @@ Dominion.Interface = (function(Interface) {
             cardHTML += "<p class='card-cost'>" + hand[card].cost + "</p>";
             cardHTML += "<p class='card-type'>" + hand[card].type + "</p></div></li>";
             $('#handPile').append(cardHTML);
-            $('#handPile').append(cardHTML);
         }
 
         this.addListeners();
-        this.addCarousels();
+        if (!this.carouselAdded) {
+            this.addCarousels();
+            this.carouselAdded = true;
+        }
     };
 
     Interface.prototype.addCarousels = function() {
         this.handCarousel = new Dominion.Interface.Carousel($('#handContainer'));
-        //this.fieldCarousel = new Carousel();
-        this.handCarousel.addCarousel();
+        this.fieldCarousel = new Dominion.Interface.Carousel($('#playedCardContainer'));
     };
 
     Interface.prototype.updatePlayerCounters = function (data) {
@@ -145,20 +182,18 @@ Dominion.Interface = (function(Interface) {
         switch (data.game.turn.phase) {
             case 'ACTION':
                 $('.actionDisp').addClass('activePhase');
-                console.log('action phase');
                 break;
             case 'BUY':
                 $('.buyDisp').addClass('activePhase');
-                console.log('buy phase');
                 break;
             case 'CLEANUP':
                 $('.cleanupDisp').addClass('activePhase');
-                console.log('cleanup phase');
                 break;
         }
     };
 
     Interface.prototype.refreshUI = function(gameData) {
+        this.gameDataObj = gameData;
         this.updatePlayerDisplayNames(gameData);
         this.updatePlayerCounters(gameData);
         this.updateDeckCounter(gameData);
@@ -166,18 +201,6 @@ Dominion.Interface = (function(Interface) {
         this.updateTurnDisplay(gameData);
         this.updateHand(gameData);
         this.updateActionCards(gameData);
-    };
-
-    Interface.prototype.updatePlayerDisplayNames = function (data) {
-        $('.players').empty();
-        $('.players').append('Players&nbsp;');
-        for (var player in data.game.players) {
-            if (data.game.turn.player === data.game.players[player].displayname){
-                this.addActivePlayer(player, data);
-            } else {
-                $('.players').append("<p class='player'>" + data.game.players[player].displayname + "</p>");
-            }
-        }
     };
 
     Interface.prototype.addActivePlayer = function (player, data) {
