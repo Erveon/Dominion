@@ -62,6 +62,9 @@ public class Card {
 	}
 	
 	public List<String> getTypes() {
+		List<String> types = new ArrayList<>();
+		types.add(type.toString());
+		types.addAll(this.types);
 		return types;
 	}
 	

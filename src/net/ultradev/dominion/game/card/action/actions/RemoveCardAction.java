@@ -19,6 +19,7 @@ public class RemoveCardAction extends Action {
 	
 	int amount;
 	int min, max;
+	String special;
 	RemoveCount countType;
 	RemoveType type;
 	
@@ -67,6 +68,15 @@ public class RemoveCardAction extends Action {
 		this.type = type;
 	}
 	
+	/**
+	 * If anything special that can't be parsed through the actions has to happen
+	 * to a card, the card is defined in here and handled by the class when necessary
+	 * @param String the name of the special card
+	 */
+	public void setSpecial(String name) {
+		this.special = name;
+	}
+	
 	public void addRestriction(Card card) {
 		restriction.add(card);
 	}
@@ -96,6 +106,15 @@ public class RemoveCardAction extends Action {
 				break;
 			default:
 				break;
+		}
+		
+		// Handles special card actions that can't be parsed
+		if(special != null) {
+			if(special.equalsIgnoreCase("mine")) {
+				return getResponse(turn).accumulate("after", new JSONObject()
+																.accumulate("type", "buy_treasure")
+																.accumulate("max_cost", card.getCost() + 3));
+			}
 		}
 		
 		getCallbacks().forEach(action -> action.play(turn));

@@ -272,7 +272,7 @@ public class Turn {
 	 * @param cardid
 	 * @return Whether that card can be played for this phase
 	 */
-	private boolean canPlay(Phase phase, String cardid) {
+	public boolean canPlay(Phase phase, String cardid) {
 		CardManager cm = getGame().getGameServer().getCardManager();
 		if(cm.exists(cardid)) {
 			Card card = cm.get(cardid);

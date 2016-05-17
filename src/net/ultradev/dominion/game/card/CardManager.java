@@ -128,6 +128,12 @@ public class CardManager {
 
 		Card militia = getCards().get("militia");
 		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+		militia.addAction(parseAction("trash_min", "Each other player discards down to 3 cards in his hand.", "min=3;for=others"));
+
+		Card mine = getCards().get("mine");
+		Action discardTreasureMine = parseAction("trash_specific", "Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more", "amount=1;restrict=gold,copper,silver");
+		//discardTreasureMine.addCallback(action);
+		mine.addAction(discardTreasureMine);
 	}
 	
 	/**
