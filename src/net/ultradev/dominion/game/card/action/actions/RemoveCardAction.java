@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
@@ -98,16 +97,19 @@ public class RemoveCardAction extends Action {
 				break;
 		}
 		
-		for(Action action : getCallbacks())
+		getCallbacks().forEach(action -> {
+			action.setMaster(player, card);
 			action.play(turn);
+		});
 		
-		cardsRemoved.put(turn.getPlayer(), removedCards(player) + 1);
+		cardsRemoved.put(turn.getPlayer(), getRemovedCards(player) + 1);
 		return getResponse(turn);
 	}
 	
-	public int removedCards(Player player) {
-		if(cardsRemoved.containsKey(player))
+	public int getRemovedCards(Player player) {
+		if(cardsRemoved.containsKey(player)) {
 			return cardsRemoved.get(player);
+		}
 		return 0;
 	}
 	
@@ -116,9 +118,9 @@ public class RemoveCardAction extends Action {
 			case CHOOSE_AMOUNT:
 				return false;
 			case RANGE:
-				return removedCards(player) < this.min;
+				return getRemovedCards(player) < this.min;
 			case SPECIFIC_AMOUNT:
-				return removedCards(player) == this.amount;
+				return getRemovedCards(player) == this.amount;
 			default:
 				return false;
 		}
@@ -129,9 +131,9 @@ public class RemoveCardAction extends Action {
 			case CHOOSE_AMOUNT:
 				return true;
 			case RANGE:
-				return removedCards(player) < this.max;
+				return getRemovedCards(player) < this.max;
 			case SPECIFIC_AMOUNT:
-				return removedCards(player) != this.amount;
+				return getRemovedCards(player) != this.amount;
 			default:
 				return false;
 		}
@@ -140,11 +142,10 @@ public class RemoveCardAction extends Action {
 	public JSONObject getResponse(Turn turn) {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
 		if(canSelectMore(turn.getPlayer())) {
-			response.accumulate("result", ActionResult.SELECT_CARD);
+			response.accumulate("result", ActionResult.SELECT_CARD_HAND);
 			response.accumulate("force", hasForceSelect(turn.getPlayer()));
 		} else {
 			response.accumulate("result", ActionResult.DONE);
-			//return turn.playCard(turn.getActiveCard().getName()); wat?
 		}
 		return response;
 	}

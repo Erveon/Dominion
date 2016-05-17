@@ -25,6 +25,11 @@ public class Turn {
 	Card activeCard;
 	Action activeAction;
 
+	/**
+	 * Represents a turn for a player in a game
+	 * @param game The game
+	 * @param player The player who's turn it is
+	 */
 	public Turn(Game game, Player player) {
 		this.game = game;
 		this.player = player;
@@ -35,24 +40,41 @@ public class Turn {
 		this.phase = Phase.ACTION;
 	}
 	
+	/**
+	 * @return The game the turn is in
+	 */
 	public Game getGame() {
 		return game;
 	}
 	
+	/**
+	 * @return The player who's turn it is
+	 */
 	public Player getPlayer() {
 		return player;
 	}
 	
+	/**
+	 * @return The phase that the turn is in right now
+	 */
 	public Phase getPhase() {
 		return phase;
 	}
 	
+	/**
+	 * Sets the turn's phase
+	 * @param phase The phase the turn should go to
+	 */
 	public void setPhase(Phase phase) {
 		this.phase = phase;
-		if(phase.equals(Phase.CLEANUP))
+		if(phase.equals(Phase.CLEANUP)) {
 			getGame().getBoard().cleanup(getPlayer());
+		}
 	}
 	
+	/**
+	 * Ends a phase and moves to the next one
+	 */
 	public void endPhase() {
 		switch(getPhase()) {
 			case ACTION:
@@ -68,46 +90,80 @@ public class Turn {
 		}
 	}
 	
+	/**
+	 * Adds to the amount of cards a player can buy this turn
+	 * @param amount
+	 */
 	public void addBuys(int amount) {
 		this.buycount += amount;
 	}
 	
+	/**
+	 * Removes a buy from the amount of cards a player can buy this round
+	 */
 	public void removeBuy() {
 		this.buycount--;
-		if(this.buycount == 0)
-			endPhase();
 	}
 	
+	/**
+	 * Removes an action from the amount of cards a player can play this round
+	 */
 	public void removeAction() {
 		this.actioncount--;
-		if(this.actioncount == 0)
+		if(this.actioncount == 0) {
 			endPhase();
+		}
 	}
 	
+	/**
+	 * Adds to the amount of cards a player can play this turn
+	 * @param amount
+	 */
 	public void addActions(int amount) {
 		this.actioncount += amount;
 	}
 	
+	/**
+	 * Adds to the amount of coins a player has to buy cards with
+	 * @param amount
+	 */
 	public void addBuypower(int amount) {
 		this.buypower += amount;
 	}
 	
+	/**
+	 * Multiplies the amount of coins a player has to buy cards with
+	 * @param amount
+	 */
 	public void addMultiplierBuypower(int amount) {
 		this.buypowerMultiplier += amount;
 	}
 	
+	/**
+	 * Removes coins from the turn
+	 * @param amount
+	 */
 	public void removeBuypower(int amount) {
 		this.buypower -= amount;
 	}
 	
+	/**
+	 * @return How many coins a player can spend at this moment
+	 */
 	public int getBuypower() {
 		return buypower * buypowerMultiplier;
 	}
 	
+	/**
+	 * @return The amount of cards a player can buy this turn
+	 */
 	public int getBuys() {
 		return buycount;
 	}
 	
+	/**
+	 * @return The amount of actions a player has left this turn
+	 */
 	public int getActions() {
 		return actioncount;
 	}
@@ -119,90 +175,145 @@ public class Turn {
 	 * @param p The player we want the next from
 	 * @return The next player
 	 */
-	public Player getNext() {
+	public Player getNextPlayer() {
 		boolean found = false;
 		for(Player pl : getGame().getPlayers()) {
-			if(found)
+			if(found) {
 				return pl;
-			if(getPlayer().equals(pl))
+			} else if(getPlayer().equals(pl)) {
 				found = true;
+			}
 		}
 		return getGame().getPlayers().get(0);
 	}
 	
+	/**
+	 * @return The next turn for this game
+	 */
 	public Turn getNextTurn() {
-		return new Turn(getGame(), getNext());
+		return new Turn(getGame(), getNextPlayer());
 	}
 
+	/**
+	 * Ends this player's turn this round
+	 * discarding their hand and drawing 5 new cards from their deck
+	 */
 	public void end() {
 		Player p = getPlayer();
 		p.discardHand();
-		for(int i = 0; i < 5; i++)
+		for(int i = 0; i < 5; i++) {
 			p.drawCardFromDeck();
+		}
 	}
 	
 	public JSONObject buyCard(String cardid) {
-		if(!phase.equals(Phase.BUY) || !isValidCard(cardid))
-			return getGame().getGameServer().getGameManager()
-					.getInvalid("Unable to perform purchase. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid");
+		return buyCard(cardid, false);
+	}
+	
+	/**
+	 * Buys a card for a player
+	 * @param cardid
+	 * @param boolean if the card is free
+	 * @return The response
+	 */
+	public JSONObject buyCard(String cardid, boolean free) {
+		if(!free) {
+			if(!phase.equals(Phase.BUY) || !isValidCard(cardid)) {
+				return getGame().getGameServer().getGameManager()
+						.getInvalid("Unable to perform purchase. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid");
+			}
+		}
 		
 		JSONObject response = new JSONObject().accumulate("response", "OK");
 		CardManager cm = getGame().getGameServer().getCardManager();
 		Card card = cm.get(cardid);
 		
-		if(getBuypower() >= card.getCost()) {
+		if(getBuypower() >= card.getCost() || free) {
 			getPlayer().getDeck().add(card);
-			removeBuy();
-			removeBuypower(card.getCost());
+			if(!free) {
+				removeBuy();
+				removeBuypower(card.getCost());
+			}
+			Board board = getGame().getBoard();
+			board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
 			return response.accumulate("result", BuyResponse.BOUGHT);
 		}
 		// In other cases
 		return response.accumulate("result", BuyResponse.CANTAFFORD);
 	}
 	
+	/**
+	 * Plays a card for a player
+	 * @param cardid
+	 * @return The response
+	 */
 	public JSONObject playCard(String cardid) {
-		if(!canPlay(Phase.ACTION, cardid) && !canPlay(Phase.BUY, cardid))
-			return getGame().getGameServer().getGameManager()
-					.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
+		GameManager gm = getGame().getGameServer().getGameManager();
+		if(!canPlay(getPhase(), cardid)) {
+			return gm.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
+		}
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		if(!getPlayer().getHand().contains(card))
-			return getGame().getGameServer().getGameManager().getInvalid("Player doesn't have the selected card in their hand");
-		
+		if(!getPlayer().getHand().contains(card)) {
+			return gm.getInvalid("Player doesn't have the selected card in their hand");
+		}
+
+		getGame().getGameServer().getUtils().debug("Card played: " + card.getName());
 		getPlayer().getHand().remove(card);
 		getGame().getBoard().addPlayedCard(card);
+		
 		JSONObject response = playActions(card);
+		
+		if(getPhase().equals(Phase.ACTION)) {
+			removeAction();
+		}
 		return response;
 	}
 	
+	/**
+	 * @param cardid
+	 * @return Whether the card id exists in the card manager
+	 */
 	private boolean isValidCard(String cardid) {
 		return getGame().getGameServer().getCardManager().exists(cardid);
 	}
 	
-	private boolean canPlay(Phase phase, String cardid) {
+	/**
+	 * @param phase
+	 * @param cardid
+	 * @return Whether that card can be played for this phase
+	 */
+	public boolean canPlay(Phase phase, String cardid) {
 		CardManager cm = getGame().getGameServer().getCardManager();
-		if(!cm.exists(cardid))
-			return false;
-		if(cm.get(cardid).getType().equals(CardType.VICTORY)
-				|| cm.get(cardid).getType().equals(CardType.CURSE))
-			return false;
-		if(cm.get(cardid).getType().equals(CardType.TREASURE))
-			return phase.equals(Phase.BUY);
-		if(cm.get(cardid).getType().equals(CardType.ACTION))
-			return phase.equals(Phase.ACTION);
-		return true;
+		if(cm.exists(cardid)) {
+			Card card = cm.get(cardid);
+			if(card.getType().equals(CardType.VICTORY)
+					|| cm.get(cardid).getType().equals(CardType.CURSE)) {
+				return false;
+			} else if(card.getType().equals(CardType.TREASURE)) {
+				return phase.equals(Phase.BUY);
+			} else if(card.getType().equals(CardType.ACTION)) {
+				return phase.equals(Phase.ACTION);
+			}
+		}
+		return false;
 	}
 	
+	/**
+	 * Plays the actions for this card for the player
+	 * @param card
+	 * @return The response
+	 */
 	private JSONObject playActions(Card card) {
 		this.activeCard = card;
 		for(Action action : card.getActions()) {
 			JSONObject actionResponse = action.play(this);
 			ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
 			if(!result.equals(ActionResult.DONE)) {
+				this.activeAction = action;
 				return actionResponse;
 			}
 		}
-		this.phase = Phase.ACTION;
 		return new JSONObject().accumulate("response", "OK")
 							   .accumulate("result", ActionResult.DONE);
 	}
@@ -215,40 +326,60 @@ public class Turn {
 	public JSONObject selectCard(String cardid) {
 		Action action = getActiveAction();
 		GameManager gm = getGame().getGameServer().getGameManager();
-		if(!phase.equals(Phase.ACTION) || !isValidCard(cardid))
+		if(!phase.equals(Phase.ACTION) || !isValidCard(cardid)) {
 			return gm.getInvalid("Unable to perform action. (Not in the right phase or card '"+cardid+"' is invalid)");
+		}
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		
-		if(action == null)
+		if(action == null) {
 			return gm.getInvalid("Unable to select card, no active action");
+		}
+		
 		JSONObject response = handleCardSelection(card, action);
 		return response;
 	}
 	
+	/**
+	 * Selects a card for an action
+	 * @param card
+	 * @param action
+	 * @return The response
+	 */
 	private JSONObject handleCardSelection(Card card, Action action) {
+		getGame().getGameServer().getUtils().debug("Card selected: " + card.getName());
 		if(action instanceof RemoveCardAction) {
-			RemoveCardAction tca = (RemoveCardAction) action;
-			return tca.selectCard(this, card);
+			RemoveCardAction rca = (RemoveCardAction) action;
+			return rca.selectCard(this, card);
 		}
 		return getGame().getGameServer().getGameManager().getInvalid("Action '"+ action.getIdentifier() +"' does not handle card selections");
 	}
 	
+	/**
+	 * @return The card currently active
+	 * used when an action requires actions from other players
+	 */
 	public Card getActiveCard() {
 		return activeCard;
 	}
 	
+	/**
+	 * @return The action that is currently happening
+	 */
 	public Action getActiveAction() {
 		return activeAction;
 	}
 	
+	/**
+	 * @return The turn and its info in JSON format
+	 */
 	public JSONObject getAsJson() {
 		return new JSONObject()
 				.accumulate("player", getPlayer().getDisplayname())
 				.accumulate("buysleft", getBuys())
 				.accumulate("actionsleft", getActions())
 				.accumulate("buypower", getBuypower())
-				.accumulate("phase", getPhase().toString());
+				.accumulate("phase", getPhase().toString())
+				.accumulate("next_player", getNextPlayer().getDisplayname());
 	}
 	
 }

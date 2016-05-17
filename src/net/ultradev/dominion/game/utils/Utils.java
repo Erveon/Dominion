@@ -9,8 +9,9 @@ public class Utils {
 	}
 	
 	public void debug(String s) {
-		if(debugging)
+		if(debugging) {
 			System.out.println(s);
+		}
 	}
 	
 	/**

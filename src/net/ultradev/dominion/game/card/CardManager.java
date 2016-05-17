@@ -14,6 +14,8 @@ import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
 import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
+import net.ultradev.dominion.game.card.action.actions.GainCardAction;
+import net.ultradev.dominion.game.card.action.actions.GainCardAction.GainCardType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveCount;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
@@ -44,6 +46,7 @@ public class CardManager {
 		getCards().put("province", new Card("province", "A province, worth 6 victory points", 8, CardType.VICTORY));
 
 		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1, CardType.VICTORY));
+		getCards().put("gardens", new Card("gardens", "Worth 1 Victory Point for every 10 cards in your deck (rounded down).", 4, CardType.VICTORY));
 
 		//TODO fetch from db
 		//Temporary cards to make the board work:
@@ -127,6 +130,23 @@ public class CardManager {
 
 		Card militia = getCards().get("militia");
 		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+		militia.addAction(parseAction("trash_min", "Each other player discards down to 3 cards in his hand.", "min=3;for=others"));
+
+		Card mine = getCards().get("mine");
+		Action discardTreasureMine = parseAction("trash_specific", "Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more", "amount=1;restrict=gold,copper,silver");
+		discardTreasureMine.addCallback(parseAction("gain_card", "gain a treasure card costing up to 3 coins more", "cost=3;type=treasure"));
+		mine.addAction(discardTreasureMine);
+		
+		Card moat = getCards().get("moat");
+		moat.addAction(parseAction("draw_cards", "Draw 2 cards", "amount=2"));
+		
+		Card remodel = getCards().get("remodel");
+		Action discardTreasureRemodel = parseAction("trash_specific", "Trash a card from your hand. Gain a card costing up to 2 Coins more than the trashed card.", "amount=1");
+		discardTreasureRemodel.addCallback(parseAction("gain_card", "gain a treasure card costing up to 2 coins more", "cost=2"));
+		remodel.addAction(discardTreasureRemodel);
+		
+		Card smithy = getCards().get("smithy");
+		smithy.addAction(parseAction("draw_cards", "Draw 3 cards", "amount=3"));
 	}
 	
 	/**
@@ -150,51 +170,67 @@ public class CardManager {
 		
 		switch(identifier.toLowerCase()) {
 			case "draw_cards":
-				if(containsKeys(params, identifier, "amount"))
+				if(containsKeys(params, identifier, "amount")) {
 					return parseDrawCards(identifier, description, target, params.get("amount"));
-				
+				}
 			case "trash_specific":
-				if(containsKeys(params, identifier, "amount"))
+				if(containsKeys(params, identifier, "amount")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
+				}
 			case "trash_choose":
-				if(containsKeys(params, identifier))
+				if(containsKeys(params, identifier)) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
+				}
 			case "trash_range":
-				if(containsKeys(params, identifier, "min", "max"))
+				if(containsKeys(params, identifier, "min", "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
+				}
 			case "trash_min":
-				if(containsKeys(params, identifier, "min"))
+				if(containsKeys(params, identifier, "min")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.TRASH);
+				}
 			case "trash_max":
-				if(containsKeys(params, identifier, "max"))
+				if(containsKeys(params, identifier, "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.TRASH);
-				
+				}
 			case "discard_specific":
-				if(containsKeys(params, identifier, "amount"))
+				if(containsKeys(params, identifier, "amount")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
+				}
 			case "discard_choose":
 				return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
 			case "discard_range":
-				if(containsKeys(params, identifier, "min", "max"))
+				if(containsKeys(params, identifier, "min", "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
+				}
 			case "discard_min":
-				if(containsKeys(params, identifier, "min"))
+				if(containsKeys(params, identifier, "min")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.DISCARD);
+				}
 			case "discard_max":
-				if(containsKeys(params, identifier, "max"))
+				if(containsKeys(params, identifier, "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.DISCARD);
-				
+				}
 			case "add_actions":
-				if(containsKeys(params, identifier, "amount"))
+				if(containsKeys(params, identifier, "amount")) {
 					return parseAddActions(identifier, description, target, params.get("amount"));
-				
+				}
 			case "add_buys":
-				if(containsKeys(params, identifier, "amount"))
+				if(containsKeys(params, identifier, "amount")) {
 					return parseAddBuys(identifier, description, target, params.get("amount"));
-				
+				}
 			case "add_buypower":
-				if(containsKeys(params, identifier, "amount"))
+				if(containsKeys(params, identifier, "amount")) {
 					return parseAddBuypower(identifier, description, target, params.get("amount"), GainBuypowerType.ADD);
+				}
+			case "gain_card":
+				if(containsKeys(params, identifier, "cost")) {
+					GainCardType gainType = GainCardType.ANY;
+					if(params.containsKey("type")) {
+						gainType = GainCardType.valueOf(params.get("type"));
+					}
+					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
+				}
 		}
 		return null;
 	}
@@ -254,8 +290,9 @@ public class CardManager {
 		}
 		if(params.containsKey("restrict")) {
 			String[] toRestrict = params.get("restrict").split(",");
-			for(String restrict : toRestrict)
+			for(String restrict : toRestrict) {
 				action.addRestriction(gs.getCardManager().get(restrict));
+			}
 		}
 		return action;
 	}
@@ -268,21 +305,24 @@ public class CardManager {
 	
 	private boolean containsKeys(Map<String, String> params, String identifier, String... variables) {
 		for(String var : variables) {
-			if(!params.containsKey(var))
+			if(!params.containsKey(var)) {
 				throw new MissingVariableException(identifier, var);
+			}
 		}
 		return true;
 	}
 	
 	public Map<String, String> getMappedVariables(String identifier, String variables) {
 		Map<String, String> mappedVariables = new HashMap<>();
-		if(variables.isEmpty() || variables.equals(""))
+		if(variables.isEmpty() || variables.equals("")) {
 			return mappedVariables;
+		}
 		
 		String[] vars = variables.split(";");
 		for(String var : vars) {
-			if(!var.contains("=") || var.split("=").length != 2)
+			if(!var.contains("=") || var.split("=").length != 2) {
 				throw new IllegalActionVariableException(identifier, variables);
+			}
 			String[] keyvalue = var.split("=");
 			mappedVariables.put(keyvalue[0].toLowerCase(), keyvalue[1].toLowerCase());
 		}
@@ -290,7 +330,7 @@ public class CardManager {
 		return mappedVariables;
 	}
 	
-	private Map<String, Card> getCards() {
+	public Map<String, Card> getCards() {
 		return cards;
 	}
 	
@@ -299,9 +339,11 @@ public class CardManager {
 	}
 	
 	public Card get(String identifier) {
-		if(cards.containsKey(identifier))
+		if(cards.containsKey(identifier)) {
 			return getCards().get(identifier);
-		throw new CardNotFoundException(identifier);
+		} else {
+			throw new CardNotFoundException(identifier);
+		}
 	}
 	
 	public int getVictoryPointsFor(Card c, Player p) {
