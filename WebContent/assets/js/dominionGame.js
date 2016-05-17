@@ -13,7 +13,7 @@ Dominion.Game = (function(Game) {
     Game.prototype.addPlayer = function(name) {
         this.Api.doCall({'action': 'addplayer', 'name': name}, this.isMp,
             function() {
-                console.log(name + ' was added to the game');
+                console.log('Player ' + name + ' was added to the game.');
             }
         );
     };
@@ -32,7 +32,7 @@ Dominion.Game = (function(Game) {
         var that = this;
         this.Api.doCall({'action': 'start'}, this.isMp,
             function () {
-                console.log("Game started!");
+                console.log("The game has been started.");
                 that.updateGameInfo();
                 that.Interface = new Dominion.Interface();
             }
@@ -40,7 +40,17 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.playCard = function(card) {
-        this.Api.doCall({'action': 'playcard', 'card': card}, this.isMp);
+        var isPlayable = false;
+
+        this.Api.doCall({'action': 'playcard', 'card': card}, this.isMp,
+            function(data) {
+                if (data.response !== "invalid") {
+                    isPlayable = true;
+                }
+            }
+        );
+
+        return isPlayable;
     };
 
     Game.prototype.updateGameInfo = function () {
@@ -72,7 +82,7 @@ Dominion.Game = (function(Game) {
         var that = this;
         this.Api.doCall({'action': 'create'}, this.isMp,
             function() {
-                console.log('game created');
+                console.log('The game has been created.');
                 that.addCardSet();
                 that.addAllPlayers(function() {
                     that.startGame();

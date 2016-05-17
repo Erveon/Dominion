@@ -9,17 +9,10 @@
 
     <body>
         <main id="fullpage">
-            <div class="fp-section headroom">
-                <h2 class="config">Online play is currently unavailable.</h2>
-
-                <button class="config page-down">Back To Menu</button>
-            </div>
-
             <div class="fp-section active headroom">
                 <h1 class="config">Dominion</h1>
 
-                <button class="config page-up">Play Online</button>
-                <button class="config page-down">Play Local</button>
+                <button class="config page-down">Play</button>
             </div>
 
             <div class="fp-section">
@@ -68,7 +61,7 @@
                                 <li>Buys <span class="buyC counter"></span></li>
                                 <li>Coins <span class="coinC counter"></span></li>
                             </ul>
-                            <a href="#" class="menu"><i class="material-icons">menu</i></a>
+                            <a href="" class="menu"><i class="material-icons">menu</i></a>
                         </div>
                     </div>
 
@@ -228,9 +221,9 @@
 
                         <div id="field">
                             <div id="playedCardContainer">
-                                <a href="#" class="arrow prev"><i class="material-icons">chevron_left</i></a>
-                                <ul id="playedCards"></ul>
-                                <a href="#" class="arrow next"><i class="material-icons">chevron_right</i></a>
+                                <a href="" class="arrow prev"><i class="material-icons">chevron_left</i></a>
+                                <ul id="playedCards" class='cardContainer'></ul>
+                                <a href="" class="arrow next"><i class="material-icons">chevron_right</i></a>
                             </div>
 
                             <div id="controls">
@@ -242,16 +235,17 @@
                                     <div class="circle buyDisp"></div>
                                     <div class="circle actionDisp"></div>
                                 </div>
-                                <a href="#" class="actionBtn mainAction endTurn">End turn</a>
-                                <a href="#" class="actionBtn mainAction endPhase">Play Treasures</a>
+                                <a href="" class="actionBtn mainAction endTurn">End Turn</a>
+                                <a href="" class="actionBtn mainAction endPhase">End Phase</a>
+                                <a href="" class="actionBtn mainAction playCards">Play Cards</a>
                             </div>
                         </div>
 
                         <div id="hand">
                             <div id="handContainer">
-                                <a href="#" class="arrow prev"><i class="material-icons">chevron_left</i></a>
-                                <ul id="handPile"></ul>
-                                <a href="#" class="arrow next"><i class="material-icons">chevron_right</i></a>
+                                <a href="" class="arrow prev"><i class="material-icons">chevron_left</i></a>
+                                <ul id="handPile" class="cardContainer"></ul>
+                                <a href="" class="arrow next"><i class="material-icons">chevron_right</i></a>
                             </div>
                         </div>
                     </div>
