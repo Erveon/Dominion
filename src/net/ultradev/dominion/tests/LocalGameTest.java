@@ -67,7 +67,7 @@ public class LocalGameTest {
 	@Test
 	public void testNextTurn () {
 		testBuyChapel();
-		Player nextPlayer = lg.getTurn().getNext();
+		Player nextPlayer = lg.getTurn().getNextPlayer();
 		Turn turn = new Turn(lg, nextPlayer);
 		lg.setTurn(turn);
 		testBuyChapel();
