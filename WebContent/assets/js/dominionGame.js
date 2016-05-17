@@ -3,7 +3,7 @@ Dominion.Game = (function(Game) {
         this.Api = new Dominion.Api('//localhost:8080/Dominion/api?', true);
         this.players = initData.players;
         this.cardSet = initData.cardSet;
-        this.gameInfo = null;
+        this.gameData = null;
         this.Interface = null;
         this.isMp = false;
         this.initGame();
@@ -31,26 +31,36 @@ Dominion.Game = (function(Game) {
     Game.prototype.startGame = function () {
         var that = this;
         this.Api.doCall({'action': 'start'}, this.isMp,
-            function () {
+            function() {
                 console.log("The game has been started.");
-                that.updateGameInfo();
                 that.Interface = new Dominion.Interface();
+                that.updateGameInfo();
+            }
+        );
+    };
+
+    Game.prototype.buyCard = function(card) {
+        var that = this;
+        this.Api.doCall({'action': 'buycard', 'card': card}, this.isMp,
+            function() {
+                console.log("Card has been purchased.");
+                that.updateGameInfo();
             }
         );
     };
 
     Game.prototype.playCard = function(card) {
-        var isPlayable = false;
+        var cardToPlay = card.children().first().children().text();
+        var that = this;
 
-        this.Api.doCall({'action': 'playcard', 'card': card}, this.isMp,
+        this.Api.doCall({'action': 'playcard', 'card': cardToPlay}, this.isMp,
             function(data) {
-                if (data.response !== "invalid") {
-                    isPlayable = true;
+                if (data.response == "OK") {
+                    that.Interface.addCardToField(card);
+                    card.remove();
                 }
             }
         );
-
-        return isPlayable;
     };
 
     Game.prototype.updateGameInfo = function () {
@@ -58,7 +68,9 @@ Dominion.Game = (function(Game) {
         this.Api.doCall({'action': 'info'}, this.isMp,
             function (data) {
                 that.gameData = data;
-                that.Interface.refreshUI(that.gameData);
+                that.Interface.setGameData(that.gameData);
+                that.handlePhaseSkip();
+                that.Interface.refreshUI();
             }
         );
     };
@@ -66,6 +78,41 @@ Dominion.Game = (function(Game) {
     Game.prototype.addCardSet = function () {
         var that = this;
         this.Api.doCall({'action': 'setconfig', 'key': 'setcardset', 'value' : 'test'}, this.isMp);
+    };
+
+    Game.prototype.checkHandForActions = function () {
+        var currentPlayerHand = this.fetchCurrentPlayerHand();
+        var containsActions = false;
+
+        for(var card in currentPlayerHand) {
+            if(currentPlayerHand[card].type === "ACTION") {
+                containsActions = true;
+            }
+        }
+
+        return containsActions;
+    };
+
+    Game.prototype.fetchCurrentPlayerHand = function () {
+        var currentPlayerName = this.gameData.game.turn.player;
+        var playersInGame = this.gameData.game.players;
+        var currentPlayerHand = [];
+
+        for (var player in playersInGame) {
+            if(playersInGame[player].displayname === currentPlayerName) {
+                currentPlayerHand = playersInGame[player].hand;
+            }
+        }
+
+        return currentPlayerHand;
+    };
+
+    Game.prototype.handlePhaseSkip = function () {
+        if(this.gameData.game.turn.phase === "ACTION") {
+            if(this.checkHandForActions() === false) {
+                this.Interface.handlePhaseEnd();
+            }
+        }
     };
 
     Game.prototype.endPhase = function () {

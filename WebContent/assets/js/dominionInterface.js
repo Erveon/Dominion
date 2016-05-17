@@ -4,12 +4,14 @@ Dominion.Interface = (function(Interface) {
         this.handCarousel = null;
         this.fieldCarousel = null;
         this.carouselAdded = false;
-        this.gameDataObj = null;
+        this.listenersAdded = false;
+        this.gameData = null;
         this.handContents = null;
         this.playBuffer = [];
     };
 
-    Interface.prototype.updatePlayerDisplayNames = function (data) {
+    Interface.prototype.updatePlayerDisplayNames = function () {
+        var data = this.gameData;
         $('.players').empty();
         $('.players').append('Players&nbsp;');
         for (var player in data.game.players) {
@@ -21,8 +23,9 @@ Dominion.Interface = (function(Interface) {
         }
     };
 
-    Interface.prototype.updateHand = function (data) {
+    Interface.prototype.updateHand = function () {
         var hand;
+        var data = this.gameData;
 
         for (var player in data.game.players) {
             if (data.game.turn.player === data.game.players[player].displayname) {
@@ -37,48 +40,77 @@ Dominion.Interface = (function(Interface) {
         this.handCarousel.addCarousel();
     };
 
-    Interface.prototype.addListeners = function () {
+    Interface.prototype.updateControlListeners = function () {
         var that = this;
-        $('#handPile .card').on('click', function(e) {
-            e.preventDefault();
-            that.togglePlayBuffer($(this));
-        });
+
         $('#controls .playCards').on('click', function(e) {
             e.preventDefault();
             that.flushPlayBuffer();
+            e.stopImmediatePropagation();
         });
         $('#controls .endPhase').on('click', function(e) {
             e.preventDefault();
+            that.handlePhaseEnd();
+            e.stopImmediatePropagation();
         });
-        $('#controls .endTurn').on('click', function(e) {
-            e.preventDefault();
-        });
+    };
 
+    Interface.prototype.updateCardListeners = function () {
+        var that = this;
+        if(this.gameData.game.turn.phase === "ACTION") {
+            $("#handPile .action, #handPile .curse").on("click", function(e) {
+                that.togglePlayBuffer($(this));
+                e.stopImmediatePropagation();
+            });
+            $("#handPile .treasure").off().append("<div class='dim'></div>");
+        } else {
+            $("#handPile .treasure").on("click", function(e) {
+                that.togglePlayBuffer($(this));
+                e.stopImmediatePropagation();
+            });
+            $("#handPile .action, #handPile .curse").off().append("<div class='dim'></div>");
+        }
+        $("#handPile .victory").off().append("<div class='dim'></div>");
+    };
+
+    Interface.prototype.updateMarketListeners = function() {
+        $("#mainPile .wideCard").on('click', function(e) {
+            gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
+            e.stopImmediatePropagation();
+        });
+    };
+
+    Interface.prototype.handleListenerAccess = function () {
+        if(this.gameData.game.turn.phase === "ACTION") {
+            $("#handPile .action, #handPile .curse").on("click", this.toggleBuffer);
+        } else {
+            $("#handPile .victory, #handPile .treasure").on("click", this.toggleBuffer);
+        }
+    };
+
+    Interface.prototype.handlePhaseEnd = function () {
+        if(this.gameData.game.turn.phase === "BUY") {
+            this.passTurn();
+        } else {
+            gameObj.endPhase();
+        }
     };
 
     Interface.prototype.flushPlayBuffer = function () {
         for (var i = 0; i < this.playBuffer.length; i++) {
-            this.playCard($(this.handContents[this.playBuffer[i]]));
+            gameObj.playCard($(this.handContents[this.playBuffer[i]]));
         }
         this.playBuffer = [];
+        gameObj.updateGameInfo();
     };
 
     Interface.prototype.togglePlayBuffer = function (card) {
-        this.handContents = $("ul#handPile").children();
-
         if(this.playBuffer.indexOf(this.handContents.index(card)) === -1) {
-            card.css('box-shadow', '0px 0px 3px 1px rgba(0, 0, 255, 0.9)');
+            card.css('box-shadow', '0px 0px 5px 4px rgba(41, 128, 185, 1)');
             this.playBuffer.push(this.handContents.index(card));
         } else {
             card.css('box-shadow', '');
             this.playBuffer.splice(this.playBuffer.indexOf(this.handContents.index(card)), 1);
-        }
-    };
-
-    Interface.prototype.playCard = function(card) {
-        if(gameObj.playCard(card.children().first().children().text())) {
-            this.addCardToField(card);
-            card.remove();
         }
     };
 
@@ -88,8 +120,6 @@ Dominion.Interface = (function(Interface) {
         html += "<p class='miniCard-title'>" + cardName + "</p>";
         html += "<img src='assets/images/cards/" + cardName + ".jpg' width='100%'></li>";
         $("#playedCards").append($(html));
-        this.refreshField();
-        this.refreshUI(this.gameDataObj);
     };
 
     Interface.prototype.refreshField = function() {
@@ -97,23 +127,30 @@ Dominion.Interface = (function(Interface) {
         this.handCarousel.addCarousel();
     };
 
-    /*Interface.prototype.openCardInfo = function(currentCard) {
+    Interface.prototype.passTurn = function() {
         var html = "<div class='overlay'>";
         html += "<div class='overlay-title'>";
-        html += "<h2>" + currentCard.children('p.card-title').text();
+        html += "<h2>Give the controls to " + this.gameData.game.turn.next_player + ", please.</h2>";
         html += "</div>";
+        html += "<a class='actionBtn continue' href=''>Continue</a>";
         html += "</div>";
         $('body').append(html);
+        $('.continue').on('click', function(e) {
+            e.preventDefault();
+            $(".overlay").fadeOut(200, function() {
+                $(".overlay").remove();
+            });
+            $('#playedCards').empty();
+            gameObj.endPhase();
+        });
         $('.overlay').fadeIn();
-        console.log('openCardInfo executed');
-    };*/
+    };
 
-    // NEEDS MORE A E S T H E T I C S
     Interface.prototype.loadCards = function(hand) {
         $('#handPile').empty();
 
         for (var card in hand) {
-            var cardHTML = "<li class='card'>";
+            var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
             cardHTML += "<div class='card-header'>";
             cardHTML += "<p class='card-title'>" + hand[card].name + "</p></div>";
             cardHTML += "<div class='card-body'>";
@@ -130,11 +167,12 @@ Dominion.Interface = (function(Interface) {
             $('#handPile').append(cardHTML);
         }
 
-        this.addListeners();
         if (!this.carouselAdded) {
             this.addCarousels();
             this.carouselAdded = true;
         }
+
+        this.handContents = $("ul#handPile").children();
     };
 
     Interface.prototype.addCarousels = function() {
@@ -142,13 +180,17 @@ Dominion.Interface = (function(Interface) {
         this.fieldCarousel = new Dominion.Interface.Carousel($('#playedCardContainer'));
     };
 
-    Interface.prototype.updatePlayerCounters = function (data) {
+
+
+    Interface.prototype.updatePlayerCounters = function () {
+        var data = this.gameData;
         $('span.actionC').text(data.game.turn.actionsleft);
         $('span.buyC').text(data.game.turn.buysleft);
         $('span.coinC').text(data.game.turn.buypower);
     };
 
-    Interface.prototype.updateDeckCounter = function (data) {
+    Interface.prototype.updateDeckCounter = function () {
+        var data = this.gameData;
         for (var player in data.game.players) {
             if (data.game.turn.player === data.game.players[player].displayname){
                 $('.deckcounter').text(data.game.players[player].deck.length);
@@ -156,7 +198,8 @@ Dominion.Interface = (function(Interface) {
         }
     };
 
-    Interface.prototype.updateBoardCounters = function (data) {
+    Interface.prototype.updateBoardCounters = function () {
+        var data = this.gameData;
         $('.curseCount').text(data.game.board.curse[0].amount);
         $('.copperCount').text(data.game.board.treasure[0].amount);
         $('.silverCount').text(data.game.board.treasure[1].amount);
@@ -167,7 +210,8 @@ Dominion.Interface = (function(Interface) {
         $('.trashCount').text(data.game.board.trash.length);
     };
 
-    Interface.prototype.updateActionCards = function(data) {
+    Interface.prototype.updateActionCards = function() {
+        var data = this.gameData;
         var cardDisplay = $('#mainPile li.wideCard');
         var actionCards = data.game.board.action;
         for (var card in actionCards) {
@@ -177,30 +221,38 @@ Dominion.Interface = (function(Interface) {
         }
     };
 
-    Interface.prototype.updateTurnDisplay = function (data) {
+    Interface.prototype.updateTurnDisplay = function () {
+        var data = this.gameData;
         $('.circle').removeClass('activePhase');
         switch (data.game.turn.phase) {
             case 'ACTION':
                 $('.actionDisp').addClass('activePhase');
+                $('#controls .endPhase').text('End Action Phase');
                 break;
             case 'BUY':
                 $('.buyDisp').addClass('activePhase');
-                break;
-            case 'CLEANUP':
-                $('.cleanupDisp').addClass('activePhase');
+                $('#controls .endPhase').text('End Turn');
                 break;
         }
     };
 
-    Interface.prototype.refreshUI = function(gameData) {
-        this.gameDataObj = gameData;
-        this.updatePlayerDisplayNames(gameData);
-        this.updatePlayerCounters(gameData);
-        this.updateDeckCounter(gameData);
-        this.updateBoardCounters(gameData);
-        this.updateTurnDisplay(gameData);
-        this.updateHand(gameData);
-        this.updateActionCards(gameData);
+    Interface.prototype.setGameData = function (gameData) {
+        this.gameData = gameData;
+    };
+
+    Interface.prototype.refreshUI = function() {
+        this.updatePlayerDisplayNames();
+        this.updatePlayerCounters();
+        this.updateDeckCounter();
+        this.updateBoardCounters();
+        this.updateTurnDisplay();
+        this.updateHand();
+        this.updateActionCards();
+        this.refreshField();
+        this.updateControlListeners();
+        this.updateCardListeners();
+        this.updateMarketListeners();
+        console.log('A refresh has been completed.');
     };
 
     Interface.prototype.addActivePlayer = function (player, data) {
