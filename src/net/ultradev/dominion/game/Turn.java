@@ -378,7 +378,8 @@ public class Turn {
 				.accumulate("buysleft", getBuys())
 				.accumulate("actionsleft", getActions())
 				.accumulate("buypower", getBuypower())
-				.accumulate("phase", getPhase().toString());
+				.accumulate("phase", getPhase().toString())
+				.accumulate("next_player", getNextPlayer().getDisplayname());
 	}
 	
 }
