@@ -206,25 +206,34 @@ public class Turn {
 		}
 	}
 	
+	public JSONObject buyCard(String cardid) {
+		return buyCard(cardid, false);
+	}
+	
 	/**
 	 * Buys a card for a player
 	 * @param cardid
+	 * @param boolean if the card is free
 	 * @return The response
 	 */
-	public JSONObject buyCard(String cardid) {
-		if(!phase.equals(Phase.BUY) || !isValidCard(cardid)) {
-			return getGame().getGameServer().getGameManager()
-					.getInvalid("Unable to perform purchase. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid");
+	public JSONObject buyCard(String cardid, boolean free) {
+		if(!free) {
+			if(!phase.equals(Phase.BUY) || !isValidCard(cardid)) {
+				return getGame().getGameServer().getGameManager()
+						.getInvalid("Unable to perform purchase. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid");
+			}
 		}
 		
 		JSONObject response = new JSONObject().accumulate("response", "OK");
 		CardManager cm = getGame().getGameServer().getCardManager();
 		Card card = cm.get(cardid);
 		
-		if(getBuypower() >= card.getCost()) {
+		if(getBuypower() >= card.getCost() || free) {
 			getPlayer().getDeck().add(card);
-			removeBuy();
-			removeBuypower(card.getCost());
+			if(!free) {
+				removeBuy();
+				removeBuypower(card.getCost());
+			}
 			Board board = getGame().getBoard();
 			board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
 			return response.accumulate("result", BuyResponse.BOUGHT);
@@ -252,7 +261,9 @@ public class Turn {
 		getGame().getGameServer().getUtils().debug("Card played: " + card.getName());
 		getPlayer().getHand().remove(card);
 		getGame().getBoard().addPlayedCard(card);
+		
 		JSONObject response = playActions(card);
+		
 		if(getPhase().equals(Phase.ACTION)) {
 			removeAction();
 		}
@@ -299,6 +310,7 @@ public class Turn {
 			JSONObject actionResponse = action.play(this);
 			ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
 			if(!result.equals(ActionResult.DONE)) {
+				this.activeAction = action;
 				return actionResponse;
 			}
 		}
@@ -336,8 +348,8 @@ public class Turn {
 	private JSONObject handleCardSelection(Card card, Action action) {
 		getGame().getGameServer().getUtils().debug("Card selected: " + card.getName());
 		if(action instanceof RemoveCardAction) {
-			RemoveCardAction tca = (RemoveCardAction) action;
-			return tca.selectCard(this, card);
+			RemoveCardAction rca = (RemoveCardAction) action;
+			return rca.selectCard(this, card);
 		}
 		return getGame().getGameServer().getGameManager().getInvalid("Action '"+ action.getIdentifier() +"' does not handle card selections");
 	}

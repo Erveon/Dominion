@@ -66,7 +66,7 @@ public abstract class Game {
 	 * Set variables when the game has been configured
 	 */
 	public void init() {
-		getBoard().initSupplies(getPlayers().size());
+		getBoard().initSupplies();
 		// .setup() for every player
 		getPlayers().forEach(Player::setup);
 	}

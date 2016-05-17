@@ -132,8 +132,14 @@ public class CardManager {
 
 		Card mine = getCards().get("mine");
 		Action discardTreasureMine = parseAction("trash_specific", "Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more", "amount=1;restrict=gold,copper,silver");
-		//discardTreasureMine.addCallback(action);
 		mine.addAction(discardTreasureMine);
+		
+		Card moat = getCards().get("moat");
+		moat.addAction(parseAction("draw_cards", "Draw 2 cards", "amount=2"));
+		
+		Card remodel = getCards().get("remodel");
+		Action discardTreasureRemodel = parseAction("trash_specific", "Trash a card from your hand. Gain a card costing up to 2 Coins more than the trashed card.", "amount=1");
+		remodel.addAction(discardTreasureRemodel);
 	}
 	
 	/**
@@ -309,7 +315,7 @@ public class CardManager {
 		return mappedVariables;
 	}
 	
-	private Map<String, Card> getCards() {
+	public Map<String, Card> getCards() {
 		return cards;
 	}
 	

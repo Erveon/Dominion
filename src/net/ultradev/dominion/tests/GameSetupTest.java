@@ -1,11 +1,8 @@
 package net.ultradev.dominion.tests;
 
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.Test;
 
 import net.ultradev.dominion.GameServer;
@@ -14,143 +11,75 @@ import net.ultradev.dominion.game.Board.SupplyType;
 import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.GameConfig;
 import net.ultradev.dominion.game.card.Card;
+import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.local.LocalGame;
 
 public class GameSetupTest {
 	
-	private int playerAmount;
-	private GameServer gs = new GameServer();
-	private Game g1 = new LocalGame(gs);
-	private Game g2 = new LocalGame(gs);
-	private Board b = new Board(g1);
-	private Board b2 = new Board(g2);
-	private GameConfig gc = new GameConfig(g1);
-	private GameConfig gc2 = new GameConfig(g2);
-	private boolean databaseLive = false; //zet op true indien er een DB is, om te testen op kaartspecifieke dingen
-
-	@Test
-	public void testOnce() {
-		testAmountOfActionCards();
-		testHandleAddActionCards();
-		testHandleRemoveActionCards();
-		//TODO add functions
-	}
+	private GameServer gameServer;
+	private Game game;
+	private Board board;
+	private GameConfig config;
 	
-	@Test
-	public void testForPlayerAmount() {
-		for(int s = 2; s <= 4; s++) {
-			playerAmount = s;
-			testAmountOfGardenCards(playerAmount);
-			testAddTreasures(playerAmount);
-			testAddVictory(playerAmount);
-			//TODO add functions
-		}
-	}
+	private CardManager cardManager;
 	
-	public void testAmountOfActionCards() {
-		b.addActionCard(b.getGame().getGameServer().getCardManager().get("chapel"));
-		int chapelCount = b.getSupply(SupplyType.ACTION).getCards().get(b.getGame().getGameServer().getCardManager().get("chapel"));
-		if(!(chapelCount == 10)) {
-			fail("testAmountOfActionCards failed:\n");
-		}
-		//assertEquals("testAmountOfActionCards failed",10,chapelCount);
-	}
-	
-	public void testAmountOfGardenCards(int playerCount) {
-		if(databaseLive) {
-			Card gardens = b.getGame().getGameServer().getCardManager().get("gardens");
-			b.addActionCard(gardens);
-			int gardensCount = b.getSupply(SupplyType.ACTION).getCards().get(gardens);
-			if(!((playerCount == 2 && gardensCount == 8) || gardensCount == 12)) {
-				fail("Actual error for\ntestAmountOfGardenCards failed:\nPlayer count: " + playerCount + " and amount of cards: " + gardensCount);
-			}
-		}
-	}
-	
-	public void testHandleAddActionCards() { //TODO FIX BUG
-		List<String> desiredResult = new ArrayList<>();
-		for(int i = 1; i <= 10; i++) {
-			String val = "card" + Integer.toString(i);
-			//Card testCard = new Card(val, "Test stuff", 2);
-			//access cardManager, then execute getCards.put(val,testCard);
-			gc.handle("addCard", val);
-			desiredResult.add(val);
-		}
-		List<String> actionCards = gc.getActionCards();
-		if(!(actionCards.equals(desiredResult))) {
-			fail("testHandleAddActionCards failed:\nAdded cards:   " + actionCards + "\nDesired result: " + desiredResult);
-		}
-		/*Card chapel = new Card("chapel", "Trash up to 4 cards from your hand.", 2);
-		getCards().put("chapel", chapel);*/
-	}
-	
-	public void testHandleRemoveActionCards() {		
-		String add = "addCard";
-		String rem = "removeCard";
-		String val = "card";
-		List<String> desiredResult = new ArrayList<>();
-		for(int i = 1; i < 10; i++) {
-			val = "card" + Integer.toString(i);
-			gc2.handle(add, val);
-			desiredResult.add(val);
-		}
-		gc2.handle(rem, val);
-		desiredResult.remove(val);
-		List<String> actionCards = gc2.getActionCards();
-		if(!(actionCards.equals(desiredResult))) {
-			fail("testHandleRemoveActionCards failed:\n   Added cards: " + actionCards + "\nDesired Result: " + desiredResult);
-		}
+	@Before
+	public void init() {
+		gameServer = new GameServer();
+		cardManager = gameServer.getCardManager();
+		game = new LocalGame(gameServer);
+		board = game.getBoard();
+		config = game.getConfig();
 		
+		game.addPlayer("Bob");
+		game.addPlayer("Jos");
 	}
 	
-	/*
-	
-	@Test			// Remove this, and add to the funcion on top
-	public void testAddSameCardTwice() {			// execute once
-		String card = "chapel";
-		b2.addActionCard(b2.getGameServer().getCardManager().get(card));
-		//try {
-			b2.addActionCard(b2.getGameServer().getCardManager().get(card));
-		//}
-		//catch () {
-						//TODO this logic has to be added
-		//}
-		fail("Under construction....");
+	@Test
+	public void testBoardAmounts() {
+		board.addActionCard(cardManager.get("chapel"));
+		int chapelCount = board.getSupply(SupplyType.ACTION).getCards().get(cardManager.get("chapel"));
+		assertEquals("Chapel does not have the desired amount on the board", 10, chapelCount);
 	}
 	
-	*/
-	
-	public void testAddTreasures(int playerCount) {
-		b.initSupplies(playerCount);
-		int desiredCoppers = 60 - (7*playerCount);
-		int desiredCurses = (playerCount * 10) - 10;
-		int coppers = b.getSupply(SupplyType.TREASURE).getCards().get(b.getGame().getGameServer().getCardManager().get("copper"));
-		int curses = b.getSupply(SupplyType.CURSE).getCards().get(b.getGame().getGameServer().getCardManager().get("curse"));
-		if(!(coppers == desiredCoppers)) {
-			fail("testAddTreasures failed:\n" + coppers + " instead of " + desiredCoppers + "coppers\n" + curses + " instead of " + desiredCurses);
+	@Test
+	public void testGardenCards() {
+		Card gardens = cardManager.get("gardens");
+		board.addActionCard(gardens);
+		for(int speler = 3; speler <= 4; speler++) {
+			int gardensCount = board.getSupply(SupplyType.ACTION).getCards().get(gardens);
+			int amount = game.getPlayers().size() == 2 ? 8 : 12;
+			assertEquals("Garden count is not correct", amount, gardensCount);
+			game.addPlayer("Player " + speler);
+			board.addActionCard(gardens);
 		}
 	}
 	
-	public void testAddVictory(int playerCount) {
-		b2.initSupplies(playerCount);
-		String[] vicType = new String[]{"estate","duchy","province"};
+	@Test
+	public void testCardset() {
+		config.setCardset("test");
+		assertTrue("Cardset doesn't have the correct cards", config.getActionCards().contains("militia"));
+	}
+	
+	@Test
+	public void testAddTreasures() {
+		int playerCount = game.getPlayers().size();
+		board.initSupplies();
+		int desiredCoppers = 60 - (7 * playerCount);
+		int coppers = board.getSupply(SupplyType.TREASURE).getCards().get(board.getGame().getGameServer().getCardManager().get("copper"));
+		assertEquals("Does not have the correct amount of coppers", desiredCoppers, coppers);
+	}
+	
+	@Test
+	public void testVictorySupply() {
+		int playerCount = game.getPlayers().size();
+		board.initSupplies();
+		String[] vicType = new String[]{"estate", "duchy", "province"};
 		for(String type : vicType) {
-			int amount = b2.getSupply(SupplyType.VICTORY).getCards().get(b2.getGame().getGameServer().getCardManager().get(type));
-			if(!( (amount == 8 && playerCount == 2) || (amount == 12 && playerCount > 2) )) {
-				fail("testAddVictory failed:\ntype: " + type + " amount: " + amount + " players: " + playerCount);
-			}
+			int amount = board.getSupply(SupplyType.VICTORY).getCards().get(board.getGame().getGameServer().getCardManager().get(type));
+			int desired = playerCount == 2 ? 8 : 12;
+			assertEquals("Does not have the correct amount of victory cards", desired, amount);
 		}
 	}
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-

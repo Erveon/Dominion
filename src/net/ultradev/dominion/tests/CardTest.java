@@ -1,68 +1,40 @@
 package net.ultradev.dominion.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
-import net.ultradev.dominion.game.card.*;
-import net.ultradev.dominion.game.card.action.*;
+
+import net.ultradev.dominion.game.card.Card;
+import net.ultradev.dominion.game.card.Card.CardType;
+import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 
-import java.util.List;
-
 public class CardTest {
-	
-	private Card c;
-	private boolean Testing = true;
-
-	@Test
-	public void initTest() {
-		if(Testing){
-			System.out.println("Functie in de main toegevoegd?\n");
-		}
-	}
 	
 	@Test
 	public void testAddAction() {
-		c = new Card("Test card","This is a test card",824);
-		Action action = new GainActionsAction("Gain_Actions","I Gained 99 actions...", ActionTarget.SELF, 99);
-		c.addAction(action);
-		List<Action> actions = c.getActions();
-		if(!(actions.contains(action))) {
-			fail("testAddAction failed:\n"+ actions + " doesn't contain " + "action");
-		}
+		Card card = new Card("Test card", "This is a test card", 824);
+		Action action = new GainActionsAction("gain_actions", "Grants 99 actions", ActionTarget.SELF, 99);
+		card.addAction(action);
+		assertTrue("Couldn't add action to card", card.getActions().contains(action));
 	}
 	
 	@Test
 	public void testAddType(){
-		c = new Card("Test card","This is a test card",824);
+		Card card = new Card("Test card", "This is a test card", 824);
 		String type = "Testing card";
-		c.addType(type);
-		List<String> types = c.getTypes();
-		if(!(types.contains(type))) {
-			fail("testAddType failed:\n" + types + " doesn't contain " + type);
-		}
-		
+		card.addType(type);
+		assertTrue("The type wasn't added to the card", card.getTypes().contains(type));	
 	}
 	
 	@Test
 	public void testGetTypesFormatted() {
-		c = new Card("Test card","This is a test card",824);
-		String type1 = "Test-it";
-		String type2 = "Testing card";
-		String format = type1 + " - " + type2;
-		c.addType(type1);
-		c.addType(type2);
-		String formatted = c.getTypesFormatted();
-		if(!(formatted.equals(format))) {
-			fail("testGetTypesFormatted failed:\n" + formatted + "\nIs not equal to:\n" + format);
-		}
+		Card card = new Card("Test card", "This is a test card", 824, CardType.ACTION);
+		String extraType = "Reaction";
+		card.addType(extraType);
+		String desired = CardType.ACTION.toString() + " - " + extraType;
+		assertEquals("Card types were not formatted correctly", desired, card.getTypesFormatted());
 	}
 }
-
-
-
-
-
-
-
-

@@ -24,9 +24,10 @@ public class Board {
 	public Board(Game game) {
 		this.game = game;
 		supplies = new HashMap<>();
-		Stream.of(SupplyType.values()).forEach(type -> supplies.put(type, new Supply()));
 		trash = new ArrayList<>();
 		playedcards = new ArrayList<>();
+		// Make a new supply for every type
+		Stream.of(SupplyType.values()).forEach(type -> supplies.put(type, new Supply()));
 	}
 	
 	public Game getGame() {
@@ -68,7 +69,9 @@ public class Board {
 	 * Called when the game has been configured (the playercount is known)
 	 * @param playercount
 	 */
-	public void initSupplies(int playercount) {
+	public void initSupplies() {
+		int playercount = getGame().getPlayers().size();
+		
 		// Treasure supply (Coppers - 7 per speler)
 		int coppers = 60 - (7 * playercount);
 		getSupply(SupplyType.TREASURE).add(getGame().getGameServer().getCardManager().get("copper"), coppers);
@@ -94,7 +97,12 @@ public class Board {
 	
 	// Kingdom cards
 	public void addActionCard(Card card) {
-		getSupply(SupplyType.ACTION).add(card, 10);
+		if(card.getName().equalsIgnoreCase("gardens")) {
+			int amount = getGame().getPlayers().size() == 2 ? 8 : 12;
+			getSupply(SupplyType.ACTION).add(card, amount);
+		} else {
+			getSupply(SupplyType.ACTION).add(card, 10);
+		}
 	}
 	
 	public void removeFromSupply(Card card, SupplyType which) {

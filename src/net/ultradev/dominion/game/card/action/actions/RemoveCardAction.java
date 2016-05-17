@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
+import net.ultradev.dominion.game.Board.SupplyType;
 import net.ultradev.dominion.game.card.Card;
+import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.player.Player;
@@ -26,6 +29,8 @@ public class RemoveCardAction extends Action {
 	Map<Player, Integer> cardsRemoved;
 	
 	List<Card> restriction;
+
+	Map<Player, String> after;
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
 		super(identifier, description, target);
@@ -33,6 +38,7 @@ public class RemoveCardAction extends Action {
 		this.countType = RemoveCount.CHOOSE_AMOUNT;
 		this.restriction = new ArrayList<>();
 		this.type = type;
+		this.after = new HashMap<>();
 	}
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount) {
@@ -42,6 +48,7 @@ public class RemoveCardAction extends Action {
 		this.countType = RemoveCount.SPECIFIC_AMOUNT;
 		this.restriction = new ArrayList<>();
 		this.type = type;
+		this.after = new HashMap<>();
 	}
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int min, int max) {
@@ -52,6 +59,7 @@ public class RemoveCardAction extends Action {
 		this.countType = RemoveCount.RANGE;
 		this.restriction = new ArrayList<>();
 		this.type = type;
+		this.after = new HashMap<>();
 	}
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount, boolean minimum) {
@@ -66,6 +74,7 @@ public class RemoveCardAction extends Action {
 		}
 		this.restriction = new ArrayList<>();
 		this.type = type;
+		this.after = new HashMap<>();
 	}
 	
 	/**
@@ -97,6 +106,13 @@ public class RemoveCardAction extends Action {
 	public JSONObject selectCard(Turn turn, Card card) {
 		Player player = turn.getPlayer();
 		
+		// Happens after the person discarded a card after a mine action
+		// because they have to select the card they want to buy
+		if(after.containsKey(turn.getPlayer())) {
+			turn.buyCard(card.getName(), true);
+			after.remove(turn.getPlayer());
+		}
+		
 		switch(type) {
 			case DISCARD:
 				turn.getPlayer().discardCard(card);
@@ -111,9 +127,29 @@ public class RemoveCardAction extends Action {
 		// Handles special card actions that can't be parsed
 		if(special != null) {
 			if(special.equalsIgnoreCase("mine")) {
-				return getResponse(turn).accumulate("after", new JSONObject()
-																.accumulate("type", "buy_treasure")
-																.accumulate("max_cost", card.getCost() + 3));
+				after.put(turn.getPlayer(), special);
+				// Takes all treasure cards that cost more than the card's cost + 3 in their json form
+				// Second filter checks if that card is still available on the board
+				List<JSONObject> canBuy = turn.getGame().getGameServer().getCardManager().getCards().values().stream()
+										.filter(c -> c.getType().equals(CardType.TREASURE) && c.getCost() <= (card.getCost() + 3))
+										.filter(c -> turn.getGame().getBoard().getSupply(SupplyType.TREASURE).getCards().get(c) > 0)
+										.map(Card::getAsJson)
+										.collect(Collectors.toList());
+				// Only if there's at least 1 card eligible to be selected do we ask for it
+				if(canBuy.size() > 0) {
+					return new JSONObject().accumulate("response", "OK")
+														  .accumulate("result", ActionResult.SELECT_CARD)
+														  .accumulate("selectable", canBuy);
+				}
+			} else if(special.equalsIgnoreCase("remodel")) {
+				List<JSONObject> canBuy = turn.getGame().getGameServer().getCardManager().getCards().values().stream()
+						.filter(c -> c.getCost() <= (card.getCost() + 2))
+						.filter(c -> turn.getGame().getBoard().getSupply(turn.getGame().getBoard().getSupplyTypeForCard(c)).getCards().get(c) > 0)
+						.map(Card::getAsJson)
+						.collect(Collectors.toList());
+				return new JSONObject().accumulate("response", "OK")
+													  .accumulate("result", ActionResult.SELECT_CARD)
+													  .accumulate("selectable", canBuy);
 			}
 		}
 		
