@@ -107,7 +107,7 @@ public class CardManager {
 		
 		Card village = getCards().get("village");
 		village.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
-		village.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
+		village.addAction(parseAction("add_actions", "Adds 2 actions to your turn", "amount=2"));
 		
 		Card woodcutter = getCards().get("woodcutter");
 		woodcutter.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));

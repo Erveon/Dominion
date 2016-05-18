@@ -65,7 +65,7 @@ public class GameManager {
 		// Actions that need a game to be running
 		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") 
 				|| action.equals("start") || action.equals("endturn") || action.equals("buycard") || action.equals("playcard")
-				|| action.equals("selectcard")) {
+				|| action.equals("selectcard")|| action.equals("stopaction")) {
 			if(g == null)
 				return getInvalid("No game running");
 		}
@@ -130,6 +130,8 @@ public class GameManager {
 					return getInvalid("Card parameter doesn't exist");
 				}
 				return g.getTurn().selectCard(map.get("card"));
+			case "stopaction":
+				return g.getTurn().stopAction();
 			default:
 				return getInvalid("Action not recognized: " + action);
 		}

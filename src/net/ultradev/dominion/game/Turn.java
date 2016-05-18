@@ -305,13 +305,26 @@ public class Turn {
 	 * @return The response
 	 */
 	private JSONObject playActions(Card card) {
+		return playActions(card, null);
+	}
+	
+	private JSONObject playActions(Card card, Action from) {
 		this.activeCard = card;
+		// If there's a from action, don't perform actions until it's found
+		boolean perform = (from == null);
 		for(Action action : card.getActions()) {
-			JSONObject actionResponse = action.play(this);
-			ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
-			if(!result.equals(ActionResult.DONE)) {
-				this.activeAction = action;
-				return actionResponse;
+			if(!perform) {
+				if(action.equals(from)) {
+					// Going to fire the next action because the from was found
+					perform = true;
+				}
+			} else {
+				JSONObject actionResponse = action.play(this);
+				ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
+				if(!result.equals(ActionResult.DONE)) {
+					this.activeAction = action;
+					return actionResponse;
+				}
 			}
 		}
 		return new JSONObject().accumulate("response", "OK")
@@ -337,6 +350,16 @@ public class Turn {
 		
 		JSONObject response = handleCardSelection(card, action);
 		return response;
+	}
+	
+	public JSONObject stopAction() {
+		JSONObject response = new JSONObject().accumulate("response", "OK").accumulate("result", ActionResult.DONE);
+		Action action = getActiveAction();
+		if(action != null) {
+			response = playActions(getActiveCard(), getActiveAction());
+			activeAction = null;
+		}
+		return response; 
 	}
 	
 	/**
