@@ -151,6 +151,9 @@ public class CardManager {
 		
 		Card smithy = getCards().get("smithy");
 		smithy.addAction(parseAction("draw_cards", "Draw 3 cards", "amount=3"));
+		
+		Card workshop = getCards().get("workshop");
+		workshop.addAction(parseAction("gain_card", "Gain a card costing up to 4 coins", "cost=4"));
 	}
 	
 	/**

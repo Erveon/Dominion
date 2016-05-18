@@ -8,7 +8,7 @@ import net.sf.json.JSONObject;
 
 public class GameConfig {
 	
-	public enum CardSet { TEST }
+	public enum CardSet { TEST, FIRSTGAME }
 	public enum Option { ADDCARD, REMOVECARD, SETCARDSET };
 	
 	private List<String> actionCardTypes;
@@ -62,7 +62,7 @@ public class GameConfig {
 		try  {
 			set = CardSet.valueOf(cardSet);
 		} catch(Exception ignored) { 
-			set = CardSet.TEST;
+			set = CardSet.FIRSTGAME;
 		}
 		switch(set) {
 			case TEST:
@@ -76,6 +76,18 @@ public class GameConfig {
 						"mine", 
 						"moat", 
 						"remodel");
+				break;
+			case FIRSTGAME:
+				addActionCards("cellar", 
+						"market", 
+						"militia", 
+						"mine", 
+						"moat", 
+						"remodel", 
+						"smithy", 
+						"village", 
+						"woodcutter", 
+						"workshop");
 				break;
 			default:
 				break;
