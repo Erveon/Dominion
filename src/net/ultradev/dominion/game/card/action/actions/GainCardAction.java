@@ -61,7 +61,7 @@ public class GainCardAction extends Action {
 	 * @return The cost the gained card may have
 	 */
 	public int getCost(Player player) {
-		return hasMaster(player) ? coins : getMaster(player).getCost() + coins;
+		return hasMaster(player) ? getMaster(player).getCost() + coins : coins;
 	}
 	
 }

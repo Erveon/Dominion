@@ -45,7 +45,7 @@ public class CardManager {
 		getCards().put("duchy", new Card("duchy", "A duchy, worth 3 victory points", 5, CardType.VICTORY));
 		getCards().put("province", new Card("province", "A province, worth 6 victory points", 8, CardType.VICTORY));
 
-		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1, CardType.VICTORY));
+		getCards().put("curse", new Card("curse", "A curse placed on your victory points", 1, CardType.CURSE));
 		getCards().put("gardens", new Card("gardens", "Worth 1 Victory Point for every 10 cards in your deck (rounded down).", 4, CardType.VICTORY));
 
 		//TODO fetch from db
@@ -87,7 +87,7 @@ public class CardManager {
 		Card workshop = new Card("workshop", "Gain a card costing up to 4 coins.", 3);
 		getCards().put("workshop", workshop);
 		
-		Card adventurer = new Card("adventurer", "Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards.", 3);
+		Card adventurer = new Card("adventurer", "Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards.", 6);
 		getCards().put("adventurer", adventurer);
 		
 		addActions();
@@ -157,6 +157,9 @@ public class CardManager {
 		
 		Card workshop = getCards().get("workshop");
 		workshop.addAction(parseAction("gain_card", "Gain a card costing up to 4 coins", "cost=4"));
+		
+		Card adventurer = getCards().get("adventurer");
+		adventurer.addAction(parseAction("adventurer", "Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards.", ""));
 	}
 	
 	/**
@@ -181,44 +184,54 @@ public class CardManager {
 				if(containsKeys(params, identifier, "amount")) {
 					return parseDrawCards(identifier, description, target, params.get("amount"));
 				}
+				break;
 			case "trash_specific":
 				if(containsKeys(params, identifier, "amount")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
 				}
+				break;
 			case "trash_choose":
 				if(containsKeys(params, identifier)) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
 				}
+				break;
 			case "trash_range":
 				if(containsKeys(params, identifier, "min", "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
 				}
+				break;
 			case "trash_min":
 				if(containsKeys(params, identifier, "min")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.TRASH);
 				}
+				break;
 			case "trash_max":
 				if(containsKeys(params, identifier, "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.TRASH);
 				}
+				break;
 			case "discard_specific":
 				if(containsKeys(params, identifier, "amount")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
 				}
+				break;
 			case "discard_choose":
 				return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
 			case "discard_range":
 				if(containsKeys(params, identifier, "min", "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
 				}
+				break;
 			case "discard_min":
 				if(containsKeys(params, identifier, "min")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.DISCARD);
 				}
+				break;
 			case "discard_max":
 				if(containsKeys(params, identifier, "max")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.DISCARD);
 				}
+				break;
 			case "add_actions":
 				if(containsKeys(params, identifier, "amount")) {
 					return parseAddActions(identifier, description, target, params.get("amount"));
@@ -227,10 +240,12 @@ public class CardManager {
 				if(containsKeys(params, identifier, "amount")) {
 					return parseAddBuys(identifier, description, target, params.get("amount"));
 				}
+				break;
 			case "add_buypower":
 				if(containsKeys(params, identifier, "amount")) {
 					return parseAddBuypower(identifier, description, target, params.get("amount"), GainBuypowerType.ADD);
 				}
+				break;
 			case "gain_card":
 				if(containsKeys(params, identifier, "cost")) {
 					GainCardType gainType = GainCardType.ANY;
@@ -239,6 +254,7 @@ public class CardManager {
 					}
 					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
 				}
+				break;
 		}
 		throw new IllegalArgumentException();
 	}
@@ -356,6 +372,8 @@ public class CardManager {
 	
 	public int getVictoryPointsFor(Card c, Player p) {
 		switch(c.getName().toLowerCase()) {
+			case "curse":
+				return -1;
 			case "estate":
 				return 1;
 			case "duchy":

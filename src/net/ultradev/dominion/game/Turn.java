@@ -78,6 +78,7 @@ public class Turn {
 	public void endPhase() {
 		switch(getPhase()) {
 			case ACTION:
+				stopAction();
 				setPhase(Phase.BUY);
 				break;
 			case BUY:

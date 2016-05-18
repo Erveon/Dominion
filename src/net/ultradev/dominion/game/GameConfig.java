@@ -60,7 +60,7 @@ public class GameConfig {
 		actionCardTypes.clear();
 		CardSet set;
 		try  {
-			set = CardSet.valueOf(cardSet);
+			set = CardSet.valueOf(cardSet.toUpperCase());
 		} catch(Exception ignored) { 
 			set = CardSet.FIRSTGAME;
 		}
