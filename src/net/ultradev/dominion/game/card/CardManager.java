@@ -75,6 +75,7 @@ public class CardManager {
 		getCards().put("mine", mine);
 		
 		Card moat = new Card("moat", "+2 Cards. When another player plays an Attack card, you may reveal this from your hand. If you do, you are unaffected by that Attack.", 2);
+		moat.addType("REACTION");
 		getCards().put("moat", moat);
 		
 		Card remodel = new Card("remodel", "Trash a card from your hand. Gain a card costing up to 2 coins more than the trashed card.", 4);
@@ -102,7 +103,7 @@ public class CardManager {
 		
 		//TODO FETCH FROM DB
 		Card chapel = getCards().get("chapel");
-		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4;for=self"));
+		chapel.addAction(parseAction("trash_range", "Trash up to 4 cards from your hand.", "min=0;max=4"));
 		
 		Card village = getCards().get("village");
 		village.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
@@ -162,10 +163,8 @@ public class CardManager {
 		ActionTarget target = ActionTarget.SELF;
 		if(params.containsKey("for")) {
 			try {
-				target = ActionTarget.valueOf(params.get("for"));
-			} catch(Exception ignored) { 
-				return null;
-			}
+				target = ActionTarget.valueOf(params.get("for").toUpperCase());
+			} catch(Exception ignored) { }
 		}
 		
 		switch(identifier.toLowerCase()) {
@@ -232,7 +231,7 @@ public class CardManager {
 					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
 				}
 		}
-		return null;
+		throw new IllegalArgumentException();
 	}
 	
 	/*************
