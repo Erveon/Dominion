@@ -87,6 +87,9 @@ public class CardManager {
 		Card workshop = new Card("workshop", "Gain a card costing up to 4 coins.", 3);
 		getCards().put("workshop", workshop);
 		
+		Card adventurer = new Card("adventurer", "Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards.", 3);
+		getCards().put("adventurer", adventurer);
+		
 		addActions();
 	}
 	

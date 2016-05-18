@@ -24,6 +24,7 @@ public class GainCardAction extends Action {
 	@Override
 	public JSONObject play(Turn turn) {
 		return new JSONObject()
+				.accumulate("response", "OK")
 				.accumulate("result", ActionResult.SELECT_CARD_BOARD)
 				.accumulate("force", false)
 				.accumulate("type", type)
@@ -35,8 +36,12 @@ public class GainCardAction extends Action {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Can't select that card");
 		} else if(card.getCost() <= getCost(turn.getPlayer())) {
 			turn.buyCard(card.getName(), true);
-			return new JSONObject().accumulate("response", "OK")
-								   .accumulate("result", ActionResult.DONE);
+			if(hasMaster(turn.getPlayer())) {
+				return turn.getActiveAction().finish(turn);
+			} else {
+				return new JSONObject().accumulate("response", "OK")
+									   .accumulate("result", ActionResult.DONE);
+			}
 		}			
 		return turn.getGame().getGameServer().getGameManager().getInvalid("Card is too expensive");
 	}

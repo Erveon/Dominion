@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
@@ -102,16 +103,26 @@ public class RemoveCardAction extends Action {
 				break;
 		}
 		
-		getCallbacks().forEach(action -> {
+		for(Action action : getCallbacks()) {
 			action.setMaster(player, card);
-			action.play(turn);
-		});
+			JSONObject played = action.play(turn);
+			if(action instanceof GainCardAction) {
+				return played;
+			}
+		}
 		
-		int removedCards = getRemovedCards(player) + 1;
+		return finish(turn);
+	}
+	
+	@Override
+	public JSONObject finish(Turn turn) {
+		int removedCards = getRemovedCards(turn.getPlayer()) + 1;
 		cardsRemoved.put(turn.getPlayer(), removedCards);
+		
 		if(max != 0 && removedCards >= max) {
 			return turn.stopAction();
 		}
+		
 		return getResponse(turn);
 	}
 	

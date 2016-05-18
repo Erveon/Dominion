@@ -68,6 +68,16 @@ public abstract class Action {
 			masters.remove(player);
 		}
 	}
+	
+	/**
+	 * @param turn Used when breaking out of a slave action
+	 * @return 
+	 */
+	public JSONObject finish(Turn turn) { 
+		return new JSONObject()
+					.accumulate("response", "OK")
+					.accumulate("result", ActionResult.DONE);
+	}
 		
 	public abstract JSONObject play(Turn turn);
 	
