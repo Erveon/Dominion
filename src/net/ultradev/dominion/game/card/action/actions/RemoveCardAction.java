@@ -74,7 +74,7 @@ public class RemoveCardAction extends Action {
 		return restriction.size() == 0;
 	}
 	
-	public List<Card> getRestriction() {
+	public List<Card> getRestrictions() {
 		return restriction;
 	}
 
@@ -85,6 +85,10 @@ public class RemoveCardAction extends Action {
 	
 	public JSONObject selectCard(Turn turn, Card card) {
 		Player player = turn.getPlayer();
+		
+		if(isRestricted() && !getRestrictions().contains(card)) {
+			return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select that card, it is resricted");
+		}
 		
 		switch(type) {
 			case DISCARD:

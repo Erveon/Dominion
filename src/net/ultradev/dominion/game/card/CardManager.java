@@ -114,7 +114,10 @@ public class CardManager {
 		woodcutter.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
 		
 		Card moneylender = getCards().get("moneylender");
-		moneylender.addAction(parseAction("trash_range", "Ability to trash a single copper for $3", "min=0;max=1;restrict=copper"));
+		Action moneylenderAction = parseAction("trash_range", "Ability to trash a single copper for $3", "min=0;max=1;restrict=copper");
+		moneylenderAction.addCallback(parseAction("add_buypower", "Grants 3 buypower", "amount=3"));
+		moneylender.addAction(moneylenderAction);
+		
 		
 		//TODO fetch callbacks for cards from db
 		Card cellar = getCards().get("cellar");
