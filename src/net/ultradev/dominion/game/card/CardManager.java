@@ -227,7 +227,7 @@ public class CardManager {
 				if(containsKeys(params, identifier, "cost")) {
 					GainCardType gainType = GainCardType.ANY;
 					if(params.containsKey("type")) {
-						gainType = GainCardType.valueOf(params.get("type"));
+						gainType = GainCardType.valueOf(params.get("type").toUpperCase());
 					}
 					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
 				}
