@@ -291,9 +291,9 @@ public class CardManager {
 				break;
 		}
 		if(params.containsKey("restrict")) {
-			String[] toRestrict = params.get("restrict").split(",");
-			for(String restrict : toRestrict) {
-				action.addRestriction(gs.getCardManager().get(restrict));
+			String[] toPermit = params.get("restrict").split(",");
+			for(String permit : toPermit) {
+				action.addPermitted(gs.getCardManager().get(permit));
 			}
 		}
 		return action;

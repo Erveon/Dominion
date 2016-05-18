@@ -44,16 +44,17 @@ public class Board {
 	
 	public SupplyType getSupplyTypeForCard(Card card) {
 		// Gardens is a victory card that's actually an action card
+		SupplyType type = SupplyType.valueOf(card.getType().toString());
 		if(card.getName().equalsIgnoreCase("gardens")) {
-			return SupplyType.ACTION;
+			type = SupplyType.ACTION;
 		}
-		return SupplyType.valueOf(card.getType().toString());
+		return type;
 	}
 	
 	public boolean hasEndCondition() {
 		int emptyActionPiles = 0;
-		for(int count : getSupply(SupplyType.ACTION).getCards().values()) {
-			if(count == 0) {
+		for(int cardAmount : getSupply(SupplyType.ACTION).getCards().values()) {
+			if(cardAmount == 0) {
 				emptyActionPiles++;
 			}
 		}
@@ -62,7 +63,7 @@ public class Board {
 		}
 		// If there's enough piles left, whether the province supply ran out
 		// or not will determine if there's an end condition. If it's not empty, the game goes on. (false)
-		return getSupply(SupplyType.VICTORY).getCards().get(getGame().getGameServer().getCardManager().get("province")) == 0;
+		return getSupply(SupplyType.VICTORY).getCards().get(getCard("province")) == 0;
 	}
 	
 	/**
@@ -74,24 +75,23 @@ public class Board {
 		
 		// Treasure supply (Coppers - 7 per speler)
 		int coppers = 60 - (7 * playercount);
-		getSupply(SupplyType.TREASURE).add(getGame().getGameServer().getCardManager().get("copper"), coppers);
-		getSupply(SupplyType.TREASURE).add(getGame().getGameServer().getCardManager().get("silver"), 40);
-		getSupply(SupplyType.TREASURE).add(getGame().getGameServer().getCardManager().get("gold"), 30);
+		getSupply(SupplyType.TREASURE).add(getCard("copper"), coppers);
+		getSupply(SupplyType.TREASURE).add(getCard("silver"), 40);
+		getSupply(SupplyType.TREASURE).add(getCard("gold"), 30);
 		
 		// Victory supply (is the playercount 2? have 8, else 12)
 		int victoryamount = (playercount == 2 ? 8 : 12);
-		getSupply(SupplyType.VICTORY).add(getGame().getGameServer().getCardManager().get("estate"), victoryamount);
-		getSupply(SupplyType.VICTORY).add(getGame().getGameServer().getCardManager().get("duchy"), victoryamount);
-		getSupply(SupplyType.VICTORY).add(getGame().getGameServer().getCardManager().get("province"), victoryamount);
+		getSupply(SupplyType.VICTORY).add(getCard("estate"), victoryamount);
+		getSupply(SupplyType.VICTORY).add(getCard("duchy"), victoryamount);
+		getSupply(SupplyType.VICTORY).add(getCard("province"), victoryamount);
 		
 		// Curse supply (2 = 10, 3 = 20, 4 = 30)
 		int curseamount = (Math.max(playercount, 2) - 1) * 10;
-		getSupply(SupplyType.CURSE).add(getGame().getGameServer().getCardManager().get("curse"), curseamount);
+		getSupply(SupplyType.CURSE).add(getCard("curse"), curseamount);
 		
 		// Action supply
 		for(String cardid : getGame().getConfig().getActionCards()) {
-			Card c = getGame().getGameServer().getCardManager().get(cardid);
-			getSupply(SupplyType.ACTION).add(c, 10);
+			getSupply(SupplyType.ACTION).add(getCard(cardid), 10);
 		}
 	}
 	
@@ -122,6 +122,10 @@ public class Board {
 	
 	public void addPlayedCard(Card c) {
 		playedcards.add(c);
+	}
+	
+	public Card getCard(String cardid) {
+		return getGame().getGameServer().getCardManager().get(cardid);
 	}
 	
 	public JSONObject getAsJson() {

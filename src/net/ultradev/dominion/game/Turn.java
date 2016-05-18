@@ -110,9 +110,6 @@ public class Turn {
 	 */
 	public void removeAction() {
 		this.actioncount--;
-		if(this.actioncount == 0) {
-			endPhase();
-		}
 	}
 	
 	/**

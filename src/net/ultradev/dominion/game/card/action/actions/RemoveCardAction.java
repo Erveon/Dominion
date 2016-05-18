@@ -23,13 +23,13 @@ public class RemoveCardAction extends Action {
 	
 	Map<Player, Integer> cardsRemoved;
 	
-	List<Card> restriction;
+	List<Card> permitted;
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
 		super(identifier, description, target);
 		this.cardsRemoved = new HashMap<>();
 		this.countType = RemoveCount.CHOOSE_AMOUNT;
-		this.restriction = new ArrayList<>();
+		this.permitted = new ArrayList<>();
 		this.type = type;
 	}
 	
@@ -38,7 +38,7 @@ public class RemoveCardAction extends Action {
 		this.cardsRemoved = new HashMap<>();
 		this.amount = amount;
 		this.countType = RemoveCount.SPECIFIC_AMOUNT;
-		this.restriction = new ArrayList<>();
+		this.permitted = new ArrayList<>();
 		this.type = type;
 	}
 	
@@ -48,7 +48,7 @@ public class RemoveCardAction extends Action {
 		this.min = min;
 		this.max = max;
 		this.countType = RemoveCount.RANGE;
-		this.restriction = new ArrayList<>();
+		this.permitted = new ArrayList<>();
 		this.type = type;
 	}
 	
@@ -62,20 +62,20 @@ public class RemoveCardAction extends Action {
 			this.max = amount;
 			this.countType = RemoveCount.MAXIMUM;
 		}
-		this.restriction = new ArrayList<>();
+		this.permitted = new ArrayList<>();
 		this.type = type;
 	}
 	
-	public void addRestriction(Card card) {
-		restriction.add(card);
+	public void addPermitted(Card card) {
+		permitted.add(card);
 	}
 	
 	public boolean isRestricted() {
-		return restriction.size() == 0;
+		return permitted.size() != 0;
 	}
 	
-	public List<Card> getRestrictions() {
-		return restriction;
+	public List<Card> getPermitted() {
+		return permitted;
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class RemoveCardAction extends Action {
 	public JSONObject selectCard(Turn turn, Card card) {
 		Player player = turn.getPlayer();
 		
-		if(isRestricted() && !getRestrictions().contains(card)) {
+		if(isRestricted() && !getPermitted().contains(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select that card, it is resricted");
 		}
 		
