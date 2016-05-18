@@ -228,7 +228,7 @@ public class Turn {
 		CardManager cm = getGame().getGameServer().getCardManager();
 		Card card = cm.get(cardid);
 		
-		if(getBuypower() >= card.getCost() || free) {
+		if((getBuypower() >= card.getCost() && getBuys() > 0) || free) {
 			getPlayer().getDeck().add(card);
 			if(!free) {
 				removeBuy();
@@ -308,6 +308,12 @@ public class Turn {
 		return playActions(card, null);
 	}
 	
+	/**
+	 * Plays the actions for this card for the player from a specific action
+	 * @param card To execute the actions for
+	 * @param from The action to start executing from
+	 * @return The response
+	 */
 	private JSONObject playActions(Card card, Action from) {
 		this.activeCard = card;
 		// If there's a from action, don't perform actions until it's found
@@ -352,6 +358,10 @@ public class Turn {
 		return response;
 	}
 	
+	/**
+	 * Stops the current action
+	 * @return response
+	 */
 	public JSONObject stopAction() {
 		JSONObject response = new JSONObject().accumulate("response", "OK").accumulate("result", ActionResult.DONE);
 		Action action = getActiveAction();

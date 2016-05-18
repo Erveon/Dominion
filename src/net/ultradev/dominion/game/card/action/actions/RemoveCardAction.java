@@ -80,6 +80,7 @@ public class RemoveCardAction extends Action {
 
 	@Override
 	public JSONObject play(Turn turn) {
+		cardsRemoved.put(turn.getPlayer(), 0);
 		return getResponse(turn);
 	}
 	
@@ -106,7 +107,11 @@ public class RemoveCardAction extends Action {
 			action.play(turn);
 		});
 		
-		cardsRemoved.put(turn.getPlayer(), getRemovedCards(player) + 1);
+		int removedCards = getRemovedCards(player) + 1;
+		cardsRemoved.put(turn.getPlayer(), removedCards);
+		if(max != 0 && removedCards >= max) {
+			return turn.stopAction();
+		}
 		return getResponse(turn);
 	}
 	

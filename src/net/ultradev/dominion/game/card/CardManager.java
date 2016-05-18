@@ -56,10 +56,10 @@ public class CardManager {
 		Card village = new Card("village", "+1 Card; +2 Actions.", 3);
 		getCards().put("village", village);
 		
-		Card woodcutter = new Card("woodcutter", "+1 Card; +2 Actions.", 3);
+		Card woodcutter = new Card("woodcutter", "+1 Buy; +2 Coins.", 3);
 		getCards().put("woodcutter", woodcutter);
 		
-		Card moneylender = new Card("moneylender", "Trash a Copper from your hand. If you do, +$3.", 3);
+		Card moneylender = new Card("moneylender", "Trash a Copper from your hand. If you do, +3 coins.", 3);
 		getCards().put("moneylender", moneylender);
 		
 		Card cellar = new Card("cellar", "+1 Action. Discard any number of cards, +1 Card per card discarded.", 2);
