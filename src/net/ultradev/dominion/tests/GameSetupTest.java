@@ -36,7 +36,7 @@ public class GameSetupTest {
 	}
 	
 	@Test
-	public void testBoardAmounts() {
+	public void testAmountOfActionCards() {
 		board.addActionCard(cardManager.get("chapel"));
 		int chapelCount = board.getSupply(SupplyType.ACTION).getCards().get(cardManager.get("chapel"));
 		assertEquals("Chapel does not have the desired amount on the board", 10, chapelCount);
@@ -46,7 +46,7 @@ public class GameSetupTest {
 	public void testGardenCards() {
 		Card gardens = cardManager.get("gardens");
 		board.addActionCard(gardens);
-		for(int speler = 3; speler <= 4; speler++) {
+		for(int speler = 2; speler <= 4; speler++) {
 			int gardensCount = board.getSupply(SupplyType.ACTION).getCards().get(gardens);
 			int amount = game.getPlayers().size() == 2 ? 8 : 12;
 			assertEquals("Garden count is not correct", amount, gardensCount);
@@ -80,6 +80,14 @@ public class GameSetupTest {
 			int desired = playerCount == 2 ? 8 : 12;
 			assertEquals("Does not have the correct amount of victory cards", desired, amount);
 		}
+	}
+	
+	@Test
+	public void testCurseSupply() {
+		int desired = 10 * (game.getPlayers().size() - 1);
+		board.initSupplies();
+		int curseCount = board.getSupply(SupplyType.CURSE).getCards().get(board.getGame().getGameServer().getCardManager().get("curse"));
+		assertEquals("Does not have the correct amount of curse cards", desired, curseCount);
 	}
 	
 }
