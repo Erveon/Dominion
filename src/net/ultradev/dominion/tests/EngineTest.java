@@ -10,7 +10,7 @@ import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.local.LocalGame;
 
-public class LocalGameTest {
+public class EngineTest {
 
 	private GameServer gameServer;
 	private Game game;

@@ -31,6 +31,7 @@ public class GainCardAction extends Action {
 				.accumulate("cost", getCost(turn.getPlayer()));
 	}
 	
+	@Override
 	public JSONObject selectCard(Turn turn, Card card) {
 		if(!isSelectable(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Can't select that card");

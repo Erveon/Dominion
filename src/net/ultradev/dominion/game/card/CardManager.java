@@ -9,6 +9,7 @@ import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.card.action.IllegalActionVariableException;
 import net.ultradev.dominion.game.card.action.MissingVariableException;
+import net.ultradev.dominion.game.card.action.actions.AdventurerAction;
 import net.ultradev.dominion.game.card.action.actions.DrawCardAction;
 import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
@@ -255,8 +256,10 @@ public class CardManager {
 					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
 				}
 				break;
+			case "adventurer":
+				return new AdventurerAction(identifier, description, target);
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("That action does not exist");
 	}
 	
 	/*************
@@ -338,19 +341,16 @@ public class CardManager {
 	
 	public Map<String, String> getMappedVariables(String identifier, String variables) {
 		Map<String, String> mappedVariables = new HashMap<>();
-		if(variables.isEmpty() || variables.equals("")) {
-			return mappedVariables;
-		}
-		
-		String[] vars = variables.split(";");
-		for(String var : vars) {
-			if(!var.contains("=") || var.split("=").length != 2) {
-				throw new IllegalActionVariableException(identifier, variables);
+		if(!variables.isEmpty() && !variables.equals("")) {
+			String[] vars = variables.split(";");
+			for(String var : vars) {
+				if(!var.contains("=") || var.split("=").length != 2) {
+					throw new IllegalActionVariableException(identifier, variables);
+				}
+				String[] keyvalue = var.split("=");
+				mappedVariables.put(keyvalue[0].toLowerCase(), keyvalue[1].toLowerCase());
 			}
-			String[] keyvalue = var.split("=");
-			mappedVariables.put(keyvalue[0].toLowerCase(), keyvalue[1].toLowerCase());
 		}
-		
 		return mappedVariables;
 	}
 	

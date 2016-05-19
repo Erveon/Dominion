@@ -69,17 +69,32 @@ public abstract class Action {
 		}
 	}
 	
+	public JSONObject finish(Turn turn) {
+		return finish(turn, turn.getPlayer());
+	}
+	
+	public boolean isMultiTargeted() {
+		return target.equals(ActionTarget.EVERYONE) || target.equals(ActionTarget.OTHERS);
+	}
+	
+	public boolean isCompleted() {
+		return true;
+	}
+	
 	/**
 	 * @param turn Used when breaking out of a slave action
 	 * @return 
 	 */
-	public JSONObject finish(Turn turn) { 
+	public JSONObject finish(Turn turn, Player player) { 
 		return new JSONObject()
 					.accumulate("response", "OK")
 					.accumulate("result", ActionResult.DONE);
 	}
 		
 	public abstract JSONObject play(Turn turn);
-	
+
+	public JSONObject selectCard(Turn turn, Card card) {
+		return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select a card for this action");
+	}
 	
 }

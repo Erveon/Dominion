@@ -6,7 +6,6 @@ import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
-import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
 import net.ultradev.dominion.game.player.Player; 
 
 public class Turn {
@@ -351,8 +350,9 @@ public class Turn {
 		if(action == null) {
 			return gm.getInvalid("Unable to select card, no active action");
 		}
-		
-		JSONObject response = handleCardSelection(card, action);
+
+		getGame().getGameServer().getUtils().debug("Card selected: " + card.getName());
+		JSONObject response = action.selectCard(getGame().getTurn(), card);
 		return response;
 	}
 	
@@ -364,25 +364,19 @@ public class Turn {
 		JSONObject response = new JSONObject().accumulate("response", "OK").accumulate("result", ActionResult.DONE);
 		Action action = getActiveAction();
 		if(action != null) {
-			response = playActions(getActiveCard(), getActiveAction());
-			activeAction = null;
+			// If the action isn't fully completed, finish it first
+			if(!action.isCompleted()) {
+				response = action.finish(this);
+			}
+			// Checks if the finish completed the action
+			// If multiple people have to do the action
+			// then this will be true when the last player completed it
+			if(action.isCompleted()) {
+				response = playActions(getActiveCard(), getActiveAction());
+				activeAction = null;
+			}
 		}
 		return response; 
-	}
-	
-	/**
-	 * Selects a card for an action
-	 * @param card
-	 * @param action
-	 * @return The response
-	 */
-	private JSONObject handleCardSelection(Card card, Action action) {
-		getGame().getGameServer().getUtils().debug("Card selected: " + card.getName());
-		if(action instanceof RemoveCardAction) {
-			RemoveCardAction rca = (RemoveCardAction) action;
-			return rca.selectCard(this, card);
-		}
-		return getGame().getGameServer().getGameManager().getInvalid("Action '"+ action.getIdentifier() +"' does not handle card selections");
 	}
 	
 	/**
