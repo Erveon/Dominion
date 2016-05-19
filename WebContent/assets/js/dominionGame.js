@@ -5,6 +5,7 @@ Dominion.Game = (function(Game) {
         this.cardSet = initData.cardSet;
         this.gameData = null;
         this.Interface = null;
+        this.playingAction = false;
         this.isMp = false;
         this.initGame();
         gameObj = this;
@@ -55,11 +56,14 @@ Dominion.Game = (function(Game) {
 
         this.Api.doCall({'action': 'playcard', 'card': cardToPlay}, this.isMp,
             function(data) {
+                console.log("CARD PLAY RESPONSE: ", data);
                 if (data.response == "OK") {
                     that.Interface.addCardToField(card);
-                    that.updateGameInfo();
                     if(data.result !== "DONE") {
+                        that.playingAction = true;
                         that.Interface.showCardSelector(data);
+                    } else {
+                        that.updateGameInfo();
                     }
                 }
             }
@@ -112,7 +116,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.handlePhaseSkip = function () {
         if(this.gameData.game.turn.phase === "ACTION") {
-            if(this.checkHandForActions() === false) {
+            if(this.checkHandForActions() === false && !this.playingAction) {
                 this.Interface.handlePhaseEnd();
             }
         }
