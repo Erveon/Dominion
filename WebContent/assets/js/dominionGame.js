@@ -52,7 +52,7 @@ Dominion.Game = (function(Game) {
     Game.prototype.playCard = function(card) {
         var cardToPlay = card.children().first().children().text();
         var that = this;
-        console.log('koude fritten');
+
         this.Api.doCall({'action': 'playcard', 'card': cardToPlay}, this.isMp,
             function(data) {
                 if (data.response == "OK") {
