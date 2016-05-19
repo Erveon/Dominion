@@ -31,12 +31,14 @@ public class RemoveCardAction extends Action {
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
 		super(identifier, description, target);
 		this.countType = RemoveCount.CHOOSE_AMOUNT;
+		init(type);
 	}
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount) {
 		super(identifier, description, target);
 		this.amount = amount;
 		this.countType = RemoveCount.SPECIFIC_AMOUNT;
+		init(type);
 	}
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int min, int max) {
@@ -44,6 +46,7 @@ public class RemoveCardAction extends Action {
 		this.min = min;
 		this.max = max;
 		this.countType = RemoveCount.RANGE;
+		init(type);
 	}
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount, boolean minimum) {
@@ -55,6 +58,7 @@ public class RemoveCardAction extends Action {
 			this.max = amount;
 			this.countType = RemoveCount.MAXIMUM;
 		}
+		init(type);
 	}
 	
 	public void init(RemoveType type) {
