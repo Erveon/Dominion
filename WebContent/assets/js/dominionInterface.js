@@ -78,6 +78,18 @@ Dominion.Interface = (function(Interface) {
             gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
             e.stopImmediatePropagation();
         });
+        $('#treasurePile .wideCard').on('click', function(e) {
+            gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
+            e.stopImmediatePropagation();
+        });
+        $('#victoryPile .wideCard').on('click', function(e) {
+            gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
+            e.stopImmediatePropagation();
+        });
+        $('#trashCursePile .cursePile').on('click', function(e) {
+            gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
+            e.stopImmediatePropagation();
+        });
     };
 
     Interface.prototype.handleListenerAccess = function () {
@@ -120,6 +132,43 @@ Dominion.Interface = (function(Interface) {
         html += "<p class='miniCard-title'>" + cardName + "</p>";
         html += "<img src='assets/images/cards/" + cardName + ".jpg' width='100%'></li>";
         $("#playedCards").append($(html));
+        card.remove();
+    };
+
+    Interface.prototype.showCardSelector = function(playResponse) {
+        var overlayHTML = "<div class='overlay'></div>";
+        var selectorHand = "<ul id='selectorPile' class='cardContainer'></ul>";
+        //var selectorCarousel = new Dominion.Interface.Carousel($());
+
+        $('body').append(overlayHTML);
+        $('.overlay').append(selectorHand);
+        this.appendSelectorCards(playResponse);
+    };
+
+    Interface.prototype.appendSelectorCards = function(playResponse) {
+        var action = playResponse.result;
+
+        switch (action) {
+            case "SELECT_CARD_HAND":
+                this.selectCardFromHand();
+                break;
+        }
+    };
+
+    Interface.prototype.selectCardFromHand = function() {
+        var players = this.gameData.game.players;
+        var currentPlayer = this.gameData.game.turn.player;
+        var hand = [];
+
+        for (var player in players){
+            if(players[player].displayName === currentPlayer) {
+                currentHand = players[player].hand;
+            }
+        }
+
+        for(var card in hand) {
+            this.addCard(card, hand, $("#selectorPile"));
+        }
     };
 
     Interface.prototype.refreshField = function() {
@@ -150,21 +199,7 @@ Dominion.Interface = (function(Interface) {
         $('#handPile').empty();
 
         for (var card in hand) {
-            var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
-            cardHTML += "<div class='card-header'>";
-            cardHTML += "<p class='card-title'>" + hand[card].name + "</p></div>";
-            cardHTML += "<div class='card-body'>";
-            cardHTML += "<img src='assets/images/cards/" + hand[card].name + ".jpg' alt='" + hand[card].name + "' width='100%'>";
-            cardHTML += "<div class='card-actionList'>";
-            cardHTML += "<ul class='card-actions'>";
-            for (var action in hand[card].actions) {
-                cardHTML += "<li class='card-action'>" + hand[card].actions[action] + "</li>";
-            }
-            cardHTML += "</ul></div></div>";
-            cardHTML += "<div class='card-info'>";
-            cardHTML += "<p class='card-cost'>" + hand[card].cost + "</p>";
-            cardHTML += "<p class='card-type'>" + hand[card].type + "</p></div></li>";
-            $('#handPile').append(cardHTML);
+            this.addCard(card, hand, $("#handPile"));
         }
 
         if (!this.carouselAdded) {
@@ -175,12 +210,32 @@ Dominion.Interface = (function(Interface) {
         this.handContents = $("ul#handPile").children();
     };
 
+    Interface.prototype.addCard = function(card, hand, element) {
+        var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
+
+        cardHTML += "<div class='card-header'>";
+        cardHTML += "<p class='card-title'>" + hand[card].name + "</p></div>";
+        cardHTML += "<div class='card-body'>";
+        cardHTML += "<img src='assets/images/cards/" + hand[card].name + ".jpg' alt='" + hand[card].name + "' width='100%'>";
+        cardHTML += "<div class='card-actionList'>";
+        cardHTML += "<ul class='card-actions'>";
+
+        for (var action in hand[card].actions) {
+            cardHTML += "<li class='card-action'>" + hand[card].actions[action] + "</li>";
+        }
+
+        cardHTML += "</ul></div></div>";
+        cardHTML += "<div class='card-info'>";
+        cardHTML += "<p class='card-cost'>" + hand[card].cost + "</p>";
+        cardHTML += "<p class='card-type'>" + hand[card].type + "</p></div></li>";
+
+        element.append(cardHTML);
+    };
+
     Interface.prototype.addCarousels = function() {
         this.handCarousel = new Dominion.Interface.Carousel($('#handContainer'));
         this.fieldCarousel = new Dominion.Interface.Carousel($('#playedCardContainer'));
     };
-
-
 
     Interface.prototype.updatePlayerCounters = function () {
         var data = this.gameData;
@@ -218,6 +273,60 @@ Dominion.Interface = (function(Interface) {
             cardDisplay.eq(card).children('p:first').text(actionCards[card].name);
             cardDisplay.eq(card).children('div:first').children('p:first').text(actionCards[card].cost);
             cardDisplay.eq(card).children('div:first').children('p:last').text(actionCards[card].amount);
+        }
+
+        this.dimAllMarketCards();
+        this.handleActiveMarketCards();
+    };
+
+    Interface.prototype.dimAllMarketCards = function () {
+        $("#mainPile .wideCard").children('.dim').remove();
+        $("#treasurePile .wideCard").children('.dim').remove();
+        $("#victoryPile .wideCard").children('.dim').remove();
+        $(".cursePile").children('.dim').remove();
+        $("#mainPile .wideCard").append("<div class='dim'></div>");
+        $("#treasurePile .wideCard").append("<div class='dim'></div>");
+        $("#victoryPile .wideCard").append("<div class='dim'></div>");
+        $(".cursePile").append("<div class='dim'></div>");
+    };
+
+    Interface.prototype.handleActiveMarketCards = function() {
+        var buys = this.gameData.game.turn.buysleft;
+
+        if(this.gameData.game.turn.phase === "BUY") {
+            if(buys > 0) {
+                this.showAvailibleMarketCards();
+            }
+        }
+    };
+
+    Interface.prototype.showAvailibleMarketCards = function () {
+        var availibleCoins = this.gameData.game.turn.buypower;
+        var actionPile = this.gameData.game.board.action;
+        var treasurePile = this.gameData.game.board.treasure;
+        var victoryPile = this.gameData.game.board.victory;
+        var actionDOM = $("#mainPile .wideCard");
+        var treasureDOM = $("#treasurePile .wideCard");
+        var victoryDOM = $("#victoryPile .wideCard");
+        this.showAvailibleCards(availibleCoins, actionPile, actionDOM);
+        this.showAvailibleCards(availibleCoins, treasurePile, treasureDOM);
+        this.showAvailibleCards(availibleCoins, victoryPile, victoryDOM);
+    };
+
+    Interface.prototype.showAvailibleCards = function(availibleCoins, pile, cardDOM) {
+        for (var card in pile) {
+            if(pile[card].cost <= availibleCoins) {
+                this.showAvailibleCard(pile[card], card, cardDOM);
+            }
+        }
+    };
+
+    Interface.prototype.showAvailibleCard = function(cardData, cardId, cardDOM) {
+        var cardPile = cardDOM.eq(cardId);
+        var cardTitle = cardPile.children('.wideCard-title').text();
+
+        if(cardData.name === cardTitle.toLowerCase()) {
+            cardPile.children('.dim').remove();
         }
     };
 
