@@ -136,7 +136,7 @@ div#market
     ul#discardDeckPile
       width: 225px
       float: right
-      margin-right: 3px
+      margin-right: 1px
       box-sizing: border-box
       display: inline-block
 
@@ -150,6 +150,7 @@ div#market
     ul#treasurePile
       float: right
       width: 685px
+      margin-right: 2px
 
       .wideCard
         background-color: $treasureCardColor
@@ -160,13 +161,13 @@ div#market
     ul#victoryPile
       float: right
       width: 685px
+      margin-right: 2px
 
       .wideCard
         background-color: $victoryCardColor
 
     ul#trashCursePile
       width: 225px
-      padding-right: 2.5px
 
       .wideCard
         background-color: $deckCardColor
@@ -189,6 +190,13 @@ div#market
     -webkit-transition: all 150ms ease-in-out
     -moz-transition: all 150ms ease-in-out
     transition: all 150ms ease-in-out
+
+    .dim
+      width: 100%
+      height: 100%
+      z-index: 100
+      position: relative
+      background-color: $wideCardHidden
 
     p
       font-family: 'RobotoBold'

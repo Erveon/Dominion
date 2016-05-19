@@ -57,7 +57,10 @@ Dominion.Game = (function(Game) {
             function(data) {
                 if (data.response == "OK") {
                     that.Interface.addCardToField(card);
-                    card.remove();
+                    that.updateGameInfo();
+                    if(data.result !== "DONE") {
+                        that.Interface.showCardSelector(data);
+                    }
                 }
             }
         );
