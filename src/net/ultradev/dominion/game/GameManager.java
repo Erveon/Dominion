@@ -113,8 +113,7 @@ public class GameManager {
 				g.addPlayer(name);
 				return response.accumulate("response", "OK");
 			case "endphase":
-				g.endPhase();
-				return response.accumulate("response", "OK");
+				return g.endPhase();
 			case "playcard":
 				if(!map.containsKey("card")) {
 					return getInvalid("Card parameter doesn't exist");

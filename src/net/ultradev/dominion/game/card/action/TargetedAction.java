@@ -1,5 +1,6 @@
 package net.ultradev.dominion.game.card.action;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,15 +26,15 @@ public class TargetedAction {
 		this.target = action.getTarget();
 		
 		this.game = player.getGame();
-		this.todo = player.getGame().getPlayers();
+		this.todo = new ArrayList<>(player.getGame().getPlayers());
 		
 		switch(target) {
 			case EVERYONE:
 				this.currentPlayer = getNextPlayer(player);
 				break;
 			case OTHERS:
-				this.todo.remove(player);
 				this.currentPlayer = getNextPlayer(player);
+				this.todo.remove(player);
 				break;
 			case SELF:
 				this.todo = Arrays.asList(player);

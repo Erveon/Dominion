@@ -15,7 +15,7 @@ import net.ultradev.dominion.game.player.Player;
 
 public class RemoveCardAction extends Action {
 	
-	public enum RemoveCount { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, RANGE, MINIMUM, MAXIMUM };
+	public enum RemoveCount { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, RANGE };
 	public enum RemoveType { TRASH, DISCARD };
 	
 	private int amount;
@@ -49,18 +49,6 @@ public class RemoveCardAction extends Action {
 		init(type);
 	}
 	
-	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount, boolean minimum) {
-		super(identifier, description, target);
-		if(minimum) {
-			this.min = amount;
-			this.countType = RemoveCount.MINIMUM;
-		} else {
-			this.max = amount;
-			this.countType = RemoveCount.MAXIMUM;
-		}
-		init(type);
-	}
-	
 	public void init(RemoveType type) {
 		this.permitted = new ArrayList<>();
 		this.type = type;
@@ -85,6 +73,7 @@ public class RemoveCardAction extends Action {
 		
 		// If the action affects more than the person that played the card
 		if(getTarget().equals(ActionTarget.EVERYONE) || getTarget().equals(ActionTarget.OTHERS)) {
+			turn.getGame().getGameServer().getUtils().debug("Playing multi-target card");
 			targeted = new TargetedAction(turn.getPlayer(), this);
 			for(Player p : targeted.getPlayers()) {
 				cardsRemoved.put(p, 0);
@@ -189,7 +178,7 @@ public class RemoveCardAction extends Action {
 			case CHOOSE_AMOUNT:
 				return true;
 			case RANGE:
-				return getRemovedCards(player) < this.max;
+				return getRemovedCards(player) <= this.max;
 			case SPECIFIC_AMOUNT:
 				return getRemovedCards(player) != this.amount;
 			default:

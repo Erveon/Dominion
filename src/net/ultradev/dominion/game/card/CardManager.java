@@ -138,7 +138,7 @@ public class CardManager {
 
 		Card militia = getCards().get("militia");
 		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
-		militia.addAction(parseAction("trash_min", "Each other player discards down to 3 cards in his hand.", "min=3;for=others"));
+		militia.addAction(parseAction("discard_min", "Each other player discards down to 3 cards in his hand.", "min=3;for=others"));
 
 		Card mine = getCards().get("mine");
 		Action discardTreasureMine = parseAction("trash_specific", "Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more", "amount=1;restrict=gold,copper,silver");
@@ -203,12 +203,12 @@ public class CardManager {
 				break;
 			case "trash_min":
 				if(containsKeys(params, identifier, "min")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
 				}
 				break;
 			case "trash_max":
 				if(containsKeys(params, identifier, "max")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
 				}
 				break;
 			case "discard_specific":
@@ -225,12 +225,12 @@ public class CardManager {
 				break;
 			case "discard_min":
 				if(containsKeys(params, identifier, "min")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MINIMUM, RemoveType.DISCARD);
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
 				}
 				break;
 			case "discard_max":
 				if(containsKeys(params, identifier, "max")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.MAXIMUM, RemoveType.DISCARD);
+					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
 				}
 				break;
 			case "add_actions":
@@ -295,17 +295,15 @@ public class CardManager {
 				action = new RemoveCardAction(target, type, identifier, description);
 				break;
 			case RANGE:
-				int minrange = getGameServer().getUtils().parseInt(params.get("min"), 0);
-				int maxrange = getGameServer().getUtils().parseInt(params.get("max"), 4);
-				action = new RemoveCardAction(target, type, identifier, description, minrange, maxrange);
-				break;
-			case MINIMUM:
-				int min = getGameServer().getUtils().parseInt(params.get("min"), 0);
-				action = new RemoveCardAction(target, type, identifier, description, min, true);
-				break;
-			case MAXIMUM:
-				int max = getGameServer().getUtils().parseInt(params.get("max"), 4);
-				action = new RemoveCardAction(target, type, identifier, description, max, false);
+				int min = 0;
+				int max = 0;
+				if(params.containsKey("min")) {
+					min = getGameServer().getUtils().parseInt(params.get("min"), 0);
+				}
+				if(params.containsKey("max")) {
+					max = getGameServer().getUtils().parseInt(params.get("max"), 4);
+				}
+				action = new RemoveCardAction(target, type, identifier, description, min, max);
 				break;
 			case SPECIFIC_AMOUNT:
 				int amount = getGameServer().getUtils().parseInt(params.get("amount"), 1);

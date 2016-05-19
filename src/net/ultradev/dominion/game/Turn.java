@@ -323,7 +323,7 @@ public class Turn {
 				}
 			} else {
 				JSONObject actionResponse = action.play(this);
-				ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString());
+				ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString().toUpperCase());
 				if(!result.equals(ActionResult.DONE)) {
 					this.activeAction = action;
 					return actionResponse;
@@ -392,6 +392,15 @@ public class Turn {
 	 */
 	public Action getActiveAction() {
 		return activeAction;
+	}
+	
+	public boolean canEndPhase() {
+		if(activeAction != null) {
+			if(!activeAction.isCompleted()) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**

@@ -126,11 +126,17 @@ public abstract class Game {
 		}
 	}
 	
-	public void endPhase() {
-		getTurn().endPhase();
-		if(getTurn().getPhase().equals(Phase.CLEANUP)) {
-			endTurn();
+	public JSONObject endPhase() {
+		JSONObject response = new JSONObject().accumulate("response", "OK");
+		if(getTurn().canEndPhase()) {
+			getTurn().endPhase();
+			if(getTurn().getPhase().equals(Phase.CLEANUP)) {
+				endTurn();
+			}
+		} else {
+			response = getGameServer().getGameManager().getInvalid("Cannot end a phase when in an action!");
 		}
+		return response;
 	}
 	
 	public void setTurn(Turn turn) {
