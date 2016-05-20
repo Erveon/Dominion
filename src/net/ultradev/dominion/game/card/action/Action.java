@@ -77,7 +77,7 @@ public abstract class Action {
 		return target.equals(ActionTarget.EVERYONE) || target.equals(ActionTarget.OTHERS);
 	}
 	
-	public boolean isCompleted() {
+	public boolean isCompleted(Turn turn) {
 		return true;
 	}
 	

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action;
@@ -26,7 +27,7 @@ public class RemoveCardAction extends Action {
 	private Map<Player, ActionProgress> progress;
 	
 	private List<Card> permitted;
-	private TargetedAction targeted;
+	private Map<Game, TargetedAction> targeted;
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
 		super(identifier, description, target);
@@ -55,6 +56,7 @@ public class RemoveCardAction extends Action {
 		this.permitted = new ArrayList<>();
 		this.type = type;
 		this.progress = new HashMap<>();
+		this.targeted = new HashMap<>();
 	}
 	
 	public void addPermitted(Card card) {
@@ -93,8 +95,8 @@ public class RemoveCardAction extends Action {
 		// If the action affects more people than the person that played the card
 		if(getTarget().equals(ActionTarget.EVERYONE) || getTarget().equals(ActionTarget.OTHERS)) {
 			turn.getGame().getGameServer().getUtils().debug("Playing multi-target card");
-			targeted = new TargetedAction(turn.getPlayer(), this);
-			for(Player p : targeted.getPlayers()) {
+			targeted.put(turn.getGame(), new TargetedAction(turn.getPlayer(), this));
+			for(Player p : getTargetedAction(turn).getPlayers()) {
 				progress.put(p, new ActionProgress());
 				progress.get(p).set("removed", 0);
 				calculateRemovalAmount(p);
@@ -105,8 +107,15 @@ public class RemoveCardAction extends Action {
 	
 	@Override
 	public JSONObject selectCard(Turn turn, Card card) {
-		Player player = targeted == null ? turn.getPlayer() : targeted.getCurrentPlayer();
+		Player player = targeted == null ? turn.getPlayer() : targeted.get(turn.getGame()).getCurrentPlayer();
 		return selectCard(turn, card, player);
+	}
+	
+	public TargetedAction getTargetedAction(Turn turn) {
+		if(targeted.containsKey(turn.getGame())) {
+			return targeted.get(turn.getGame());
+		}
+		return null;
 	}
 	
 	public JSONObject selectCard(Turn turn, Card card, Player player) {
@@ -117,7 +126,7 @@ public class RemoveCardAction extends Action {
 		for(Action action : getCallbacks()) {
 			action.setMaster(player, card);
 			JSONObject played = action.play(turn);
-			if(!action.isCompleted()) {
+			if(!action.isCompleted(turn)) {
 				return played;
 			}
 		}
@@ -127,7 +136,7 @@ public class RemoveCardAction extends Action {
 	@Override
 	public JSONObject finish(Turn turn) {
 		if(isMultiTargeted()) {
-			return finish(turn, targeted.getCurrentPlayer());
+			return finish(turn, getTargetedAction(turn).getCurrentPlayer());
 		}
 		return finish(turn, turn.getPlayer());
 	}
@@ -136,22 +145,22 @@ public class RemoveCardAction extends Action {
 	public JSONObject finish(Turn turn, Player player) {
 		int removedCards = getRemovedCards(player) + 1;
 		progress.get(player).set("removed", removedCards);
-		if(targeted != null && canSelectMore(player)) {
-			targeted.completeForCurrentPlayer();
+		if(getTargetedAction(turn) != null && !canSelectMore(player)) {
+			getTargetedAction(turn).completeForCurrentPlayer();
 		}
-		if(max != 0 && removedCards >= max && isCompleted()) {
+		if(max != 0 && removedCards >= max && isCompleted(turn)) {
 			return turn.stopAction();
 		}
 		return getResponse(turn);
 	}
 	
 	@Override
-	public boolean isCompleted() {
+	public boolean isCompleted(Turn turn) {
 		boolean completed = false;
-		if(targeted == null) {
+		if(getTargetedAction(turn) == null) {
 			completed = true;
 		} else {
-			if(targeted.isDone()) {
+			if(getTargetedAction(turn).isDone()) {
 				completed = true;
 			}
 		}
@@ -192,7 +201,7 @@ public class RemoveCardAction extends Action {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
 		Player player = turn.getPlayer();
 		if(isMultiTargeted()) {
-			player = targeted.isDone() ? null : targeted.getCurrentPlayer();
+			player = getTargetedAction(turn).isDone() ? null : getTargetedAction(turn).getCurrentPlayer();
 		}
 		
 		if(player != null && canSelectMore(player)) {

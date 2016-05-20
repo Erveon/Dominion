@@ -381,13 +381,13 @@ public class Turn {
 		Action action = getActiveAction();
 		if(action != null) {
 			// If the action isn't fully completed, finish it first
-			if(!action.isCompleted()) {
+			if(!action.isCompleted(this)) {
 				response = action.finish(this);
 			}
 			// Checks if the finish completed the action
 			// If multiple people have to do the action
 			// then this will be true when the last player completed it
-			if(action.isCompleted()) {
+			if(action.isCompleted(this)) {
 				response = playActions(getActiveCard(), getActiveAction());
 				activeAction = null;
 			}
@@ -412,7 +412,7 @@ public class Turn {
 	
 	public boolean canEndPhase() {
 		if(activeAction != null) {
-			if(!activeAction.isCompleted()) {
+			if(!activeAction.isCompleted(this)) {
 				return false;
 			}
 		}
