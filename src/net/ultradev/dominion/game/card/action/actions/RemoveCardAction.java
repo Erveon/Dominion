@@ -105,7 +105,8 @@ public class RemoveCardAction extends Action {
 	
 	@Override
 	public JSONObject selectCard(Turn turn, Card card) {
-		return selectCard(turn, card, turn.getPlayer());
+		Player player = targeted == null ? turn.getPlayer() : targeted.getCurrentPlayer();
+		return selectCard(turn, card, player);
 	}
 	
 	public JSONObject selectCard(Turn turn, Card card, Player player) {
