@@ -107,7 +107,7 @@ public class RemoveCardAction extends Action {
 	
 	@Override
 	public JSONObject selectCard(Turn turn, Card card) {
-		Player player = targeted == null ? turn.getPlayer() : targeted.get(turn.getGame()).getCurrentPlayer();
+		Player player = getTargetedAction(turn) == null ? turn.getPlayer() : getTargetedAction(turn).getCurrentPlayer();
 		return selectCard(turn, card, player);
 	}
 	
@@ -122,11 +122,13 @@ public class RemoveCardAction extends Action {
 		if(isRestricted() && !getPermitted().contains(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select that card, it is resricted");
 		}
+		turn.getGame().getGameServer().getUtils().debug("Player " + player + " selected " + card.getName());
 		removeCard(player, card);
 		for(Action action : getCallbacks()) {
 			action.setMaster(player, card);
 			JSONObject played = action.play(turn);
 			if(!action.isCompleted(turn)) {
+				turn.getGame().getGameServer().getUtils().debug("Card remove is going into a sub action");
 				return played;
 			}
 		}
@@ -147,8 +149,10 @@ public class RemoveCardAction extends Action {
 		progress.get(player).set("removed", removedCards);
 		if(getTargetedAction(turn) != null && !canSelectMore(player)) {
 			getTargetedAction(turn).completeForCurrentPlayer();
+			turn.getGame().getGameServer().getUtils().debug("The subturn for " + player + " has been completed");
 		}
 		if(max != 0 && removedCards >= max && isCompleted(turn)) {
+			turn.getGame().getGameServer().getUtils().debug("The action has been fully completed");
 			return turn.stopAction();
 		}
 		return getResponse(turn);
@@ -202,6 +206,7 @@ public class RemoveCardAction extends Action {
 		Player player = turn.getPlayer();
 		if(isMultiTargeted()) {
 			player = getTargetedAction(turn).isDone() ? null : getTargetedAction(turn).getCurrentPlayer();
+			turn.getGame().getGameServer().getUtils().debug("Multi targeted action, player is: " + player == null ? "null" : player.getDisplayname());
 		}
 		
 		if(player != null && canSelectMore(player)) {
