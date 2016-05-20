@@ -193,7 +193,7 @@ public class RemoveCardAction extends Action {
 	public boolean canSelectMore(Player player) {
 		if(amountType.equals(AmountType.UNTIL)) {
 			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed "+ getRemovedCards(player) +" of minimum " + progress.get(player).getInteger("forceremovecount") + " cards");
-			return getRemovedCards(player) <= progress.get(player).getInteger("forceremovecount");
+			return getRemovedCards(player) < progress.get(player).getInteger("forceremovecount");
 		}		
 		player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed " + getRemovedCards(player) + " of " + max + " allowed cards");
 		return this.max == 0 || getRemovedCards(player) <= this.max;
