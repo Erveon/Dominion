@@ -103,12 +103,14 @@ Dominion.Interface = (function(Interface) {
     Interface.prototype.handlePhaseEnd = function () {
         if(this.gameData.game.turn.phase === "BUY") {
             var target = this.gameData.game.turn.next_player;
+            var that = this;
 
             this.passTurn(target, function() {
                 $(".overlay").fadeOut(200, function() {
                     $(".overlay").remove();
                 });
 
+                that.handCarousel.currentTab = 0;
                 $('#playedCards').empty();
                 gameObj.endPhase();
             });
@@ -159,8 +161,9 @@ Dominion.Interface = (function(Interface) {
             $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
             that.appendSelectorCards(playResponse);
             that.handleSelectButton(playResponse);
+            var selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
+            selectorCarousel.addCarousel();
             $('.overlay').show();
-            //new Dominion.Interface.Carousel($('.selectorPile'));
         });
     };
 
@@ -177,6 +180,7 @@ Dominion.Interface = (function(Interface) {
 
             that.passTurn(that.gameData.game.turn.player, function() {
                 $('.overlay').remove();
+                gameObj.playingAction = false;
             });
 
             e.stopImmediatePropagation();
@@ -189,7 +193,7 @@ Dominion.Interface = (function(Interface) {
         switch (action) {
             case "SELECT_CARD_HAND":
                 this.selectCardFromHand(playResponse.player);
-                $('.message').text("Select cards to remove from your puny existence, and then kill yourself. <3");
+                $('.message').text("Koude frittn");
                 this.addSelectorListeners();
                 break;
         }

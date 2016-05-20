@@ -92,7 +92,7 @@ Dominion.Game = (function(Game) {
         var containsActions = false;
 
         for(var card in currentPlayerHand) {
-            if(currentPlayerHand[card].type === "ACTION") {
+            if(currentPlayerHand[card].type.substring(0, 6) === "ACTION") {
                 containsActions = true;
             }
         }
