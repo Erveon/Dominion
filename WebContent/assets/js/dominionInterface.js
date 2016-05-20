@@ -102,7 +102,16 @@ Dominion.Interface = (function(Interface) {
 
     Interface.prototype.handlePhaseEnd = function () {
         if(this.gameData.game.turn.phase === "BUY") {
-            this.passTurn();
+            var target = this.gameData.game.turn.next_player;
+
+            this.passTurn(target, function() {
+                $(".overlay").fadeOut(200, function() {
+                    $(".overlay").remove();
+                });
+
+                $('#playedCards').empty();
+                gameObj.endPhase();
+            });
         } else {
             gameObj.endPhase();
         }
@@ -137,12 +146,41 @@ Dominion.Interface = (function(Interface) {
 
     Interface.prototype.showCardSelector = function(playResponse) {
         var overlayHTML = "<div class='overlay'></div>";
+        var selectorContainer = "<div id='selectorContainer'></div>";
+        var leftArrow = "<a href='' class='arrow prev'><i class='material-icons'>chevron_left</i></a>";
+        var rightArrow = "<a href='' class='arrow next'><i class='material-icons'>chevron_right</i></a>";
         var selectorHand = "<ul id='selectorPile' class='cardContainer'></ul>";
-        //var selectorCarousel = new Dominion.Interface.Carousel($());
+        var that = this;
 
-        $('body').append(overlayHTML);
-        $('.overlay').append(selectorHand);
-        this.appendSelectorCards(playResponse);
+        this.passTurn(playResponse.player, function () {
+            $('.overlay').remove();
+            $('body').append(overlayHTML);
+            $('.overlay').append("<h2 class='message'></h2>").append(selectorContainer);
+            $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
+            that.appendSelectorCards(playResponse);
+            that.handleSelectButton(playResponse);
+            $('.overlay').show();
+            //new Dominion.Interface.Carousel($('.selectorPile'));
+        });
+    };
+
+    Interface.prototype.handleSelectButton = function(playResponse) {
+        var that = this;
+        $('.overlay').append("<a class='actionBtn continue' href=''>Top Kek</a>");
+
+        if(playResponse.force === true) {
+            //make button unclickable until action is complete
+        }
+
+        $('.overlay a').on('click', function (e) {
+            e.preventDefault();
+
+            that.passTurn(that.gameData.game.turn.player, function() {
+                $('.overlay').remove();
+            });
+
+            e.stopImmediatePropagation();
+        });
     };
 
     Interface.prototype.appendSelectorCards = function(playResponse) {
@@ -150,19 +188,30 @@ Dominion.Interface = (function(Interface) {
 
         switch (action) {
             case "SELECT_CARD_HAND":
-                this.selectCardFromHand();
+                this.selectCardFromHand(playResponse.player);
+                $('.message').text("Select cards to remove from your puny existence, and then kill yourself. <3");
+                this.addSelectorListeners();
                 break;
         }
     };
 
-    Interface.prototype.selectCardFromHand = function() {
-        var players = this.gameData.game.players;
-        var currentPlayer = this.gameData.game.turn.player;
-        var hand = [];
+    Interface.prototype.addSelectorListeners = function() {
+        $('#selectorPile .card').on('click', function() {
+            var card = $(this).children().first().children().text();
+            var cardDOM = $(this);
+            gameObj.selectCard(card, function() {
+                cardDOM.remove();
+            });
+        });
+    };
 
-        for (var player in players){
-            if(players[player].displayName === currentPlayer) {
-                currentHand = players[player].hand;
+    Interface.prototype.selectCardFromHand = function(target) {
+        var hand = [];
+        var players = this.gameData.game.players;
+
+        for(var player in players) {
+            if(players[player].displayname === target){
+                hand = this.gameData.game.players[player].hand;
             }
         }
 
@@ -176,21 +225,17 @@ Dominion.Interface = (function(Interface) {
         this.handCarousel.addCarousel();
     };
 
-    Interface.prototype.passTurn = function() {
+    Interface.prototype.passTurn = function(target, endAction) {
         var html = "<div class='overlay'>";
         html += "<div class='overlay-title'>";
-        html += "<h2>Give the controls to " + this.gameData.game.turn.next_player + ", please.</h2>";
+        html += "<h2>Give the controls to " + target + ", please.</h2>";
         html += "</div>";
         html += "<a class='actionBtn continue' href=''>Continue</a>";
         html += "</div>";
         $('body').append(html);
         $('.continue').on('click', function(e) {
             e.preventDefault();
-            $(".overlay").fadeOut(200, function() {
-                $(".overlay").remove();
-            });
-            $('#playedCards').empty();
-            gameObj.endPhase();
+            endAction();
         });
         $('.overlay').fadeIn();
     };
