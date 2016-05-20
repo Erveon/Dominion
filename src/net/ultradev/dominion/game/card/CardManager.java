@@ -142,7 +142,7 @@ public class CardManager {
 
 		Card militia = getCards().get("militia");
 		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
-		militia.addAction(parseAction("discard_min", "Discard down to 3 cards in your hand", "min=3;for=others"));
+		militia.addAction(parseAction("discard_until", "Discard down to 3 cards in your hand", "amount=3;for=others"));
 
 		Card mine = getCards().get("mine");
 		Action discardTreasureMine = parseAction("trash_specific", "Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more", "amount=1;restrict=gold,copper,silver");
@@ -241,6 +241,11 @@ public class CardManager {
 					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.DISCARD);
 				}
 				break;
+			case "discard_until":
+				if(containsKeys(params, identifier, "amount")) {
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.UNTIL, RemoveType.DISCARD);
+				}
+				break;
 			case "add_actions":
 				if(containsKeys(params, identifier, "amount")) {
 					return parseAddActions(identifier, description, target, params.get("amount"));
@@ -327,6 +332,7 @@ public class CardManager {
 				}
 				action = new RemoveCardAction(target, type, identifier, description, min, max);
 				break;
+			case UNTIL:
 			case SPECIFIC_AMOUNT:
 				int amount = getGameServer().getUtils().parseInt(params.get("amount"), 1);
 				action = new RemoveCardAction(target, type, identifier, description, count, amount);
