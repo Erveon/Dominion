@@ -17,7 +17,7 @@ import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
 import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
-import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveCount;
+import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.AmountType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
 
 public class CardManagerTest {
@@ -59,7 +59,7 @@ public class CardManagerTest {
 	@Test
 	public void testParseRemove() {
 		Map<String, String> parameters = cardmanager.getMappedVariables("trash_range", "min=0;max=4");
-		Action parsedAction = cardmanager.parseRemove(gameserver, "Remove a card", "Tests parsing the database by adding a removeCard", parameters, ActionTarget.SELF, RemoveCount.RANGE, RemoveType.DISCARD);
+		Action parsedAction = cardmanager.parseRemove(gameserver, "Remove a card", "Tests parsing the database by adding a removeCard", parameters, ActionTarget.SELF, AmountType.RANGE, RemoveType.DISCARD);
 		assertTrue("Failed to parse a RemoveCard string", parsedAction instanceof RemoveCardAction);
 	}
 
