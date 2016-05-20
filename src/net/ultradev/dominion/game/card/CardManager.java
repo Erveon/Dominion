@@ -130,7 +130,7 @@ public class CardManager {
 		//TODO fetch callbacks for cards from db
 		Card cellar = getCards().get("cellar");
 		cellar.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
-		Action cellarAddcard = parseAction("discard_choose", "Discard any number of cards. +1 Card per card discarded.", "");
+		Action cellarAddcard = parseAction("discard_choose", "Discard any number of cards. +1 Card per card discarded", "");
 		cellarAddcard.addCallback(parseAction("draw_cards", "Draw 1 card", "amount=1"));
 		cellar.addAction(cellarAddcard);
 		
@@ -142,7 +142,7 @@ public class CardManager {
 
 		Card militia = getCards().get("militia");
 		militia.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
-		militia.addAction(parseAction("discard_min", "Each other player discards down to 3 cards in his hand.", "min=3;for=others"));
+		militia.addAction(parseAction("discard_min", "Discard down to 3 cards in your hand", "min=3;for=others"));
 
 		Card mine = getCards().get("mine");
 		Action discardTreasureMine = parseAction("trash_specific", "Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more", "amount=1;restrict=gold,copper,silver");
