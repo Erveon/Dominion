@@ -83,6 +83,7 @@ public class RemoveCardAction extends Action {
 			int amount = min - player.getHand().size();
 			amount = amount > 0 ? 0 : Math.abs(amount);
 			progress.get(player).set("forceremovecount", amount);
+			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has to discard " + amount + " cards");
 		}
 	}
 
@@ -137,7 +138,7 @@ public class RemoveCardAction extends Action {
 	
 	@Override
 	public JSONObject finish(Turn turn) {
-		if(isMultiTargeted()) {
+		if(getTargetedAction(turn) != null) {
 			return finish(turn, getTargetedAction(turn).getCurrentPlayer());
 		}
 		return finish(turn, turn.getPlayer());
@@ -202,7 +203,7 @@ public class RemoveCardAction extends Action {
 	public JSONObject getResponse(Turn turn) {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
 		Player player = turn.getPlayer();
-		if(isMultiTargeted()) {
+		if(getTargetedAction(turn) != null) {
 			player = getTargetedAction(turn).isDone() ? null : getTargetedAction(turn).getCurrentPlayer();
 			turn.getGame().getGameServer().getUtils().debug("Multi targeted action, player is: " + player == null ? "null" : player.getDisplayname());
 		}
