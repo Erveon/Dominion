@@ -132,6 +132,17 @@ Dominion.Game = (function(Game) {
         );
     };
 
+    Game.prototype.selectCard = function(card, callback) {
+        this.Api.doCall({'action': 'selectcard', 'card': card}, this.isMP,
+            function (data) {
+                console.log('card selected (trashing/etc)');
+                if (callback && data.result === "DONE") {
+                    callback();
+                }
+            }
+        );
+    };
+
     Game.prototype.initGame = function() {
         var that = this;
         this.Api.doCall({'action': 'create'}, this.isMp,
