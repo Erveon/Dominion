@@ -36,11 +36,11 @@ public class RemoveCardAction extends Action {
 	}
 	
 	// Until & specific amount
-	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, AmountType countType, int amount) {
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, AmountType amountType, int amount) {
 		super(identifier, description, target);
 		this.min = amount;
 		this.max = amount;
-		this.amountType = countType;
+		this.amountType = amountType;
 		init(type);
 	}
 	
@@ -145,13 +145,11 @@ public class RemoveCardAction extends Action {
 	
 	@Override
 	public JSONObject finish(Turn turn, Player player) {
-		int removedCards = getRemovedCards(player) + 1;
-		progress.get(player).set("removed", removedCards);
 		if(getTargetedAction(turn) != null && !canSelectMore(player)) {
 			getTargetedAction(turn).completeForCurrentPlayer();
 			turn.getGame().getGameServer().getUtils().debug("The subturn for " + player.getDisplayname() + " has been completed");
 		}
-		if(max != 0 && removedCards >= max && isCompleted(turn)) {
+		if(max != 0 && getRemovedCards(player) >= max && isCompleted(turn)) {
 			turn.getGame().getGameServer().getUtils().debug("The action has been fully completed");
 			return turn.stopAction();
 		}
@@ -181,9 +179,7 @@ public class RemoveCardAction extends Action {
 				player.discardCard(card);
 				break;
 		}
-		if(getRemovedCards(player) > 0) {
-			progress.get(player).set("forceremovecount", (getRemovedCards(player) - 1));
-		}
+		progress.get(player).set("removed", (getRemovedCards(player) + 1));
 	}
 	
 	public int getRemovedCards(Player player) {
@@ -196,7 +192,7 @@ public class RemoveCardAction extends Action {
 	
 	public boolean canSelectMore(Player player) {
 		if(amountType.equals(AmountType.UNTIL)) {
-			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed " + progress.get(player).getInteger("forceremovecount") + " of " + max + " allowed cards");
+			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed "+ getRemovedCards(player) +" of minimum " + progress.get(player).getInteger("forceremovecount") + " cards");
 			return getRemovedCards(player) <= progress.get(player).getInteger("forceremovecount");
 		}		
 		player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed " + getRemovedCards(player) + " of " + max + " allowed cards");
@@ -215,7 +211,7 @@ public class RemoveCardAction extends Action {
 			response.accumulate("result", ActionResult.SELECT_CARD_HAND);
 			response.accumulate("force", hasForceSelect(player));
 			response.accumulate("min", progress.get(player).getInteger("forceremovecount"));
-			response.accumulate("max", max);
+			response.accumulate("max", amountType.equals(AmountType.UNTIL) ? progress.get(player).getInteger("forceremovecount") : max);
 			response.accumulate("player", player.getDisplayname());
 			response.accumulate("message", getDescripton());
 		} else {
