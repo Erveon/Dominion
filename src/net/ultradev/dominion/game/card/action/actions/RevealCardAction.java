@@ -3,6 +3,7 @@ package net.ultradev.dominion.game.card.action.actions;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.ActionResult;
 
 public class RevealCardAction extends Action {
 	
@@ -12,7 +13,7 @@ public class RevealCardAction extends Action {
 
 	@Override
 	public JSONObject play(Turn turn) {
-		return null;
+		return new JSONObject().accumulate("response", "OK").accumulate("status", ActionResult.DONE);
 	}
 
 }
