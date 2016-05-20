@@ -122,7 +122,7 @@ public class RemoveCardAction extends Action {
 		if(isRestricted() && !getPermitted().contains(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select that card, it is resricted");
 		}
-		turn.getGame().getGameServer().getUtils().debug("Player " + player + " selected " + card.getName());
+		turn.getGame().getGameServer().getUtils().debug("Player " + player.getDisplayname() + " selected " + card.getName());
 		removeCard(player, card);
 		for(Action action : getCallbacks()) {
 			action.setMaster(player, card);
@@ -149,7 +149,7 @@ public class RemoveCardAction extends Action {
 		progress.get(player).set("removed", removedCards);
 		if(getTargetedAction(turn) != null && !canSelectMore(player)) {
 			getTargetedAction(turn).completeForCurrentPlayer();
-			turn.getGame().getGameServer().getUtils().debug("The subturn for " + player + " has been completed");
+			turn.getGame().getGameServer().getUtils().debug("The subturn for " + player.getDisplayname() + " has been completed");
 		}
 		if(max != 0 && removedCards >= max && isCompleted(turn)) {
 			turn.getGame().getGameServer().getUtils().debug("The action has been fully completed");
@@ -195,10 +195,8 @@ public class RemoveCardAction extends Action {
 	}
 	
 	public boolean canSelectMore(Player player) {
-		if(amountType.equals(AmountType.CHOOSE_AMOUNT)) {
-			return true;
-		}
-		return getRemovedCards(player) <= this.max;
+		player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed " + getRemovedCards(player) + " of " + max + " allowed cards");
+		return this.max == 0 || getRemovedCards(player) <= this.max;
 	}
 	
 	public JSONObject getResponse(Turn turn) {
