@@ -160,16 +160,15 @@ Dominion.Interface = (function(Interface) {
             $('.overlay').append("<h2 class='message'></h2>").append(selectorContainer);
             $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
             that.appendSelectorCards(playResponse);
-            that.handleSelectButton(playResponse);
             var selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
             selectorCarousel.addCarousel();
             $('.overlay').show();
         });
     };
 
-    Interface.prototype.handleSelectButton = function(playResponse) {
+    /*Interface.prototype.handleSelectButton = function(playResponse) {
         var that = this;
-        $('.overlay').append("<a class='actionBtn continue' href=''>Top Kek</a>");
+        $('.overlay').append("<a class='actionBtn continue' href=''>Continue</a>");
 
         if(playResponse.force === true) {
             //make button unclickable until action is complete
@@ -178,6 +177,7 @@ Dominion.Interface = (function(Interface) {
         $('.overlay a').on('click', function (e) {
             e.preventDefault();
 
+            //Return the control to the original player
             that.passTurn(that.gameData.game.turn.player, function() {
                 $('.overlay').remove();
                 gameObj.playingAction = false;
@@ -185,27 +185,18 @@ Dominion.Interface = (function(Interface) {
 
             e.stopImmediatePropagation();
         });
-    };
+    };*/
 
     Interface.prototype.appendSelectorCards = function(playResponse) {
-        var action = playResponse.result;
-
-        switch (action) {
-            case "SELECT_CARD_HAND":
-                this.selectCardFromHand(playResponse.player);
-                $('.message').text("Koude frittn");
-                this.addSelectorListeners();
-                break;
-        }
+        this.selectCardFromHand(playResponse.player);
+        $('.message').text(playResponse.message);
+        this.addSelectorListeners();
     };
 
     Interface.prototype.addSelectorListeners = function() {
         $('#selectorPile .card').on('click', function() {
             var card = $(this).children().first().children().text();
-            var cardDOM = $(this);
-            gameObj.selectCard(card, function() {
-                cardDOM.remove();
-            });
+            gameObj.selectCard(card, $(this));
         });
     };
 
