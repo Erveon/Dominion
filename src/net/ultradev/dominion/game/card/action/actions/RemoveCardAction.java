@@ -136,7 +136,7 @@ public class RemoveCardAction extends Action {
 	public JSONObject finish(Turn turn, Player player) {
 		int removedCards = getRemovedCards(player) + 1;
 		progress.get(player).set("removed", removedCards);
-		if(targeted != null) {
+		if(targeted != null && canSelectMore(player)) {
 			targeted.completeForCurrentPlayer();
 		}
 		if(max != 0 && removedCards >= max && isCompleted()) {
