@@ -89,12 +89,8 @@ public class RemoveCardAction extends Action {
 
 	@Override
 	public JSONObject play(Turn turn) {
-		progress.put(turn.getPlayer(), new ActionProgress());
-		progress.get(turn.getPlayer()).set("removed", 0);
-		calculateRemovalAmount(turn.getPlayer());
-		
 		// If the action affects more people than the person that played the card
-		if(getTarget().equals(ActionTarget.EVERYONE) || getTarget().equals(ActionTarget.OTHERS)) {
+		if(isMultiTargeted()) {
 			turn.getGame().getGameServer().getUtils().debug("Playing multi-target card");
 			targeted.put(turn.getGame(), new TargetedAction(turn.getPlayer(), this));
 			for(Player p : getTargetedAction(turn).getPlayers()) {
@@ -102,6 +98,10 @@ public class RemoveCardAction extends Action {
 				progress.get(p).set("removed", 0);
 				calculateRemovalAmount(p);
 			}
+		} else {
+			progress.put(turn.getPlayer(), new ActionProgress());
+			progress.get(turn.getPlayer()).set("removed", 0);
+			calculateRemovalAmount(turn.getPlayer());
 		}
 		return getResponse(turn);
 	}
@@ -159,15 +159,7 @@ public class RemoveCardAction extends Action {
 	
 	@Override
 	public boolean isCompleted(Turn turn) {
-		boolean completed = false;
-		if(getTargetedAction(turn) == null) {
-			completed = true;
-		} else {
-			if(getTargetedAction(turn).isDone()) {
-				completed = true;
-			}
-		}
-		return completed;
+		return getTargetedAction(turn) == null || getTargetedAction(turn).isDone();
 	}
 	
 	public void removeCard(Player player, Card card) {
@@ -205,7 +197,7 @@ public class RemoveCardAction extends Action {
 		Player player = turn.getPlayer();
 		if(getTargetedAction(turn) != null) {
 			player = getTargetedAction(turn).isDone() ? null : getTargetedAction(turn).getCurrentPlayer();
-			turn.getGame().getGameServer().getUtils().debug("Multi targeted action, player is: " + player == null ? "null" : player.getDisplayname());
+			turn.getGame().getGameServer().getUtils().debug("Multi targeted action, player is: " + player);
 		}
 		
 		if(player != null && canSelectMore(player)) {

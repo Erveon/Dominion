@@ -26,7 +26,8 @@ public class TargetedAction {
 		this.target = action.getTarget();
 		
 		this.game = player.getGame();
-		this.todo = new ArrayList<>(player.getGame().getPlayers());
+		this.todo = new ArrayList<>();
+		this.todo.addAll(player.getGame().getPlayers());
 		
 		switch(target) {
 			case EVERYONE:
