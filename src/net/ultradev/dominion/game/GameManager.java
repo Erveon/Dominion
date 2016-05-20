@@ -66,8 +66,9 @@ public class GameManager {
 		if(action.equals("info") || action.equals("setconfig") || action.equals("addplayer") || action.equals("removeplayer") 
 				|| action.equals("start") || action.equals("endturn") || action.equals("buycard") || action.equals("playcard")
 				|| action.equals("selectcard")|| action.equals("stopaction")) {
-			if(g == null)
+			if(g == null) {
 				return getInvalid("No game running");
+			}
 		}
 		
 		switch(action) {
@@ -99,9 +100,9 @@ public class GameManager {
 				String key = map.get("key");
 				if(g.getConfig().handle(key, map.get("value"))) {
 					return response.accumulate("response", "OK");
-				}
-				else
+				} else {
 					return getInvalid("Invalid key in setconfig: " + key);
+				}
 			case "addplayer":
 				if(!map.containsKey("name")) {
 					return getInvalid("Need a name to add the player");

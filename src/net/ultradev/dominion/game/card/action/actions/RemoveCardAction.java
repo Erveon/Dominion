@@ -9,35 +9,37 @@ import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action;
+import net.ultradev.dominion.game.card.action.ActionProgress;
 import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.card.action.TargetedAction;
 import net.ultradev.dominion.game.player.Player;
 
 public class RemoveCardAction extends Action {
 	
-	public enum RemoveCount { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, RANGE };
+	public enum AmountType { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, UNTIL, RANGE };
 	public enum RemoveType { TRASH, DISCARD };
 	
-	private int amount;
 	private int min, max;
-	private RemoveCount countType;
+	private AmountType amountType;
 	private RemoveType type;
 	
-	private Map<Player, Integer> cardsRemoved;
+	private Map<Player, ActionProgress> progress;
 	
 	private List<Card> permitted;
 	private TargetedAction targeted;
 	
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
 		super(identifier, description, target);
-		this.countType = RemoveCount.CHOOSE_AMOUNT;
+		this.amountType = AmountType.CHOOSE_AMOUNT;
 		init(type);
 	}
 	
-	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, int amount) {
+	// Until & specific amount
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, AmountType countType, int amount) {
 		super(identifier, description, target);
-		this.amount = amount;
-		this.countType = RemoveCount.SPECIFIC_AMOUNT;
+		this.min = amount;
+		this.max = amount;
+		this.amountType = countType;
 		init(type);
 	}
 	
@@ -45,14 +47,14 @@ public class RemoveCardAction extends Action {
 		super(identifier, description, target);
 		this.min = min;
 		this.max = max;
-		this.countType = RemoveCount.RANGE;
+		this.amountType = AmountType.RANGE;
 		init(type);
 	}
 	
 	public void init(RemoveType type) {
 		this.permitted = new ArrayList<>();
 		this.type = type;
-		this.cardsRemoved = new HashMap<>();
+		this.progress = new HashMap<>();
 	}
 	
 	public void addPermitted(Card card) {
@@ -66,20 +68,38 @@ public class RemoveCardAction extends Action {
 	public List<Card> getPermitted() {
 		return permitted;
 	}
+	
+	/**
+	 * Calculates the minimum amount of cards to be removed for a player.
+	 * This will actively decrease when cards are removed opposed to the 'min' variable
+	 * @param player
+	 */
+	public void calculateRemovalAmount(Player player) {
+		progress.get(player).set("forceremovecount", min);
+		// If they already have that amount or less, don't force
+		if(amountType.equals(AmountType.UNTIL)) {
+			int amount = min - player.getHand().size();
+			amount = amount > 0 ? 0 : Math.abs(amount);
+			progress.get(player).set("forceremovecount", amount);
+		}
+	}
 
 	@Override
 	public JSONObject play(Turn turn) {
-		cardsRemoved.put(turn.getPlayer(), 0);
+		progress.put(turn.getPlayer(), new ActionProgress());
+		progress.get(turn.getPlayer()).set("removed", 0);
+		calculateRemovalAmount(turn.getPlayer());
 		
-		// If the action affects more than the person that played the card
+		// If the action affects more people than the person that played the card
 		if(getTarget().equals(ActionTarget.EVERYONE) || getTarget().equals(ActionTarget.OTHERS)) {
 			turn.getGame().getGameServer().getUtils().debug("Playing multi-target card");
 			targeted = new TargetedAction(turn.getPlayer(), this);
 			for(Player p : targeted.getPlayers()) {
-				cardsRemoved.put(p, 0);
+				progress.put(p, new ActionProgress());
+				progress.get(p).set("removed", 0);
+				calculateRemovalAmount(p);
 			}
 		}
-		
 		return getResponse(turn);
 	}
 	
@@ -92,26 +112,14 @@ public class RemoveCardAction extends Action {
 		if(isRestricted() && !getPermitted().contains(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select that card, it is resricted");
 		}
-		
-		switch(type) {
-			case DISCARD:
-				player.discardCard(card);
-				break;
-			case TRASH:
-				player.trashCard(card);
-				break;
-			default:
-				break;
-		}
-		
+		removeCard(player, card);
 		for(Action action : getCallbacks()) {
 			action.setMaster(player, card);
 			JSONObject played = action.play(turn);
-			if(action instanceof GainCardAction) {
+			if(!action.isCompleted()) {
 				return played;
 			}
 		}
-		
 		return finish(turn, player);
 	}
 	
@@ -119,24 +127,20 @@ public class RemoveCardAction extends Action {
 	public JSONObject finish(Turn turn) {
 		if(isMultiTargeted()) {
 			return finish(turn, targeted.getCurrentPlayer());
-		} else {
-			return finish(turn, turn.getPlayer());
 		}
+		return finish(turn, turn.getPlayer());
 	}
 	
 	@Override
 	public JSONObject finish(Turn turn, Player player) {
 		int removedCards = getRemovedCards(player) + 1;
-		cardsRemoved.put(player, removedCards);
-		
+		progress.get(player).set("removed", removedCards);
 		if(targeted != null) {
 			targeted.completeForCurrentPlayer();
 		}
-		
 		if(max != 0 && removedCards >= max && isCompleted()) {
 			return turn.stopAction();
 		}
-		
 		return getResponse(turn);
 	}
 	
@@ -153,42 +157,38 @@ public class RemoveCardAction extends Action {
 		return completed;
 	}
 	
-	public int getRemovedCards(Player player) {
-		if(cardsRemoved.containsKey(player)) {
-			return cardsRemoved.get(player);
+	public void removeCard(Player player, Card card) {
+		switch(type) {
+			case TRASH:
+				player.trashCard(card);
+				break;
+			case DISCARD:
+			default:
+				player.discardCard(card);
+				break;
 		}
-		return 0;
+		if(getRemovedCards(player) > 0) {
+			progress.get(player).set("forceremovecount", (getRemovedCards(player) - 1));
+		}
+	}
+	
+	public int getRemovedCards(Player player) {
+		return progress.get(player).getInteger("removed");
 	}
 	
 	public boolean hasForceSelect(Player player) {
-		switch(countType) {
-			case CHOOSE_AMOUNT:
-				return false;
-			case RANGE:
-				return getRemovedCards(player) < this.min;
-			case SPECIFIC_AMOUNT:
-				return getRemovedCards(player) == this.amount;
-			default:
-				return false;
-		}
+		return progress.get(player).getInteger("forceremovecount") > 0;
 	}
 	
 	public boolean canSelectMore(Player player) {
-		switch(countType) {
-			case CHOOSE_AMOUNT:
-				return true;
-			case RANGE:
-				return getRemovedCards(player) <= this.max;
-			case SPECIFIC_AMOUNT:
-				return getRemovedCards(player) != this.amount;
-			default:
-				return false;
+		if(amountType.equals(AmountType.CHOOSE_AMOUNT)) {
+			return true;
 		}
+		return getRemovedCards(player) <= this.max;
 	}
 	
 	public JSONObject getResponse(Turn turn) {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
-		
 		Player player = turn.getPlayer();
 		if(isMultiTargeted()) {
 			player = targeted.isDone() ? null : targeted.getCurrentPlayer();
@@ -197,6 +197,8 @@ public class RemoveCardAction extends Action {
 		if(player != null && canSelectMore(player)) {
 			response.accumulate("result", ActionResult.SELECT_CARD_HAND);
 			response.accumulate("force", hasForceSelect(player));
+			response.accumulate("min", progress.get(player).getInteger("forceremovecount"));
+			response.accumulate("max", max);
 			response.accumulate("player", player.getDisplayname());
 		} else {
 			response.accumulate("result", ActionResult.DONE);

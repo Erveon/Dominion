@@ -9,7 +9,8 @@ import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.player.Player; 
 
 public class Turn {
-	
+
+	public enum CardDestination { TOP_DECK, DECK, DISCARD }
 	public enum Phase { ACTION, BUY, CLEANUP };
 	private enum BuyResponse { CANTAFFORD, BOUGHT };
 	
@@ -207,13 +208,17 @@ public class Turn {
 		return buyCard(cardid, false);
 	}
 	
+	public JSONObject buyCard(String cardid, boolean free) {
+		return buyCard(cardid, free, CardDestination.DECK);
+	}
+	
 	/**
 	 * Buys a card for a player
 	 * @param cardid
 	 * @param boolean if the card is free
 	 * @return The response
 	 */
-	public JSONObject buyCard(String cardid, boolean free) {
+	public JSONObject buyCard(String cardid, boolean free, CardDestination destination) {
 		if(!free) {
 			if(!phase.equals(Phase.BUY) || !isValidCard(cardid)) {
 				return getGame().getGameServer().getGameManager()
@@ -226,7 +231,18 @@ public class Turn {
 		Card card = cm.get(cardid);
 		
 		if((getBuypower() >= card.getCost() && getBuys() > 0) || free) {
-			getPlayer().getDeck().add(card);
+			switch(destination) {
+				case TOP_DECK:
+					// Shifts all other elements to the right
+					getPlayer().getDeck().add(0, card);
+					break;
+				case DECK:
+					getPlayer().getDeck().add(card);
+					break;
+				default:
+					getPlayer().getDiscard().add(card);
+					break;
+			}
 			if(!free) {
 				removeBuy();
 				removeBuypower(card.getCost());

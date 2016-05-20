@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.ultradev.dominion.GameServer;
+import net.ultradev.dominion.game.Turn.CardDestination;
 import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
@@ -18,7 +19,7 @@ import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
 import net.ultradev.dominion.game.card.action.actions.GainCardAction;
 import net.ultradev.dominion.game.card.action.actions.GainCardAction.GainCardType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
-import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveCount;
+import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.AmountType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
 import net.ultradev.dominion.game.player.Player;
 
@@ -91,6 +92,9 @@ public class CardManager {
 		Card adventurer = new Card("adventurer", "Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards.", 6);
 		getCards().put("adventurer", adventurer);
 		
+		Card bureaucrat = new Card("bureaucrat", "Gain a Silver card; put it on top of your deck. Each other player reveals a Victory card from his hand and puts it on his deck", 4);
+		getCards().put("bureaucrat", bureaucrat);
+		
 		addActions();
 	}
 	
@@ -161,6 +165,10 @@ public class CardManager {
 		
 		Card adventurer = getCards().get("adventurer");
 		adventurer.addAction(parseAction("adventurer", "Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards.", ""));
+		
+		Card bureaucrat = getCards().get("bureaucrat");
+		bureaucrat.addAction(parseAction("gain_specific_card", "Gain a Silver card; put it on top of your deck", "card=silver;to=top_deck"));
+		
 	}
 	
 	/**
@@ -188,49 +196,49 @@ public class CardManager {
 				break;
 			case "trash_specific":
 				if(containsKeys(params, identifier, "amount")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.SPECIFIC_AMOUNT, RemoveType.TRASH);
 				}
 				break;
 			case "trash_choose":
 				if(containsKeys(params, identifier)) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.CHOOSE_AMOUNT, RemoveType.TRASH);
 				}
 				break;
 			case "trash_range":
 				if(containsKeys(params, identifier, "min", "max")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.TRASH);
 				}
 				break;
 			case "trash_min":
 				if(containsKeys(params, identifier, "min")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.TRASH);
 				}
 				break;
 			case "trash_max":
 				if(containsKeys(params, identifier, "max")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.TRASH);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.TRASH);
 				}
 				break;
 			case "discard_specific":
 				if(containsKeys(params, identifier, "amount")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.SPECIFIC_AMOUNT, RemoveType.DISCARD);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.SPECIFIC_AMOUNT, RemoveType.DISCARD);
 				}
 				break;
 			case "discard_choose":
-				return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.CHOOSE_AMOUNT, RemoveType.DISCARD);
+				return parseRemove(getGameServer(), identifier, description, params, target, AmountType.CHOOSE_AMOUNT, RemoveType.DISCARD);
 			case "discard_range":
 				if(containsKeys(params, identifier, "min", "max")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.DISCARD);
 				}
 				break;
 			case "discard_min":
 				if(containsKeys(params, identifier, "min")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.DISCARD);
 				}
 				break;
 			case "discard_max":
 				if(containsKeys(params, identifier, "max")) {
-					return parseRemove(getGameServer(), identifier, description, params, target, RemoveCount.RANGE, RemoveType.DISCARD);
+					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.DISCARD);
 				}
 				break;
 			case "add_actions":
@@ -254,6 +262,20 @@ public class CardManager {
 						gainType = GainCardType.valueOf(params.get("type").toUpperCase());
 					}
 					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
+				}
+				break;
+			case "gain_specific_card":
+				if(containsKeys(params, identifier, "card")) {
+					Card card = get(params.get("card"));
+					GainCardAction gainSpecificCard = new GainCardAction(identifier, description, ActionTarget.SELF, card);
+					CardDestination destination = CardDestination.DISCARD;
+					if(params.containsKey("to")) {
+						destination = CardDestination.valueOf(params.get("to").toUpperCase());
+						if(destination != null) {
+							gainSpecificCard.setDestination(destination);
+						}
+					}
+					return gainSpecificCard;
 				}
 				break;
 			case "adventurer":
@@ -288,7 +310,7 @@ public class CardManager {
 		return new GainBuysAction(identifier, description, target, amount);
 	}
 	
-	public Action parseRemove(GameServer gs, String identifier, String description, Map<String, String> params, ActionTarget target,  RemoveCount count, RemoveType type) {
+	public Action parseRemove(GameServer gs, String identifier, String description, Map<String, String> params, ActionTarget target,  AmountType count, RemoveType type) {
 		RemoveCardAction action = null;
 		switch(count) {
 			case CHOOSE_AMOUNT:
@@ -307,7 +329,7 @@ public class CardManager {
 				break;
 			case SPECIFIC_AMOUNT:
 				int amount = getGameServer().getUtils().parseInt(params.get("amount"), 1);
-				action = new RemoveCardAction(target, type, identifier, description, amount);
+				action = new RemoveCardAction(target, type, identifier, description, count, amount);
 				break;
 			default:
 				action = new RemoveCardAction(target, type, identifier, description);
