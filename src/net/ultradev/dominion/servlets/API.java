@@ -23,15 +23,18 @@ public class API extends HttpServlet {
 		// Create game > ?action=create&type=local
 		// Destroy game > ?action=destroy&type=local
 		// Game info > ?action=info&type=local
-		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
-		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
-		// Start game > ?action=start&type=local
 		// End phase(action/buys/turn) > ?action=endphase&type=local
 		// Buy card > ?action=buycard&type=local&card=copper
 		// Select card > ?action=selectcard&type=local&card=copper
 		// Set card set > ?action=setconfig&type=local&key=setcardset&value=test
 		// Play card > ?action=playcard&type=local&card=copper
 		// Stop an active action & continue card actions > ?action=stopaction&type=local
+	
+	//DEPRECATED CALLS
+		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
+		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
+		// Start game > ?action=start&type=local
+	// -> instead, use > ?action=setup&type=local&players="Bob","Nick"&cardset=firstgame
 	
 	GameServer gs;
        

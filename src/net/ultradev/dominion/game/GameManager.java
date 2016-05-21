@@ -2,6 +2,7 @@ package net.ultradev.dominion.game;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpSession;
 
@@ -30,7 +31,7 @@ public class GameManager {
 	}
 	
 	// If null, it's a java GUI game
-	public LocalGame createGame(HttpSession session) {
+	public LocalGame createLocalGame(HttpSession session) {
 		LocalGame game = new LocalGame(getGameServer());
 		games.put(session, game);
 		return game;
@@ -72,47 +73,27 @@ public class GameManager {
 		}
 		
 		switch(action) {
-			case "create":
-				createGame(session);
+			case "setup":
+				if(!map.containsKey("cardset") || !map.containsKey("players")) {
+					return getInvalid("Requires players & carset");
+				}
+				String[] players = map.get("players").split("¤");
+				if(players.length < 2) {
+					return getInvalid("Requires at least 2 players");
+				}
+				Game game = createLocalGame(session);
+				Stream.of(players).forEach(game::addPlayer);
+				String cardset = map.get("cardset");
+				game.getConfig().setCardset(cardset);
+				game.start();
+				response.accumulate("who", game.getTurn().getPlayer().getDisplayname());
 				return response.accumulate("response", "OK");
 			case "destroy":
 				destroyFor(session);
-				return response.accumulate("response", "OK");
-			case "start":
-				if(g.getPlayers().size() < 2) {
-					return getInvalid("You need at least 2 players to start a game");
-				} else if(g.getWhoStarted() != null) {
-					return getInvalid("The game has already been started");
-				} else if(!g.getConfig().hasValidActionCards()) {
-					return getInvalid("Invalid actioncards");
-				}
-				g.start();
-				response.accumulate("who", g.getTurn().getPlayer().getDisplayname());
-				return response.accumulate("response", "OK");
-			case "info":
+				return response.accumulate("response", "OK");case "info":
 				return response
 						.accumulate("response", "OK")
 						.accumulate("game", g.getAsJson());
-			case "setconfig":
-				if(!map.containsKey("key") || !map.containsKey("value")) {
-					return getInvalid("No key & value pair given for config");
-				}
-				String key = map.get("key");
-				if(g.getConfig().handle(key, map.get("value"))) {
-					return response.accumulate("response", "OK");
-				} else {
-					return getInvalid("Invalid key in setconfig: " + key);
-				}
-			case "addplayer":
-				if(!map.containsKey("name")) {
-					return getInvalid("Need a name to add the player");
-				}
-				String name = map.get("name");
-				if(g.hasStarted()) {
-					return getInvalid("Game has started already");
-				}
-				g.addPlayer(name);
-				return response.accumulate("response", "OK");
 			case "endphase":
 				return g.endPhase();
 			case "playcard":
