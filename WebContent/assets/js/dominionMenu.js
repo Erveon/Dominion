@@ -30,10 +30,6 @@ Dominion.Menu = (function(Menu) {
         $.fn.fullpage.moveSlideRight();
     };
 
-    Menu.prototype.moveLeft = function() {
-        $.fn.fullpage.moveSlideLeft();
-    };
-
     Menu.prototype.PlayerNameField = function(playerNo) {
         var name = '<label class="hidden" for="player' + playerNo + '">Name Player ' + playerNo + '</label>';
         name += '<input class="hidden player" id="player' + playerNo + '" type="text" name="player' + playerNo + '">';
@@ -81,7 +77,6 @@ Dominion.Menu = (function(Menu) {
         $('button.page-down').on('click', this.moveDown);
         $('button.page-up').on('click', this.moveUp);
         $('button.page-right').on('click', this.moveRight);
-        $('button.page-left').on('click', this.moveLeft);
         $('.start-game').on('click', function() {
         	that.startGame(that);
         });

@@ -13,33 +13,33 @@ Dominion.Game = (function(Game) {
         gameObj = this;
     };
 
-    Game.prototype.addPlayer = function(name) {
-        this.Api.doCall({'action': 'addplayer', 'name': name}, this.isMp,
-            function() {
-                console.log('Player ' + name + ' was added to the game.');
-            }
-        );
-    };
-
-    Game.prototype.addAllPlayers = function(callback) {
-        for (var playerIndex in this.players) {
-            this.addPlayer(this.players[playerIndex]);
-        }
-
-        if (callback) {
-            callback();
-        }
-    };
-
-    Game.prototype.startGame = function () {
+    Game.prototype.startGame = function (players, cardset) {
         var that = this;
-        this.Api.doCall({'action': 'start'}, this.isMp,
+        var playerString = this.constructPlayerString(players);
+        this.Api.doCall({'action': 'setup', 'cardset': cardset, 'players': playerString}, this.isMp,
             function() {
                 console.log("The game has been started.");
                 that.Interface = new Dominion.Interface();
-                that.updateGameInfo();
+                that.updateGameInfo(function () {
+                    that.Interface.passTurn(that.gameData.game.turn.player, function() {
+                        $('.overlay').slideUp(function() {
+                            $('.overlay').remove();
+                        });
+                    });
+                });
             }
         );
+    };
+
+    Game.prototype.constructPlayerString = function(players) {
+        var playerString = "";
+
+        for(var player in players) {
+            playerString += players[player];
+            playerString += "¤";
+        }
+
+        return playerString.substring(0, playerString.length - 1);
     };
 
     Game.prototype.buyCard = function(card) {
@@ -72,7 +72,7 @@ Dominion.Game = (function(Game) {
         );
     };
 
-    Game.prototype.updateGameInfo = function () {
+    Game.prototype.updateGameInfo = function (callback) {
         var that = this;
         this.Api.doCall({'action': 'info'}, this.isMp,
             function (data) {
@@ -80,13 +80,12 @@ Dominion.Game = (function(Game) {
                 that.Interface.setGameData(that.gameData);
                 that.handlePhaseSkip();
                 that.Interface.refreshUI();
+
+                if(callback) {
+                    callback();
+                }
             }
         );
-    };
-
-    Game.prototype.addCardSet = function () {
-        var that = this;
-        this.Api.doCall({'action': 'setconfig', 'key': 'setcardset', 'value' : 'test'}, this.isMp);
     };
 
     Game.prototype.checkHandForActions = function () {
@@ -187,10 +186,7 @@ Dominion.Game = (function(Game) {
         this.Api.doCall({'action': 'create'}, this.isMp,
             function() {
                 console.log('The game has been created.');
-                that.addCardSet();
-                that.addAllPlayers(function() {
-                    that.startGame();
-                });
+                that.startGame(that.players, that.cardSet);
             }
         );
     };
