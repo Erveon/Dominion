@@ -6,6 +6,7 @@ Dominion.Interface = (function(Interface) {
         this.carouselAdded = false;
         this.listenersAdded = false;
         this.menuOn = false;
+        this.infoModeOn = false;
         this.gameData = null;
         this.handContents = null;
         this.playBuffer = [];
@@ -72,6 +73,49 @@ Dominion.Interface = (function(Interface) {
                 $('body').append(html);
                 $('.settings').slideDown();
                 that.menuOn = true;
+            }
+
+            e.stopImmediatePropagation();
+        });
+
+        $('.info').on('click', function(e) {
+            e.preventDefault();
+
+            if(that.infoModeOn === true) {
+                $(this).children().remove();
+                $(this).append("<i class='material-icons'>info_outline</i>");
+                $('.info-overlay').fadeOut(function() {
+                    $('.info-overlay').remove();
+                });
+                that.infoModeOn = false;
+            } else {
+                $(this).children().remove();
+                $(this).append("<i class='material-icons'>info</i>");
+
+                var hand = $('#handPile').position();
+                var market = $('#mainPile').children().first().position();
+                var field = $('#playedCardContainer').children().first().position();
+                var controls = $('#controls').children().first().position();
+                var counters = $('#topStatus ul').children().first().position();
+
+                $('body').append("<div class='info-overlay handOverlay'><h2>HAND</h2><p>This field contains the current players' hand of cards. Playable cards will be highlighted, unplayable cards will be dimmed.</p></div>");
+                $('.handOverlay').css({top: hand.top + 'px', left: hand.left + 14 + 'px'});
+
+                $('body').append("<div class='info-overlay marketOverlay'><h2>MARKET</h2><p>This field contains all of the purchaseable cards. Buyable cards will be highlighted, unbuyable cards will be dimmed.</p></div>");
+                $('.marketOverlay').css({top: market.top + 'px', left: market.left + 'px'});
+
+                $('body').append("<div class='info-overlay fieldOverlay'><h2>PLAYING FIELD</h2><p>This field contains all of cards that have been played this turn.</p></div>");
+                $('.fieldOverlay').css({top: field.top + 10 + 'px', left: field.left + 'px'});
+
+                $('body').append("<div class='info-overlay controlsOverlay'><h2>CONTROLS</h2></div>");
+                $('.controlsOverlay').css({top: controls.top + 'px', left: controls.left + 'px'});
+
+                $('body').append("<div class='info-overlay countersOverlay'><h2>COUNTERS</h2></div>");
+                $('.countersOverlay').css({top: counters.top + 5 + 'px', left: controls.left + 380 + 'px'});
+
+                $('.info-overlay').fadeIn();
+
+                that.infoModeOn = true;
             }
 
             e.stopImmediatePropagation();

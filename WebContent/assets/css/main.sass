@@ -14,6 +14,53 @@ body
 #game
   display: none
 
+.info-overlay
+  background-color: $infoOverlayBg
+  position: absolute
+  display: none
+  z-index: 50
+  text-align: center
+  color: $lightTextColor
+
+  h2
+    margin-top: 100px
+    font-size: 2.5rem
+
+  p
+    width: 450px
+    margin: 0 auto
+
+.handOverlay
+  width: 1125px
+  height: 329px
+
+.marketOverlay
+  width: 1142px
+  height: 316px
+
+.fieldOverlay
+  width: 680px
+  height: 165px
+
+  h2
+    margin-top: 25px
+
+.controlsOverlay
+  width: 1124px
+  height: 37px
+
+  h2
+    margin-top: 8px
+    font-size: 1.2rem
+
+.countersOverlay
+  width: 360px
+  height: 50px
+
+  h2
+    font-size: 1.2rem
+    margin-top: 13px
+
 .settings
   width: 100%
   height: 325px
@@ -340,6 +387,19 @@ body
     margin: 0 auto
     display: block
 
+    a.info
+      color: white
+      padding-left: 40px
+      padding-top: 15px
+      width: 30px
+      height: 30px
+      text-decoration: none
+      float: left
+
+      i
+        font-size: 1.7rem
+
+
     h1
       display: inline-block
       float: left
@@ -361,7 +421,7 @@ body
         -moz-transition: all 150ms ease-in-out
         transition: all 150ms ease-in-out
 
-    a.menu:hover
+    a:hover
       i
         color: $treasureCardColor
         -webkit-transition: all 150ms ease-in-out
@@ -369,7 +429,7 @@ body
         transition: all 150ms ease-in-out
 
     ul
-      margin: 0 0 0 290px
+      margin: 0 0 0 195px
       padding: 0
       list-style-type: none
       text-align: center
