@@ -89,9 +89,10 @@ public class TargetedAction {
 	}
 	
 	public void completeForCurrentPlayer() {
-		if(todo.contains(currentPlayer)) {
-			this.currentPlayer = getNextPlayer(currentPlayer);
-			todo.remove(currentPlayer);
+		Player current = currentPlayer;
+		if(todo.contains(current)) {
+			this.currentPlayer = getNextPlayer(current);
+			todo.remove(current);
 			if(todo.isEmpty()) {
 				this.isDone = true;
 			}

@@ -267,7 +267,9 @@ public class Turn {
 		}
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		if(!getPlayer().getHand().contains(card)) {
+		if(getActions() <= 0 && card.getType().equals(CardType.ACTION)) {
+			return gm.getInvalid("No actions left");
+		} else if(!getPlayer().getHand().contains(card)) {
 			return gm.getInvalid("Player doesn't have the selected card in their hand");
 		}
 
