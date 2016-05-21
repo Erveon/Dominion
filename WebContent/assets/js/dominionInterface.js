@@ -5,6 +5,7 @@ Dominion.Interface = (function(Interface) {
         this.fieldCarousel = null;
         this.carouselAdded = false;
         this.listenersAdded = false;
+        this.menuOn = false;
         this.gameData = null;
         this.handContents = null;
         this.playBuffer = [];
@@ -51,6 +52,28 @@ Dominion.Interface = (function(Interface) {
         $('#controls .endPhase').on('click', function(e) {
             e.preventDefault();
             that.handlePhaseEnd();
+            e.stopImmediatePropagation();
+        });
+
+        $('.menu').on('click', function(e) {
+            e.preventDefault();
+
+            if(that.menuOn) {
+                $('.settings').slideUp(function () {
+                    $('.settings').remove();
+                    that.menuOn = false;
+                });
+            } else {
+                var html = "<div class='settings'>";
+                html += "<ul>";
+                html += "<li><a href=''>Quit Playing</a></li>";
+                html += "</ul>";
+                html += "</div>";
+                $('body').append(html);
+                $('.settings').slideDown();
+                that.menuOn = true;
+            }
+
             e.stopImmediatePropagation();
         });
     };

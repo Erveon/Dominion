@@ -14,6 +14,47 @@ body
 #game
   display: none
 
+.settings
+  width: 100%
+  height: 325px
+  position: absolute
+  top: 60px
+  display: none
+  background-color: $mainColor
+
+  ul
+    list-style-type: none
+    margin: 50px auto
+    width: 1142px
+
+    li
+      padding: 0
+      margin: 0
+
+      a
+        background-color: $accentColor2
+        border: none
+        color: $lightTextColor
+        text-transform: uppercase
+        font-family: 'RobotoBold'
+        padding: 10px
+        font-size: 0.9rem
+        display: block
+        width: 150px
+        text-align: center
+        text-decoration: none
+        margin: 50px auto
+        -webkit-transition: all 150ms ease-in-out
+        -moz-transition: all 150ms ease-in-out
+        transition: all 150ms ease-in-out
+
+      a:hover
+        background-color: $accentColor4
+        cursor: pointer
+        -webkit-transition: all 150ms ease-in-out
+        -moz-transition: all 150ms ease-in-out
+        transition: all 150ms ease-in-out
+
 .tooltip
   width: 216px
   height: 320px
