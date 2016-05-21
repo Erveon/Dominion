@@ -10,6 +10,7 @@ import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.player.Player;
+import net.ultradev.dominion.game.player.Player.Pile;
 
 public class AdventurerAction extends Action {
 
@@ -18,7 +19,7 @@ public class AdventurerAction extends Action {
 	}
 
 	@Override
-	public JSONObject play(Turn turn) {
+	public JSONObject play(Turn turn, Card card) {
 		Player p = turn.getPlayer();
 		
 		List<Card> toReveal = new ArrayList<>();
@@ -33,7 +34,7 @@ public class AdventurerAction extends Action {
 		}
 		
 		for(Card treasure : treasures) {
-			p.getHand().add(treasure);
+			p.getPile(Pile.HAND).add(treasure);
 		}
 		
 		return new JSONObject()
@@ -44,7 +45,7 @@ public class AdventurerAction extends Action {
 	
 	public void checkDeck(Player p, List<Card> toReveal, List<Card> treasures) {
 		// Looking for treasures :))
-		for(Card card : p.getDeck()) {
+		for(Card card : p.getPile(Pile.DECK)) {
 			if(treasures.size() < 2) {
 				if(card.getType().equals(CardType.TREASURE)) {
 					treasures.add(card);
@@ -56,7 +57,7 @@ public class AdventurerAction extends Action {
 		int amount = toReveal.size() + treasures.size();
 		// Remove the cards to reveal from the deck
 		for(int i = 0; i < amount; i++) {
-			p.getDeck().remove(0);
+			p.getPile(Pile.DECK).remove(0);
 		}
 	}
 

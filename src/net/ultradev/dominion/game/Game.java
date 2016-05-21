@@ -128,7 +128,7 @@ public abstract class Game {
 	
 	public JSONObject endPhase() {
 		JSONObject response = new JSONObject().accumulate("response", "OK");
-		if(getTurn().canEndPhase()) {
+		if(getTurn().canEndPhase() || true) {
 			getTurn().endPhase();
 			if(getTurn().getPhase().equals(Phase.CLEANUP)) {
 				endTurn();

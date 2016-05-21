@@ -11,6 +11,8 @@ import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.CardManager;
 
 public class Player {
+
+	public enum Pile { HAND, DECK, DISCARD }
 	
 	private String displayname;
 	
@@ -63,26 +65,21 @@ public class Player {
 	public String getDisplayname() {
 		return displayname;
 	}
-
-	/**
-	 * @return The deck pile
-	 */
-	public List<Card> getDeck() {
-		return deck;
-	}
-
-	/**
-	 * @return The hand pile
-	 */
-	public List<Card> getHand() {
-		return hand;
-	}
 	
 	/**
-	 * @return The discard pile
+	 * @param pile Which pile to return
+	 * @return A list of cards in that pile
 	 */
-	public List<Card> getDiscard() {
-		return discard;
+	public List<Card> getPile(Pile pile) {
+		switch(pile) {
+			case DECK:
+				return deck;
+			case DISCARD:
+				return discard;
+			case HAND:
+				return hand;
+		}
+		return null;
 	}
 	
 	/**
@@ -90,9 +87,9 @@ public class Player {
 	 */
 	public List<Card> getCards() {
 		List<Card> cards = new ArrayList<Card>();
-		cards.addAll(getDeck());
-		cards.addAll(getHand());
-		cards.addAll(getDiscard());
+		cards.addAll(getPile(Pile.DECK));
+		cards.addAll(getPile(Pile.HAND));
+		cards.addAll(getPile(Pile.DISCARD));
 		return cards;
 	}
 	
@@ -101,12 +98,12 @@ public class Player {
 	 */
 	public void setup() {
 		for(int i = 0; i < 7; i++) {
-			getDeck().add(getGameServer().getCardManager().get("copper"));
+			getPile(Pile.DECK).add(getGameServer().getCardManager().get("copper"));
 		}
 		for(int i = 0; i < 3; i++) {
-			getDeck().add(getGameServer().getCardManager().get("estate"));
+			getPile(Pile.DECK).add(getGameServer().getCardManager().get("estate"));
 		}
-		this.deck = shuffle(getDeck());
+		this.deck = shuffle(getPile(Pile.DECK));
 		for(int i = 0; i < 5; i++) {
 			drawCardFromDeck();
 		}
@@ -126,19 +123,19 @@ public class Player {
 	 * Draws a card from the player's deck
 	 */
 	public void drawCardFromDeck() {
-		if(getDeck().size() == 0 && getDiscard().size() != 0) {
+		if(getPile(Pile.DECK).size() == 0 && getPile(Pile.DISCARD).size() != 0) {
 			transferDiscardToDeck();
 		}
-		Card c = getDeck().remove(0);
-		getHand().add(c);
+		Card c = getPile(Pile.DECK).remove(0);
+		getPile(Pile.HAND).add(c);
 	}
 	
 	/**
 	 * Shuffles the discard pile and moves it to the deck
 	 */
 	public void transferDiscardToDeck() {
-		this.deck = shuffle(getDiscard());
-		getDiscard().clear();
+		this.deck = shuffle(getPile(Pile.DISCARD));
+		getPile(Pile.DISCARD).clear();
 	}
 	
 	/**
@@ -179,8 +176,8 @@ public class Player {
 	 * Discards the player's hand
 	 */
 	public void discardHand() {
-		getDiscard().addAll(getHand());
-		getHand().clear();
+		getPile(Pile.DISCARD).addAll(getPile(Pile.HAND));
+		getPile(Pile.HAND).clear();
 	}
 	
 	/**
@@ -189,7 +186,10 @@ public class Player {
 	 */
 	private List<JSONObject> getCardsAsJson(List<Card> cards) {
 		List<JSONObject> json = new ArrayList<>();
-		cards.forEach(card -> json.add(card.getAsJson()));
+		List<Card> toAdd = new ArrayList<>(cards); // Prevent concurrent modification exception
+		for(Card card : toAdd) {
+			json.add(card.getAsJson());
+		}
 		return json;
 	}
 	
@@ -198,8 +198,8 @@ public class Player {
 	 * @param card To be trashed
 	 */
 	public void trashCard(Card card) {
-		if(getHand().contains(card)) {
-			getHand().remove(card);
+		if(getPile(Pile.HAND).contains(card)) {
+			getPile(Pile.HAND).remove(card);
 			getGame().getBoard().addTrash(card);
 		}
 	}
@@ -209,8 +209,8 @@ public class Player {
 	 * @param card To be discarded
 	 */
 	public void discardCard(Card card) {
-		getDiscard().add(card);
-		getHand().remove(card);
+		getPile(Pile.DISCARD).add(card);
+		getPile(Pile.HAND).remove(card);
 	}
 	
 	/**
@@ -219,9 +219,9 @@ public class Player {
 	public JSONObject getAsJson() {
 		return new JSONObject()
 				.accumulate("displayname", getDisplayname())
-				.accumulate("deck", getCardsAsJson(getDeck()))
-				.accumulate("hand", getCardsAsJson(getHand()))
-				.accumulate("discard", getCardsAsJson(getDiscard()));
+				.accumulate("deck", getCardsAsJson(getPile(Pile.DECK)))
+				.accumulate("hand", getCardsAsJson(getPile(Pile.HAND)))
+				.accumulate("discard", getCardsAsJson(getPile(Pile.DISCARD)));
 	}
 	
 }

@@ -10,10 +10,18 @@ import java.util.Map;
  */
 public class ActionProgress {
 
-	private Map<String, String> progress;
+	private Map<String, Object> progress;
 
 	public ActionProgress() {
 		progress = new HashMap<>();
+	}
+	
+	public boolean contains(String key) {
+		return progress.containsKey(key);
+	}
+	
+	public void set(String key, Object value) {
+		progress.put(key, value);
 	}
 	
 	public void set(String key, String value) {
@@ -26,12 +34,19 @@ public class ActionProgress {
 	
 	public int getInteger(String key) {
 		if(progress.containsKey(key)) {
-			return Integer.valueOf(progress.get(key));
+			return Integer.valueOf((String) progress.get(key));
 		}
 		throw new IllegalArgumentException("The key does not exist (" + key + ")");
 	}
 	
 	public String getString(String key) {
+		if(progress.containsKey(key)) {
+			return (String) progress.get(key);
+		}
+		throw new IllegalArgumentException("The key does not exist (" + key + ")");
+	}
+	
+	public Object get(String key) {
 		if(progress.containsKey(key)) {
 			return progress.get(key);
 		}

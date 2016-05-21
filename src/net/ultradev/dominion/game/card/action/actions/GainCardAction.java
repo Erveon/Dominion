@@ -41,8 +41,8 @@ public class GainCardAction extends Action {
 	}
 
 	@Override
-	public JSONObject play(Turn turn) {
-		if(card != null) {
+	public JSONObject play(Turn turn, Card card) {
+		if(this.card != null) {
 			turn.buyCard(card.getName(), true, getDestinaton());
 			return new JSONObject()
 					.accumulate("response", "OK")
@@ -53,6 +53,7 @@ public class GainCardAction extends Action {
 					.accumulate("result", ActionResult.SELECT_CARD_BOARD)
 					.accumulate("force", false)
 					.accumulate("type", type)
+					.accumulate("player", turn.getPlayer())
 					.accumulate("cost", getCost(turn.getPlayer()));
 		}
 	}

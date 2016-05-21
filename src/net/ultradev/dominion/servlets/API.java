@@ -20,7 +20,6 @@ import net.ultradev.dominion.game.local.LocalGame;
 public class API extends HttpServlet {
 
 	//AJAX CALLS
-		// Create game > ?action=create&type=local
 		// Destroy game > ?action=destroy&type=local
 		// Game info > ?action=info&type=local
 		// End phase(action/buys/turn) > ?action=endphase&type=local
@@ -31,10 +30,11 @@ public class API extends HttpServlet {
 		// Stop an active action & continue card actions > ?action=stopaction&type=local
 	
 	//DEPRECATED CALLS
+		// Create game > ?action=create&type=local
 		// Set config > ?action=setconfig&type=local&key=addcard&value=Cellar
 		// Add player > ?action=addplayer&type=local&name=Bob | Doen wanneer de user finaal is
 		// Start game > ?action=start&type=local
-	// -> instead, use > ?action=setup&type=local&players="Bob","Nick"&cardset=firstgame
+	// -> instead, use > ?action=setup&type=local&players=Bob¤Nick&cardset=firstgame // ¤ is the delimiter
 	
 	GameServer gs;
        

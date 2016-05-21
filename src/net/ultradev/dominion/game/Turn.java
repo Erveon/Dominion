@@ -6,7 +6,8 @@ import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
-import net.ultradev.dominion.game.player.Player; 
+import net.ultradev.dominion.game.player.Player;
+import net.ultradev.dominion.game.player.Player.Pile; 
 
 public class Turn {
 
@@ -24,6 +25,7 @@ public class Turn {
 	
 	Card activeCard;
 	Action activeAction;
+	Action masterAction; // For actions like multiple actions that need an overhead over all other actions
 
 	/**
 	 * Represents a turn for a player in a game
@@ -204,10 +206,19 @@ public class Turn {
 		}
 	}
 	
+	/**
+	 * @param cardid Buy a card this turn
+	 * @return The response
+	 */
 	public JSONObject buyCard(String cardid) {
 		return buyCard(cardid, false);
 	}
 	
+	/**
+	 * @param cardid Buy a card this turn
+	 * @param free If the card is free to purchase
+	 * @return The response
+	 */
 	public JSONObject buyCard(String cardid, boolean free) {
 		return buyCard(cardid, free, CardDestination.DECK);
 	}
@@ -226,28 +237,35 @@ public class Turn {
 			}
 		}
 		
-		JSONObject response = new JSONObject().accumulate("response", "OK");
 		CardManager cm = getGame().getGameServer().getCardManager();
 		Card card = cm.get(cardid);
+		Board board = getGame().getBoard();
+		
+		if(board.getSupply(board.getSupplyTypeForCard(card)).getCards().get(card) <= 0) {
+			return getGame().getGameServer().getGameManager()
+					.getInvalid("There are no such cards left");
+		}
+
+		JSONObject response = new JSONObject().accumulate("response", "OK");
+		getGame().getGameServer().getUtils().debug(getPlayer().getDisplayname() + " bought card: " + card.getName());
 		
 		if((getBuypower() >= card.getCost() && getBuys() > 0) || free) {
 			switch(destination) {
 				case TOP_DECK:
 					// Shifts all other elements to the right
-					getPlayer().getDeck().add(0, card);
+					getPlayer().getPile(Pile.DECK).add(0, card);
 					break;
 				case DECK:
-					getPlayer().getDeck().add(card);
+					getPlayer().getPile(Pile.DECK).add(card);
 					break;
 				default:
-					getPlayer().getDiscard().add(card);
+					getPlayer().getPile(Pile.DISCARD).add(card);
 					break;
 			}
 			if(!free) {
 				removeBuy();
 				removeBuypower(card.getCost());
 			}
-			Board board = getGame().getBoard();
 			board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
 			return response.accumulate("result", BuyResponse.BOUGHT);
 		}
@@ -255,27 +273,33 @@ public class Turn {
 		return response.accumulate("result", BuyResponse.CANTAFFORD);
 	}
 	
+	public JSONObject playCard(String cardid) {
+		return playCard(cardid, false);
+	}
+	
 	/**
 	 * Plays a card for a player
 	 * @param cardid
 	 * @return The response
 	 */
-	public JSONObject playCard(String cardid) {
+	public JSONObject playCard(String cardid, boolean free) {
 		GameManager gm = getGame().getGameServer().getGameManager();
 		if(!canPlay(getPhase(), cardid)) {
 			return gm.getInvalid("Unable to perform action. (Not in the right phase ("+phase.toString()+") or card '"+cardid+"' is invalid)");
 		}
 		
 		Card card = getGame().getGameServer().getCardManager().get(cardid);
-		if(getActions() <= 0 && card.getType().equals(CardType.ACTION)) {
+		if(getActions() <= 0 && card.getType().equals(CardType.ACTION) && !free) {
 			return gm.getInvalid("No actions left");
-		} else if(!getPlayer().getHand().contains(card)) {
+		} else if(!getPlayer().getPile(Pile.HAND).contains(card) && !free) {
 			return gm.getInvalid("Player doesn't have the selected card in their hand");
 		}
 
-		getGame().getGameServer().getUtils().debug("Card played: " + card.getName());
-		getPlayer().getHand().remove(card);
-		getGame().getBoard().addPlayedCard(card);
+		getGame().getGameServer().getUtils().debug(getPlayer().getDisplayname() + " played card: " + card.getName());
+		if(!free) {
+			getPlayer().getPile(Pile.HAND).remove(card);
+			getGame().getBoard().addPlayedCard(card);
+		}
 		
 		JSONObject response = playActions(card);
 		
@@ -329,7 +353,7 @@ public class Turn {
 	 * @param from The action to start executing from
 	 * @return The response
 	 */
-	private JSONObject playActions(Card card, Action from) {
+	public JSONObject playActions(Card card, Action from) {
 		this.activeCard = card;
 		// If there's a from action, don't perform actions until it's found
 		boolean perform = (from == null);
@@ -340,7 +364,7 @@ public class Turn {
 					perform = true;
 				}
 			} else {
-				JSONObject actionResponse = action.play(this);
+				JSONObject actionResponse = action.play(this, card);
 				ActionResult result = ActionResult.valueOf(actionResponse.get("result").toString().toUpperCase());
 				if(!result.equals(ActionResult.DONE)) {
 					this.activeAction = action;
@@ -392,6 +416,13 @@ public class Turn {
 			if(action.isCompleted(this)) {
 				response = playActions(getActiveCard(), getActiveAction());
 				activeAction = null;
+				if(response.get("result").equals(ActionResult.DONE) && getMasterAction() != null) {
+					response = getMasterAction().finish(this);
+					// If the overhead action is done, end it
+					if(response.get("result").equals(ActionResult.DONE)) {
+						setMasterAction(null);
+					}
+				}
 			}
 		}
 		return response; 
@@ -419,6 +450,14 @@ public class Turn {
 			}
 		}
 		return true;
+	}
+	
+	public void setMasterAction(Action action) {
+		this.masterAction = action;
+	}
+	
+	public Action getMasterAction() {
+		return this.masterAction;
 	}
 	
 	/**

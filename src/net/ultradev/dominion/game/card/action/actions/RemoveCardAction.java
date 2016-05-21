@@ -14,10 +14,11 @@ import net.ultradev.dominion.game.card.action.ActionProgress;
 import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.card.action.TargetedAction;
 import net.ultradev.dominion.game.player.Player;
+import net.ultradev.dominion.game.player.Player.Pile;
 
 public class RemoveCardAction extends Action {
 	
-	public enum AmountType { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, UNTIL, RANGE };
+	public enum AmountType { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, UNTIL, RANGE, SELF };
 	public enum RemoveType { TRASH, DISCARD };
 	
 	private int min, max;
@@ -32,6 +33,12 @@ public class RemoveCardAction extends Action {
 	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description) {
 		super(identifier, description, target);
 		this.amountType = AmountType.CHOOSE_AMOUNT;
+		init(type);
+	}
+	
+	public RemoveCardAction(ActionTarget target, RemoveType type, String identifier, String description, AmountType amounttype) {
+		super(identifier, description, target);
+		this.amountType = amounttype;
 		init(type);
 	}
 	
@@ -80,7 +87,7 @@ public class RemoveCardAction extends Action {
 		progress.get(player).set("forceremovecount", min);
 		// If they already have that amount or less, don't force
 		if(amountType.equals(AmountType.UNTIL)) {
-			int amount = min - player.getHand().size();
+			int amount = min - player.getPile(Pile.HAND).size();
 			amount = amount > 0 ? 0 : Math.abs(amount);
 			progress.get(player).set("forceremovecount", amount);
 			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has to discard " + amount + " cards");
@@ -88,9 +95,11 @@ public class RemoveCardAction extends Action {
 	}
 
 	@Override
-	public JSONObject play(Turn turn) {
+	public JSONObject play(Turn turn, Card card) {
 		// If the action affects more people than the person that played the card
-		if(isMultiTargeted()) {
+		if(amountType.equals(AmountType.SELF)) {
+			turn.getPlayer().trashCard(card);
+		} else if(isMultiTargeted()) {
 			turn.getGame().getGameServer().getUtils().debug("Playing multi-target card");
 			targeted.put(turn.getGame(), new TargetedAction(turn.getPlayer(), this));
 			for(Player p : getTargetedAction(turn).getPlayers()) {
@@ -127,7 +136,7 @@ public class RemoveCardAction extends Action {
 		removeCard(player, card);
 		for(Action action : getCallbacks()) {
 			action.setMaster(player, card);
-			JSONObject played = action.play(turn);
+			JSONObject played = action.play(turn, card);
 			if(!action.isCompleted(turn)) {
 				turn.getGame().getGameServer().getUtils().debug("Card remove is going into a sub action");
 				return played;
@@ -184,7 +193,9 @@ public class RemoveCardAction extends Action {
 	}
 	
 	public boolean canSelectMore(Player player) {
-		if(amountType.equals(AmountType.UNTIL)) {
+		if(amountType.equals(AmountType.SELF)) {
+			return false;
+		} else if(amountType.equals(AmountType.UNTIL)) {
 			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed "+ getRemovedCards(player) +" of minimum " + progress.get(player).getInteger("forceremovecount") + " cards");
 			return getRemovedCards(player) < progress.get(player).getInteger("forceremovecount");
 		}		

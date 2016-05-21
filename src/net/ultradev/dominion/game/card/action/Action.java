@@ -91,7 +91,7 @@ public abstract class Action {
 					.accumulate("result", ActionResult.DONE);
 	}
 		
-	public abstract JSONObject play(Turn turn);
+	public abstract JSONObject play(Turn turn, Card card);
 
 	public JSONObject selectCard(Turn turn, Card card) {
 		return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select a card for this action");

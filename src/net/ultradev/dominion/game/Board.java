@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.Supply;
 import net.ultradev.dominion.game.player.Player;
+import net.ultradev.dominion.game.player.Player.Pile;
 
 public class Board {
 	
@@ -104,10 +105,6 @@ public class Board {
 			getSupply(SupplyType.ACTION).add(card, 10);
 		}
 	}
-	
-	public void removeFromSupply(Card card, SupplyType which) {
-		getSupply(which).removeOne(card);
-	}
 
 	public List<JSONObject> getPlayedCards() {
 		List<JSONObject> json = new ArrayList<>();
@@ -116,7 +113,7 @@ public class Board {
 	}
 	
 	public void cleanup(Player p) {
-		playedcards.forEach(card -> p.getDiscard().add(card));
+		playedcards.forEach(card -> p.getPile(Pile.DISCARD).add(card));
 		playedcards.clear();
 	}
 	

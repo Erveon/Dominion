@@ -11,17 +11,21 @@ import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.card.action.IllegalActionVariableException;
 import net.ultradev.dominion.game.card.action.MissingVariableException;
 import net.ultradev.dominion.game.card.action.actions.AdventurerAction;
+import net.ultradev.dominion.game.card.action.actions.BureaucratAction;
 import net.ultradev.dominion.game.card.action.actions.DrawCardAction;
 import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
 import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
 import net.ultradev.dominion.game.card.action.actions.GainCardAction;
+import net.ultradev.dominion.game.card.action.actions.MultipleActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainCardAction.GainCardType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.AmountType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
+import net.ultradev.dominion.game.card.action.actions.TransferPileAction;
 import net.ultradev.dominion.game.player.Player;
+import net.ultradev.dominion.game.player.Player.Pile;
 
 public class CardManager {
 	
@@ -70,7 +74,7 @@ public class CardManager {
 		Card market = new Card("market", "+1 Card. +1 Action. +1 Buy. +1 coin.", 5);
 		getCards().put("market", market);
 		
-		Card militia = new Card("militia", "+2 coins. Each player discards down to 3 cards in his hand.", 4);
+		Card militia = new Card("militia", "+2 coins, each other player discards down to 3 cards in his hand.", 4);
 		getCards().put("militia", militia);
 		
 		Card mine = new Card("mine", "Trash a Treasure card from your hand. Gain a Treasure card costing up to 3 coins more; put it into your hand.", 5);
@@ -94,6 +98,18 @@ public class CardManager {
 		
 		Card bureaucrat = new Card("bureaucrat", "Gain a Silver card; put it on top of your deck. Each other player reveals a Victory card from his hand and puts it on his deck", 4);
 		getCards().put("bureaucrat", bureaucrat);
+		
+		Card chancellor = new Card("chancellor", "+2 coins, you may immediately put your deck into your discard pile.", 3);
+		getCards().put("chancellor", chancellor);
+		
+		Card feast = new Card("feast", "Trash this card. Gain a card costing up to 5 coins.", 4);
+		getCards().put("feast", feast);
+		
+		Card laboratory = new Card("laboratory", "+2 Cards, +1 Action", 5);
+		getCards().put("laboratory", laboratory);
+		
+		Card throne_room = new Card("throne_room", "Choose an Action card in your hand. Play it twice.", 4);
+		getCards().put("throne_room", throne_room);
 		
 		addActions();
 	}
@@ -168,6 +184,22 @@ public class CardManager {
 		
 		Card bureaucrat = getCards().get("bureaucrat");
 		bureaucrat.addAction(parseAction("gain_specific_card", "Gain a Silver card; put it on top of your deck", "card=silver;to=top_deck"));
+		bureaucrat.addAction(parseAction("bureaucrat", "Each other player reveals a Victory card from his hand and puts it on his deck", ""));
+		
+		Card chancellor = getCards().get("chancellor");
+		chancellor.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+		chancellor.addAction(parseAction("transferpile", "You may immediately put your deck into your discard pile.", "from=deck;to=discard"));
+		
+		Card feast = getCards().get("feast");
+		feast.addAction(parseAction("trash_self", "Trash this card", ""));
+		feast.addAction(parseAction("gain_card", "Gain a card costing up to 5 coins", "cost=5"));
+
+		Card laboratory = getCards().get("laboratory");
+		laboratory.addAction(parseAction("draw_cards", "Draw 2 cards", "amount=2"));
+		laboratory.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
+		
+		Card throne_room = getCards().get("throne_room");
+		throne_room.addAction(parseAction("multiaction", "Choose an Action card in your hand. Play it twice.", "times=2"));
 		
 	}
 	
@@ -219,6 +251,8 @@ public class CardManager {
 					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.RANGE, RemoveType.TRASH);
 				}
 				break;
+			case "trash_self":
+				return parseRemove(getGameServer(), identifier, description, params, target, AmountType.SELF, RemoveType.TRASH);
 			case "discard_specific":
 				if(containsKeys(params, identifier, "amount")) {
 					return parseRemove(getGameServer(), identifier, description, params, target, AmountType.SPECIFIC_AMOUNT, RemoveType.DISCARD);
@@ -285,6 +319,19 @@ public class CardManager {
 				break;
 			case "adventurer":
 				return new AdventurerAction(identifier, description, target);
+			case "bureaucrat":
+				return new BureaucratAction(identifier, description, target);
+			case "transferpile":
+				if(containsKeys(params, identifier, "from", "to")) {
+					Pile from = Pile.valueOf(params.get("from").toUpperCase());
+					Pile to = Pile.valueOf(params.get("to").toUpperCase());
+					return new TransferPileAction(identifier, description, target, from, to);
+				}
+			case "multiaction":
+				if(containsKeys(params, identifier, "times")) {
+					int times = Integer.parseInt(params.get("times"));
+					return new MultipleActionsAction(identifier, description, target, times);
+				}
 		}
 		throw new IllegalArgumentException("That action does not exist");
 	}
@@ -336,6 +383,9 @@ public class CardManager {
 			case SPECIFIC_AMOUNT:
 				int amount = getGameServer().getUtils().parseInt(params.get("amount"), 1);
 				action = new RemoveCardAction(target, type, identifier, description, count, amount);
+				break;
+			case SELF:
+				action = new RemoveCardAction(target, type, identifier, description, AmountType.SELF);
 				break;
 			default:
 				action = new RemoveCardAction(target, type, identifier, description);
