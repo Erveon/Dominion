@@ -12,7 +12,104 @@ body
   background-color: $bgColor
 
 #game
-  display: none 
+  display: none
+
+.tooltip
+  width: 216px
+  height: 320px
+  position: fixed
+  background-color: $actionCardColor
+
+  .card
+    width: 216px
+    height: 320px
+    display: inline-block
+    background-color: $actionCardColor
+    -webkit-box-shadow: 0px 0px 50px 10px rgba(0,0,0,0.75)
+    -moz-box-shadow: 0px 0px 50px 10px rgba(0,0,0,0.75)
+    box-shadow: 0px 0px 50px 10px rgba(0,0,0,0.75)
+    -webkit-transition: all 150ms ease-in-out
+    -moz-transition: all 150ms ease-in-out
+    transition: all 150ms ease-in-out
+
+    div
+      width: 100%
+      float: left
+
+    div.card-header
+      height: 18px
+      padding: 5px 0
+      background-color: $actionCardColor
+
+      p.card-title
+        padding: 1px 0
+        margin: 0
+        color: $lightTextColor
+        text-transform: uppercase
+        text-align: center
+        font-family: 'RobotoBold'
+
+    div.card-body
+      color: $lightTextColor
+      height: 264px
+
+      div.card-actionList
+        ul.card-actions
+          margin: 0
+          padding: 0
+          list-style-type: none
+
+          li.card-action
+            padding: 0
+            margin: 2.5px 5px
+            width: 95%
+            text-align: center
+            font-size: 0.9rem
+
+    div.card-info
+      background-color: $actionCardColor
+      padding: 5px 0
+      height: 18px
+      p
+        color: $lightTextColor
+        margin: 0
+        padding: 0
+        display: inline-block
+        font-family: 'RobotoBold'
+        text-transform: uppercase
+        font-size: 0.9rem
+
+      p.card-cost
+        margin-left: 10px
+        color: $treasureCardColor
+
+      p.card-type
+        float: right
+        margin-right: 10px
+
+  li.victory
+    div.card-header
+      background-color: $victoryCardColor
+
+    div.card-info
+      background-color: $victoryCardColor
+
+  li.treasure
+    div.card-header
+      background-color: $treasureCardColor
+
+    div.card-info
+      background-color: $treasureCardColor
+
+      p.card-cost
+        color: $lightTextColor
+
+  li.curse
+    div.card-header
+      background-color: $curseCardColor
+
+    div.card-info
+      background-color: $curseCardColor
 
 .overlay
   background-color: $bgColorFull

@@ -74,6 +74,8 @@ Dominion.Interface = (function(Interface) {
     };
 
     Interface.prototype.updateMarketListeners = function() {
+        var that = this;
+
         $("#mainPile .wideCard").on('click', function(e) {
             gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
             e.stopImmediatePropagation();
@@ -88,6 +90,69 @@ Dominion.Interface = (function(Interface) {
         });
         $('#trashCursePile .cursePile').on('click', function(e) {
             gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
+            e.stopImmediatePropagation();
+        });
+
+        $("#mainPile .wideCard").hover(function (e) {
+            $('body').append("<div class='tooltip'></div>");
+            var cardname = $(this).children('.wideCard-title').text().toLowerCase();
+            var pos = $(this).position();
+            var actionCards = that.gameData.game.board.action;
+            var cardID;
+
+            for (var card in actionCards) {
+                if(actionCards[card].name === cardname) {
+                    cardID = card;
+                }
+            }
+
+            that.addCard(cardID, actionCards, $('.tooltip'));
+            $(".tooltip").css({left: pos.left + 2  +'px', top: pos.top + 84 +'px'});
+            e.stopImmediatePropagation();
+        }, function (e) {
+            $('.tooltip').remove();
+            e.stopImmediatePropagation();
+        });
+
+        $("#victoryPile .wideCard").hover(function (e) {
+            $('body').append("<div class='tooltip'></div>");
+            var cardname = $(this).children('.wideCard-title').text().toLowerCase();
+            var pos = $(this).position();
+            var cards = that.gameData.game.board.victory;
+            var cardID;
+
+            for (var card in cards) {
+                if(cards[card].name === cardname) {
+                    cardID = card;
+                }
+            }
+
+            that.addCard(cardID, cards, $('.tooltip'));
+            $(".tooltip").css({left: pos.left + 5  +'px', top: pos.top + 84 +'px'});
+            e.stopImmediatePropagation();
+        }, function (e) {
+            $('.tooltip').remove();
+            e.stopImmediatePropagation();
+        });
+
+        $("#treasurePile .wideCard").hover(function (e) {
+            $('body').append("<div class='tooltip'></div>");
+            var cardname = $(this).children('.wideCard-title').text().toLowerCase();
+            var pos = $(this).position();
+            var cards = that.gameData.game.board.treasure;
+            var cardID;
+
+            for (var card in cards) {
+                if(cards[card].name === cardname) {
+                    cardID = card;
+                }
+            }
+
+            that.addCard(cardID, cards, $('.tooltip'));
+            $(".tooltip").css({left: pos.left + 5  +'px', top: pos.top + 84 +'px'});
+            e.stopImmediatePropagation();
+        }, function (e) {
+            $('.tooltip').remove();
             e.stopImmediatePropagation();
         });
     };
@@ -187,7 +252,6 @@ Dominion.Interface = (function(Interface) {
             $('.overlay a').on('click', function (e) {
             e.preventDefault();
 
-
             if (gameObj.returnToSamePlayer === true) {
                 $('.overlay').slideUp(function() {
                     gameObj.updateGameInfo();
@@ -203,7 +267,6 @@ Dominion.Interface = (function(Interface) {
                     gameObj.playingAction = false;
                 });
             }
-
 
             e.stopImmediatePropagation();
         });
@@ -275,6 +338,10 @@ Dominion.Interface = (function(Interface) {
         this.handContents = $("ul#handPile").children();
     };
 
+    Interface.prototype.addTooltipCard = function(cardName) {
+
+    };
+
     Interface.prototype.addCard = function(card, hand, element) {
         var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
 
@@ -338,6 +405,9 @@ Dominion.Interface = (function(Interface) {
             cardDisplay.eq(card).children('p:first').text(actionCards[card].name);
             cardDisplay.eq(card).children('div:first').children('p:first').text(actionCards[card].cost);
             cardDisplay.eq(card).children('div:first').children('p:last').text(actionCards[card].amount);
+            cardDisplay.eq(card).css({
+                'background': 'linear-gradient(rgba(127, 140, 141, 0.8), rgba(127, 140, 141, 0.8)), url(assets/images/cards/' + actionCards[card].name + '.jpg) no-repeat center center'
+            });
         }
 
         this.dimAllMarketCards();
