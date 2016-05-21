@@ -20,8 +20,10 @@ Dominion.Game = (function(Game) {
             function() {
                 console.log("The game has been started.");
                 that.Interface = new Dominion.Interface();
-                that.updateGameInfo(function () {
+                that.updateGameInfo(function() {
                     that.Interface.passTurn(that.gameData.game.turn.player, function() {
+                        $('#config').remove();
+                        $('#game').show();
                         $('.overlay').slideUp(function() {
                             $('.overlay').remove();
                         });

@@ -16,7 +16,7 @@
             </div>
 
             <div class="fp-section">
-                <div class="fp-slide headroom">
+                <div class="headroom" id="config">
                     <h2 class="config">Game Configuration</h2>
 
                     <form id="game-config">
@@ -39,11 +39,11 @@
                         <div class="form-column">
                             <label for="card-set">Card Set</label>
                             <select name="card-set" id="card-set">
-                                <option value="first-game" active>First Game</option>
-                                <option value="big-money" active>Big Money</option>
+                                <option value="firstgame" active>First Game</option>
+                                <option value="bigmoney" active>Big Money</option>
                                 <option value="interaction" active>Interaction</option>
-                                <option value="size-distortion" active>Size Distortion</option>
-                                <option value="village-square" active>Village Square</option>
+                                <option value="sizedistortion" active>Size Distortion</option>
+                                <option value="villagesquare" active>Village Square</option>
                             </select>
                         </div>
                     </form>
@@ -52,7 +52,8 @@
                     <button class="config page-up">Back To Menu</button>
                 </div>
 
-                <div id="game" class="fp-slide">
+                <div id="game">
+                    <div class='overlay'></div>
                     <div id="header">
                         <div id="topStatus">
                             <h1 class="heading">Dominion</h1>
