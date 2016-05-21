@@ -53,18 +53,13 @@ body
       color: $lightTextColor
       height: 264px
 
-      div.card-actionList
-        ul.card-actions
-          margin: 0
-          padding: 0
-          list-style-type: none
-
-          li.card-action
-            padding: 0
-            margin: 2.5px 5px
-            width: 95%
-            text-align: center
-            font-size: 0.9rem
+      p.card-description
+        padding: 0
+        margin: 2.5px 5px
+        width: 95%
+        height: 108px
+        text-align: center
+        font-size: 0.9rem
 
     div.card-info
       background-color: $actionCardColor
@@ -223,18 +218,13 @@ body
           color: $lightTextColor
           height: 264px
 
-          div.card-actionList
-            ul.card-actions
-              margin: 0
-              padding: 0
-              list-style-type: none
-
-              li.card-action
-                padding: 0
-                margin: 2.5px 5px
-                width: 95%
-                text-align: center
-                font-size: 0.9rem
+          p.card-description
+            padding: 0
+            margin: 2.5px 5px
+            width: 95%
+            height: 109px
+            text-align: center
+            font-size: 0.9rem
 
         div.card-info
           background-color: $actionCardColor
@@ -400,19 +390,31 @@ div#market
       width: 685px
       margin-right: 2px
 
-      .wideCard
-        background-color: $treasureCardColor
+      .wideCard:nth-child(1)
+        background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url('../images/cards/copper.jpg') no-repeat center center
 
-        .wideCard-cost
-          color: $lightTextColor
+      .wideCard:nth-child(2)
+        background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url('../images/cards/silver.jpg') no-repeat center center
+
+      .wideCard:nth-child(3)
+        background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url('../images/cards/gold.jpg') no-repeat center center
+
+      .wideCard-cost
+        color: $lightTextColor
 
     ul#victoryPile
       float: right
       width: 685px
       margin-right: 2px
 
-      .wideCard
-        background-color: $victoryCardColor
+      .wideCard:nth-child(1)
+        background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url('../images/cards/estate.jpg') no-repeat center center
+
+      .wideCard:nth-child(2)
+        background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url('../images/cards/duchy.jpg') no-repeat center center
+
+      .wideCard:nth-child(3)
+        background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url('../images/cards/province.jpg') no-repeat center center
 
     ul#trashCursePile
       width: 225px
@@ -694,18 +696,13 @@ div#hand
           color: $lightTextColor
           height: 264px
 
-          div.card-actionList
-            ul.card-actions
-              margin: 0
-              padding: 0
-              list-style-type: none
-
-              li.card-action
-                padding: 0
-                margin: 5px
-                width: 95%
-                text-align: center
-                font-size: 0.9rem
+          p.card-description
+            padding: 0
+            margin: 5px
+            width: 95%
+            height: 104px
+            text-align: center
+            font-size: 0.9rem
 
         div.card-info
           background-color: $actionCardColor

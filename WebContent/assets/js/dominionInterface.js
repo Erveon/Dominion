@@ -344,19 +344,11 @@ Dominion.Interface = (function(Interface) {
 
     Interface.prototype.addCard = function(card, hand, element) {
         var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
-
         cardHTML += "<div class='card-header'>";
         cardHTML += "<p class='card-title'>" + hand[card].name + "</p></div>";
         cardHTML += "<div class='card-body'>";
         cardHTML += "<img src='assets/images/cards/" + hand[card].name + ".jpg' alt='" + hand[card].name + "' width='100%'>";
-        cardHTML += "<div class='card-actionList'>";
-        cardHTML += "<ul class='card-actions'>";
-
-        for (var action in hand[card].actions) {
-            cardHTML += "<li class='card-action'>" + hand[card].actions[action] + "</li>";
-        }
-
-        cardHTML += "</ul></div></div>";
+        cardHTML += "<p class='card-description'>" + hand[card].description + "</p></div>";
         cardHTML += "<div class='card-info'>";
         cardHTML += "<p class='card-cost'>" + hand[card].cost + "</p>";
         cardHTML += "<p class='card-type'>" + hand[card].type + "</p></div></li>";
