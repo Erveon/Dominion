@@ -106,7 +106,7 @@ Dominion.Interface = (function(Interface) {
             var that = this;
 
             this.passTurn(target, function() {
-                $(".overlay").fadeOut(200, function() {
+                $(".overlay").slideUp(function() {
                     $(".overlay").remove();
                 });
 
@@ -154,38 +154,63 @@ Dominion.Interface = (function(Interface) {
         var selectorHand = "<ul id='selectorPile' class='cardContainer'></ul>";
         var that = this;
 
-        this.passTurn(playResponse.player, function () {
-            $('.overlay').remove();
+        if (playResponse.player === this.gameData.game.turn.player) {
             $('body').append(overlayHTML);
             $('.overlay').append("<h2 class='message'></h2>").append(selectorContainer);
             $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
             that.appendSelectorCards(playResponse);
+            that.handleSelectButton(playResponse);
             var selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
             selectorCarousel.addCarousel();
-            $('.overlay').show();
-        });
+            $('.overlay').slideDown();
+            gameObj.returnToSamePlayer = true;
+        } else {
+            this.passTurn(playResponse.player, function () {
+                $('.overlay').remove();
+                $('body').append(overlayHTML);
+                $('.overlay').append("<h2 class='message'></h2>").append(selectorContainer);
+                $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
+                that.appendSelectorCards(playResponse);
+                that.handleSelectButton(playResponse);
+                var selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
+                selectorCarousel.addCarousel();
+                $('.overlay').fadeIn();
+            });
+        }
     };
 
-    /*Interface.prototype.handleSelectButton = function(playResponse) {
+    Interface.prototype.handleSelectButton = function(playResponse) {
         var that = this;
-        $('.overlay').append("<a class='actionBtn continue' href=''>Continue</a>");
 
-        if(playResponse.force === true) {
-            //make button unclickable until action is complete
-        }
-
-        $('.overlay a').on('click', function (e) {
+        if(playResponse.force === false) {
+            $('.overlay').append("<a class='actionBtn continue' href=''>Continue</a>");
+            $('.overlay a').on('click', function (e) {
             e.preventDefault();
 
-            //Return the control to the original player
-            that.passTurn(that.gameData.game.turn.player, function() {
-                $('.overlay').remove();
-                gameObj.playingAction = false;
-            });
+
+            if (gameObj.returnToSamePlayer === true) {
+                $('.overlay').slideUp(function() {
+                    gameObj.updateGameInfo();
+                    $('.overlay').remove();
+                });
+                gameObj.returnToSamePlayer = false;
+            } else {
+                that.passTurn(that.gameData.game.turn.player, function() {
+                    $('.overlay').slideUp(function() {
+                        gameObj.updateGameInfo();
+                        $('.overlay').remove();
+                    });
+                    gameObj.playingAction = false;
+                });
+            }
+
 
             e.stopImmediatePropagation();
         });
-    };*/
+        }
+
+
+    };
 
     Interface.prototype.appendSelectorCards = function(playResponse) {
         this.selectCardFromHand(playResponse.player);
@@ -232,7 +257,7 @@ Dominion.Interface = (function(Interface) {
             e.preventDefault();
             endAction();
         });
-        $('.overlay').fadeIn();
+        $('.overlay').slideDown();
     };
 
     Interface.prototype.loadCards = function(hand) {

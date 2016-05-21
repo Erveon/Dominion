@@ -7,6 +7,7 @@ Dominion.Game = (function(Game) {
         this.Interface = null;
         this.playingAction = false;
         this.isMp = false;
+        this.returnToSamePlayer = true;
         this.cardsSelected = 0;
         this.initGame();
         gameObj = this;
@@ -118,9 +119,9 @@ Dominion.Game = (function(Game) {
     Game.prototype.handlePhaseSkip = function () {
         if(this.gameData.game.turn.phase === "ACTION") {
             if(this.checkHandForActions() === false && !this.playingAction) {
-                if(this.gameData.game.turn.actionsleft > 0) {
-                    this.Interface.handlePhaseEnd();
-                }
+                this.Interface.handlePhaseEnd();
+            } else if(this.gameData.game.turn.actionsleft === 0 && !this.playingAction) {
+                this.Interface.handlePhaseEnd();
             }
         }
     };
@@ -151,11 +152,24 @@ Dominion.Game = (function(Game) {
         that.cardsSelected++;
 
         if (data.result === "DONE") {
-            that.Interface.passTurn(that.gameData.game.turn.player, function() {
-                $('.overlay').remove();
+            if (this.returnToSamePlayer === true) {
+                $('.overlay').slideUp(function() {
+                    $('.overlay').remove();
+                });
                 that.playingAction = false;
                 that.handlePhaseSkip();
-            });
+                this.returnToSamePlayer = false;
+            } else {
+                that.Interface.passTurn(that.gameData.game.turn.player, function() {
+                    $('.overlay').slideUp(function() {
+                        $('.overlay').remove();
+                    });
+                    that.playingAction = false;
+                    that.handlePhaseSkip();
+                });
+            }
+
+            that.updateGameInfo();
         }
 
         if (that.cardsSelected === data.max) {
