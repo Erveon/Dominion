@@ -120,7 +120,9 @@ Dominion.Game = (function(Game) {
         if(this.gameData.game.turn.phase === "ACTION") {
             if(this.checkHandForActions() === false && !this.playingAction) {
                 this.Interface.handlePhaseEnd();
-            } else if(this.gameData.game.turn.actionsleft === 0 && !this.playingAction) {
+            }
+
+            if(this.gameData.game.turn.actionsleft === 0 && !this.playingAction) {
                 this.Interface.handlePhaseEnd();
             }
         }
@@ -143,7 +145,9 @@ Dominion.Game = (function(Game) {
                 console.log('Card Selected: ', card);
                 console.log('Card Select Response', data);
                 that.handleSelect(data, that);
-                element.remove();
+                if(data.response === "OK") {
+                    element.remove();
+                }
             }
         );
     };
