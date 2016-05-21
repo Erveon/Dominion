@@ -111,6 +111,16 @@ public class CardManager {
 		Card throne_room = new Card("throne_room", "Choose an Action card in your hand. Play it twice.", 4);
 		getCards().put("throne_room", throne_room);
 		
+		Card council_room = new Card("council_room", "+4 Cards, +1 Buy, Each other player draws a card.", 5);
+		getCards().put("council_room", council_room);
+		
+		Card festival = new Card("festival", "+2 Actions, +1 Buy, +2 Coins", 5);
+		getCards().put("festival", festival);
+		
+		Card witch = new Card("witch", "+2 Cards, each other player draws a Curse card", 5);
+		witch.addType("ATTACK");
+		getCards().put("witch", witch);
+		
 		addActions();
 	}
 	
@@ -200,6 +210,20 @@ public class CardManager {
 		
 		Card throne_room = getCards().get("throne_room");
 		throne_room.addAction(parseAction("multiaction", "Choose an Action card in your hand. Play it twice.", "times=2"));
+
+		Card council_room = getCards().get("council_room");
+		council_room.addAction(parseAction("draw_cards", "Draw 4 cards", "amount=4"));
+		council_room.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
+		council_room.addAction(parseAction("draw_cards", "Every other player draws 1 card", "amount=1;for=others"));
+
+		Card festival = getCards().get("festival");
+		festival.addAction(parseAction("add_actions", "Adds 2 actions to your turn", "amount=2"));
+		festival.addAction(parseAction("add_buys", "Adds 1 buy to your turn", "amount=1"));
+		festival.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
+		
+		Card witch = getCards().get("witch");
+		witch.addAction(parseAction("draw_cards", "Draw 2 cards", "amount=2"));
+		witch.addAction(parseAction("gain_specific_card", "Draw a curse card", "card=curse;for=others"));
 		
 	}
 	
@@ -300,13 +324,13 @@ public class CardManager {
 					if(params.containsKey("type")) {
 						gainType = GainCardType.valueOf(params.get("type").toUpperCase());
 					}
-					return new GainCardAction(identifier, description, ActionTarget.SELF, Integer.valueOf(params.get("cost")), gainType);
+					return new GainCardAction(identifier, description, target, Integer.valueOf(params.get("cost")), gainType);
 				}
 				break;
 			case "gain_specific_card":
 				if(containsKeys(params, identifier, "card")) {
 					Card card = get(params.get("card"));
-					GainCardAction gainSpecificCard = new GainCardAction(identifier, description, ActionTarget.SELF, card);
+					GainCardAction gainSpecificCard = new GainCardAction(identifier, description, target, card);
 					CardDestination destination = CardDestination.DISCARD;
 					if(params.containsKey("to")) {
 						destination = CardDestination.valueOf(params.get("to").toUpperCase());

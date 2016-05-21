@@ -223,6 +223,26 @@ public class Turn {
 		return buyCard(cardid, free, CardDestination.DECK);
 	}
 	
+	public void gainCard(Player player, Card card, CardDestination destination) {
+		Board board = getGame().getBoard();
+		if(board.getSupply(board.getSupplyTypeForCard(card)).getCards().get(card) <= 0) {
+			return;
+		}
+		switch(destination) {
+			case TOP_DECK:
+				// Shifts all other elements to the right
+				getPlayer().getPile(Pile.DECK).add(0, card);
+				break;
+			case DECK:
+				getPlayer().getPile(Pile.DECK).add(card);
+				break;
+			default:
+				getPlayer().getPile(Pile.DISCARD).add(card);
+				break;
+		}
+		board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
+	}
+	
 	/**
 	 * Buys a card for a player
 	 * @param cardid
