@@ -2,6 +2,9 @@ package net.ultradev.dominion.tests;
 
 import static org.junit.Assert.*;
 
+import java.awt.RenderingHints.Key;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +52,7 @@ public class EngineTest {
 			int playerCount = game.getPlayers().size();
 			int amountOfCards = playerCount == 2 ? 8 : 12;
 			for(int i = 0; i < amountOfCards; i++){
-				board.getSupply(SupplyType.ACTION).removeOne(province);
+				board.getSupply(SupplyType.VICTORY).removeOne(province);
 			}
 			assertTrue("Game doesn't end when there are " + amountOfCards + " provinces removed", board.hasEndCondition());
 			String newPlayer = "player " + players;
@@ -64,12 +67,11 @@ public class EngineTest {
 			int playerCount = game.getPlayers().size();
 			int amountOfCards = playerCount == 2 ? 8 : 12;
 			for(int i = 0; i < amountOfCards; i++) {
-				board.removeFromSupply(gameServer.getCardManager().get("curse"), SupplyType.ACTION);
-				board.removeFromSupply(gameServer.getCardManager().get("estate"), SupplyType.ACTION);
-				board.removeFromSupply(gameServer.getCardManager().get("duchy"), SupplyType.ACTION);
+				board.getSupply(SupplyType.CURSE).removeOne(gameServer.getCardManager().get("curse"));
+				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().get("estate"));
+				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().get("duchy"));
 			}
 			assertTrue("Game doesn't end when there are " + amountOfCards + " removed from 3 piles", board.hasEndCondition());
 		}
 	}
-
 }
