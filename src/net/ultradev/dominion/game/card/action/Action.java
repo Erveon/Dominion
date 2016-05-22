@@ -22,14 +22,14 @@ public abstract class Action {
 	/**
 	 * Keeps track of which card triggered the action for subactions
 	 */
-	private Map<Player, Card> masters;
+	private Map<Player, Card> triggers;
 	
 	public Action(String identifier, String description, ActionTarget target) {
 		this.identifier = identifier;
 		this.description = description;
 		this.callbacks = new ArrayList<>();
 		this.target = target;
-		this.masters = new HashMap<>();
+		this.triggers = new HashMap<>();
 	}
 	
 	public String getIdentifier() {
@@ -52,21 +52,21 @@ public abstract class Action {
 		callbacks.add(action);
 	}
 
-	public void setMaster(Player player, Card card) {
-		masters.put(player, card);
+	public void setTrigger(Player player, Card card) {
+		triggers.put(player, card);
 	}
 	
-	public boolean hasMaster(Player player) {
-		return masters.containsKey(player);
+	public boolean hasTrigger(Player player) {
+		return triggers.containsKey(player);
 	}
 	
-	public Card getMaster(Player player) {
-		return masters.get(player);
+	public Card getTrigger(Player player) {
+		return triggers.get(player);
 	}
 	
-	public void removeMaster(Player player) {
-		if(hasMaster(player)) {
-			masters.remove(player);
+	public void removeTrigger(Player player) {
+		if(hasTrigger(player)) {
+			triggers.remove(player);
 		}
 	}
 	

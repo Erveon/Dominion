@@ -27,12 +27,7 @@ public class Card {
 	}
 	
 	public Card(String name, String description, int cost) {
-		this.name = name;
-		this.cost = cost;
-		this.type = CardType.ACTION;
-		this.description = description;
-		this.actions = new ArrayList<>();
-		this.types = new ArrayList<>();
+		this(name, description, cost, CardType.ACTION);
 	}
 	
 	public String getName() {

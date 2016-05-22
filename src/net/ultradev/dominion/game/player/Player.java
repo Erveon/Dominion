@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sf.json.JSONObject;
-import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.CardManager;
@@ -42,13 +41,6 @@ public class Player {
 	 */
 	public Game getGame() {
 		return g;
-	}
-	
-	/**
-	 * @return The game server the player is on
-	 */
-	public GameServer getGameServer() {
-		return getGame().getGameServer();
 	}
 	
 	/**
@@ -98,10 +90,10 @@ public class Player {
 	 */
 	public void setup() {
 		for(int i = 0; i < 7; i++) {
-			getPile(Pile.DECK).add(getGameServer().getCardManager().get("copper"));
+			getPile(Pile.DECK).add(getGame().getGameServer().getCardManager().get("copper"));
 		}
 		for(int i = 0; i < 3; i++) {
-			getPile(Pile.DECK).add(getGameServer().getCardManager().get("estate"));
+			getPile(Pile.DECK).add(getGame().getGameServer().getCardManager().get("estate"));
 		}
 		this.deck = shuffle(getPile(Pile.DECK));
 		for(int i = 0; i < 5; i++) {
@@ -144,7 +136,7 @@ public class Player {
 	 */
 	public int getVictoryPoints() {
 		int points = 0;
-		CardManager cm = getGameServer().getCardManager();
+		CardManager cm = getGame().getGameServer().getCardManager();
 		for(Card card : getCards()) {
 			points += cm.getVictoryPointsFor(card, this);
 		}

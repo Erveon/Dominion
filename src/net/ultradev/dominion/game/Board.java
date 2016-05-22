@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.Supply;
+import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.player.Player;
 import net.ultradev.dominion.game.player.Player.Pile;
 
@@ -82,9 +83,11 @@ public class Board {
 		
 		// Victory supply (is the playercount 2? have 8, else 12)
 		int victoryamount = (playercount == 2 ? 8 : 12);
-		getSupply(SupplyType.VICTORY).add(getCard("estate"), victoryamount);
-		getSupply(SupplyType.VICTORY).add(getCard("duchy"), victoryamount);
-		getSupply(SupplyType.VICTORY).add(getCard("province"), victoryamount);
+		for(Card card : getGame().getGameServer().getCardManager().getCards().values()) {
+			if(card.getType().equals(CardType.VICTORY)) {
+				getSupply(SupplyType.VICTORY).add(card, victoryamount);
+			}
+		}
 		
 		// Curse supply (2 = 10, 3 = 20, 4 = 30)
 		int curseamount = (Math.max(playercount, 2) - 1) * 10;
@@ -126,11 +129,11 @@ public class Board {
 	}
 	
 	public JSONObject getAsJson() {
-		return new JSONObject()
-				.accumulate("action", getSupply(SupplyType.ACTION).getAsJson())
-				.accumulate("treasure", getSupply(SupplyType.TREASURE).getAsJson())
-				.accumulate("victory", getSupply(SupplyType.VICTORY).getAsJson())
-				.accumulate("curse", getSupply(SupplyType.CURSE).getAsJson())
+		JSONObject response = new JSONObject();
+		for(SupplyType type : SupplyType.values()) {
+			response.accumulate(type.toString().toLowerCase(), getSupply(type).getAsJson());
+		}
+		return response
 				.accumulate("trash", trash)
 				.accumulate("playedcards", getPlayedCards());
 	}

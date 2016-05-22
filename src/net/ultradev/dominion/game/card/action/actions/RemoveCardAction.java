@@ -134,7 +134,7 @@ public class RemoveCardAction extends Action {
 		turn.getGame().getGameServer().getUtils().debug("Player " + player.getDisplayname() + " selected " + card.getName());
 		removeCard(player, card);
 		for(Action action : getCallbacks()) {
-			action.setMaster(player, card);
+			action.setTrigger(player, card);
 			JSONObject played = action.play(turn, card);
 			if(!action.isCompleted(turn)) {
 				turn.getGame().getGameServer().getUtils().debug("Card remove is going into a sub action");

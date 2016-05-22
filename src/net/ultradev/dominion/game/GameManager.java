@@ -50,7 +50,7 @@ public class GameManager {
 	}
 	
 	/**
-	 * Java Front-End support
+	 * Java Front-End support, it simulates a request to the server
 	 * @param map Parameters
 	 * @param g Game, may be null
 	 * @return Response

@@ -76,7 +76,7 @@ public class GainCardAction extends Action {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Can't select that card");
 		} else if(card.getCost() <= getCost(turn.getPlayer())) {
 			turn.buyCard(card.getName(), true, getDestinaton());
-			if(hasMaster(turn.getPlayer())) {
+			if(hasTrigger(turn.getPlayer())) {
 				return turn.getActiveAction().finish(turn);
 			} else {
 				return new JSONObject().accumulate("response", "OK")
@@ -99,7 +99,7 @@ public class GainCardAction extends Action {
 	 * @return The cost the gained card may have
 	 */
 	public int getCost(Player player) {
-		return hasMaster(player) ? getMaster(player).getCost() + coins : coins;
+		return hasTrigger(player) ? getTrigger(player).getCost() + coins : coins;
 	}
 	
 }

@@ -23,34 +23,6 @@ public class GameConfig {
 		return game;
 	}
 	
-	/**
-	 * @param key
-	 * @param value
-	 * @return whether the handle is valid or not
-	 */
-	public boolean handle(String key, String value) {
-		Option option = null;
-		try { 
-			option = Option.valueOf(key.toUpperCase()); 
-		} catch(Exception ignored) { 
-			return false; 
-		}
-		switch(option) {
-			case SETCARDSET:
-				setCardset(value);
-				break;
-			case ADDCARD:
-				addActionCard(value);
-				break;
-			case REMOVECARD:
-				removeActionCard(value);
-				break;
-			default:
-				break;
-		}
-		return true;
-	}
-	
 	public boolean hasValidActionCards() {
 		return actionCardTypes.size() == 10;
 	}
@@ -151,12 +123,6 @@ public class GameConfig {
 			if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10) {
 				actionCardTypes.add(actionCard);
 			}
-		}
-	}
-	
-	public void removeActionCard(String actionCard) {
-		if(actionCardTypes.contains(actionCard)) {
-			actionCardTypes.remove(actionCard);
 		}
 	}
 	

@@ -475,6 +475,10 @@ public class Turn {
 		return true;
 	}
 	
+	/**
+	 * Action that is currently controlling the turn, like throne room
+	 * @param action
+	 */
 	public void setMasterAction(Action action) {
 		this.masterAction = action;
 	}
