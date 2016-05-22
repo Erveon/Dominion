@@ -58,6 +58,12 @@ public class BureaucratAction extends Action {
 	}
 	
 	@Override
+	public boolean isCompleted(Turn turn) {
+		TargetedAction ta = getTargeted(turn.getGame());
+		return ta == null || ta.isDone();
+	}
+	
+	@Override
 	public JSONObject finish(Turn turn) {
 		TargetedAction ta = getTargeted(turn.getGame());
 		if(ta == null || ta.isDone()) {
