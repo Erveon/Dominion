@@ -118,7 +118,7 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.handlePhaseSkip = function () {
-        if(this.gameData.game.turn.phase === "ACTION") {
+        /*if(this.gameData.game.turn.phase === "ACTION") {
             if(this.checkHandForActions() === false && !this.playingAction) {
                 this.Interface.handlePhaseEnd();
             }
@@ -126,7 +126,7 @@ Dominion.Game = (function(Game) {
             if(this.gameData.game.turn.actionsleft === 0 && !this.playingAction) {
                 this.Interface.handlePhaseEnd();
             }
-        }
+        }*/
     };
 
     Game.prototype.endPhase = function () {
