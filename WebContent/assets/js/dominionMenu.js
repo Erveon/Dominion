@@ -9,7 +9,7 @@ Dominion.Menu = (function(Menu) {
     Menu.prototype.setFullpageConfig = function() {
         $('#fullpage').fullpage({
             verticalCentered: false,
-            sectionsColor: ['rgba(44, 62, 80, 0.75)', 'rgba(118, 53, 104, 0.75)'],
+            sectionsColor: ['rgba(118, 53, 104, 0.75)', 'rgba(44, 62, 80, 0.75)', 'rgba(118, 53, 104, 0.75)'],
             controlArrows: false,
         });
     };
@@ -24,14 +24,6 @@ Dominion.Menu = (function(Menu) {
 
     Menu.prototype.moveUp = function() {
         $.fn.fullpage.moveSectionUp();
-    };
-
-    Menu.prototype.moveRight = function() {
-        $.fn.fullpage.moveSlideRight();
-    };
-
-    Menu.prototype.moveLeft = function() {
-        $.fn.fullpage.moveSlideLeft();
     };
 
     Menu.prototype.PlayerNameField = function(playerNo) {
@@ -80,8 +72,6 @@ Dominion.Menu = (function(Menu) {
         });
         $('button.page-down').on('click', this.moveDown);
         $('button.page-up').on('click', this.moveUp);
-        $('button.page-right').on('click', this.moveRight);
-        $('button.page-left').on('click', this.moveLeft);
         $('.start-game').on('click', function() {
         	that.startGame(that);
         });

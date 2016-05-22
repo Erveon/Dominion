@@ -11,7 +11,8 @@ import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.player.Player;
 
 public abstract class Action {
-
+	
+	public enum AmountType { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, UNTIL, RANGE, SELF };
 	public enum ActionTarget { EVERYONE, OTHERS, SELF };
 	
 	private List<Action> callbacks;
@@ -21,14 +22,14 @@ public abstract class Action {
 	/**
 	 * Keeps track of which card triggered the action for subactions
 	 */
-	private Map<Player, Card> masters;
+	private Map<Player, Card> triggers;
 	
 	public Action(String identifier, String description, ActionTarget target) {
 		this.identifier = identifier;
 		this.description = description;
 		this.callbacks = new ArrayList<>();
 		this.target = target;
-		this.masters = new HashMap<>();
+		this.triggers = new HashMap<>();
 	}
 	
 	public String getIdentifier() {
@@ -51,25 +52,50 @@ public abstract class Action {
 		callbacks.add(action);
 	}
 
-	public void setMaster(Player player, Card card) {
-		masters.put(player, card);
+	public void setTrigger(Player player, Card card) {
+		triggers.put(player, card);
 	}
 	
-	public boolean hasMaster(Player player) {
-		return masters.containsKey(player);
+	public boolean hasTrigger(Player player) {
+		return triggers.containsKey(player);
 	}
 	
-	public Card getMaster(Player player) {
-		return masters.get(player);
+	public Card getTrigger(Player player) {
+		return triggers.get(player);
 	}
 	
-	public void removeMaster(Player player) {
-		if(hasMaster(player)) {
-			masters.remove(player);
+	public void removeTrigger(Player player) {
+		if(hasTrigger(player)) {
+			triggers.remove(player);
 		}
 	}
-		
-	public abstract JSONObject play(Turn turn);
 	
+	public JSONObject finish(Turn turn) {
+		return finish(turn, turn.getPlayer());
+	}
+	
+	public boolean isMultiTargeted() {
+		return target.equals(ActionTarget.EVERYONE) || target.equals(ActionTarget.OTHERS);
+	}
+	
+	public boolean isCompleted(Turn turn) {
+		return true;
+	}
+	
+	/**
+	 * @param turn Used when breaking out of a slave action
+	 * @return 
+	 */
+	public JSONObject finish(Turn turn, Player player) { 
+		return new JSONObject()
+					.accumulate("response", "OK")
+					.accumulate("result", ActionResult.DONE);
+	}
+		
+	public abstract JSONObject play(Turn turn, Card card);
+
+	public JSONObject selectCard(Turn turn, Card card) {
+		return turn.getGame().getGameServer().getGameManager().getInvalid("Cannot select a card for this action");
+	}
 	
 }

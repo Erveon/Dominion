@@ -25,7 +25,7 @@ public class Dominion {
 	public Dominion() {
 		gs = new GameServer();
         gs.getUtils().setDebugging(false);
-		game = gs.getGameManager().createGame(null);
+		game = gs.getGameManager().createLocalGame(null);
 		
 		setState(State.ADDPLAYERS);
 		display();

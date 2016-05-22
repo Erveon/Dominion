@@ -11,14 +11,371 @@ html
 body
   background-color: $bgColor
 
+#game
+  display: none
+
+.info-overlay
+  background-color: $infoOverlayBg
+  position: absolute
+  display: none
+  z-index: 50
+  text-align: center
+  color: $lightTextColor
+
+  h2
+    margin-top: 100px
+    font-size: 2.5rem
+
+  p
+    width: 450px
+    margin: 0 auto
+
+.handOverlay
+  width: 1125px
+  height: 329px
+
+.marketOverlay
+  width: 1142px
+  height: 316px
+
+.fieldOverlay
+  width: 680px
+  height: 165px
+
+  h2
+    margin-top: 25px
+
+.controlsOverlay
+  width: 1124px
+  height: 37px
+
+  h2
+    margin-top: 8px
+    font-size: 1.2rem
+
+.countersOverlay
+  width: 360px
+  height: 50px
+
+  h2
+    font-size: 1.2rem
+    margin-top: 13px
+
+.settings
+  width: 100%
+  height: 325px
+  position: absolute
+  top: 60px
+  display: none
+  background-color: $mainColor
+
+  ul
+    list-style-type: none
+    margin: 50px auto
+    padding: 0
+    width: 1142px
+
+    li
+      padding: 0
+      margin: 0
+
+      a
+        background-color: $accentColor2
+        border: none
+        color: $lightTextColor
+        text-transform: uppercase
+        font-family: 'RobotoBold'
+        padding: 10px
+        font-size: 0.9rem
+        display: block
+        width: 150px
+        text-align: center
+        text-decoration: none
+        margin: 50px auto
+        -webkit-transition: all 150ms ease-in-out
+        -moz-transition: all 150ms ease-in-out
+        transition: all 150ms ease-in-out
+
+      a:hover
+        background-color: $accentColor4
+        cursor: pointer
+        -webkit-transition: all 150ms ease-in-out
+        -moz-transition: all 150ms ease-in-out
+        transition: all 150ms ease-in-out
+
+.tooltip
+  width: 216px
+  height: 320px
+  position: fixed
+  background-color: $actionCardColor
+
+  .card
+    width: 216px
+    height: 320px
+    display: inline-block
+    background-color: $actionCardColor
+    -webkit-box-shadow: 0px 0px 50px 10px rgba(0,0,0,0.75)
+    -moz-box-shadow: 0px 0px 50px 10px rgba(0,0,0,0.75)
+    box-shadow: 0px 0px 50px 10px rgba(0,0,0,0.75)
+    -webkit-transition: all 150ms ease-in-out
+    -moz-transition: all 150ms ease-in-out
+    transition: all 150ms ease-in-out
+
+    div
+      width: 100%
+      float: left
+
+    div.card-header
+      height: 18px
+      padding: 5px 0
+      background-color: $actionCardColor
+
+      p.card-title
+        padding: 1px 0
+        margin: 0
+        color: $lightTextColor
+        text-transform: uppercase
+        text-align: center
+        font-family: 'RobotoBold'
+
+    div.card-body
+      color: $lightTextColor
+      height: 264px
+
+      p.card-description
+        padding: 0
+        margin: 2.5px 5px
+        width: 95%
+        height: 108px
+        text-align: center
+        font-size: 0.9rem
+
+    div.card-info
+      background-color: $actionCardColor
+      padding: 5px 0
+      height: 18px
+      p
+        color: $lightTextColor
+        margin: 0
+        padding: 0
+        display: inline-block
+        font-family: 'RobotoBold'
+        text-transform: uppercase
+        font-size: 0.9rem
+
+      p.card-cost
+        margin-left: 10px
+        color: $treasureCardColor
+
+      p.card-type
+        float: right
+        margin-right: 10px
+
+  li.victory
+    div.card-header
+      background-color: $victoryCardColor
+
+    div.card-info
+      background-color: $victoryCardColor
+
+  li.treasure
+    div.card-header
+      background-color: $treasureCardColor
+
+    div.card-info
+      background-color: $treasureCardColor
+
+      p.card-cost
+        color: $lightTextColor
+
+  li.curse
+    div.card-header
+      background-color: $curseCardColor
+
+    div.card-info
+      background-color: $curseCardColor
+
 .overlay
-    background-color: $overlayColor
-    width: 100%
-    height: 100%
-    position: absolute
-    top: 0
-    left: 0
-    display: none
+  background-color: $bgColorFull
+  width: 100%
+  height: 100%
+  position: absolute
+  top: 0
+  left: 0
+  display: none
+
+  h2
+    font-size: 2rem
+    color: $lightTextColor
+    text-align: center
+    padding-top: 200px
+
+  a.actionBtn
+    background-color: $accentColor2
+    border: none
+    color: $lightTextColor
+    text-transform: uppercase
+    font-family: 'RobotoBold'
+    padding: 10px
+    font-size: 0.9rem
+    display: block
+    width: 150px
+    text-align: center
+    text-decoration: none
+    margin: 50px auto
+    -webkit-transition: all 150ms ease-in-out
+    -moz-transition: all 150ms ease-in-out
+    transition: all 150ms ease-in-out
+
+  a.actionBtn:hover
+    background-color: $accentColor4
+    cursor: pointer
+    -webkit-transition: all 150ms ease-in-out
+    -moz-transition: all 150ms ease-in-out
+    transition: all 150ms ease-in-out
+
+  button.config:hover
+    background-color: $accentColor4
+    cursor: pointer
+    -webkit-transition: all 150ms ease-in-out
+    -moz-transition: all 150ms ease-in-out
+    transition: all 150ms ease-in-out
+
+  #selectorContainer
+    width: 1250px
+    height: 340px
+    padding-top: 10px
+    margin: 50px auto
+
+    a.arrow
+      margin-top: 140px
+      color: $accentColor1
+      -webkit-transition: all 150ms ease-in-out
+      -moz-transition: all 150ms ease-in-out
+      transition: all 150ms ease-in-out
+
+    a.arrow:hover
+      color: $treasureCardColor
+      -webkit-transition: all 150ms ease-in-out
+      -moz-transition: all 150ms ease-in-out
+      transition: all 150ms ease-in-out
+
+    #selectorPile
+      margin: 0
+      padding-left: 14px
+      width: 1125px
+      list-style-type: none
+      float: left
+
+      .dim
+        width: 100%
+        height: 100%
+        position: relative
+        top: -320px
+        left: 0
+        z-index: 10
+        background-color: $cardInactiveColor
+
+      .card
+        width: 215px
+        height: 320px
+        margin: 5px
+        display: inline-block
+        background-color: $accentColor1
+        -webkit-transition: all 150ms ease-in-out
+        -moz-transition: all 150ms ease-in-out
+        transition: all 150ms ease-in-out
+
+        div
+          width: 100%
+          float: left
+
+        div.card-header
+          height: 18px
+          padding: 5px 0
+          background-color: $actionCardColor
+
+          p.card-title
+            padding: 1px 0
+            margin: 0
+            color: $lightTextColor
+            text-transform: uppercase
+            text-align: center
+            font-family: 'RobotoBold'
+
+        div.card-body
+          color: $lightTextColor
+          height: 264px
+
+          p.card-description
+            padding: 0
+            margin: 2.5px 5px
+            width: 95%
+            height: 109px
+            text-align: center
+            font-size: 0.9rem
+
+        div.card-info
+          background-color: $actionCardColor
+          padding: 5px 0
+          height: 18px
+          p
+            color: $lightTextColor
+            margin: 0
+            padding: 0
+            display: inline-block
+            font-family: 'RobotoBold'
+            text-transform: uppercase
+            font-size: 0.9rem
+
+          p.card-cost
+            margin-left: 10px
+            color: $treasureCardColor
+
+          p.card-type
+            float: right
+            margin-right: 10px
+
+      li.card:hover
+        cursor: pointer
+        -webkit-box-shadow: 0px 0px 5px 3px $cardHoverColor
+        -moz-box-shadow: 0px 0px 5px 3px $cardHoverColor
+        box-shadow: 0px 0px 5px 3px $cardHoverColor
+        -webkit-transition: all 150ms ease-in-out
+        -moz-transition: all 150ms ease-in-out
+        transition: all 150ms ease-in-out
+
+      li.victory
+        div.card-header
+          background-color: $victoryCardColor
+
+        div.card-info
+          background-color: $victoryCardColor
+
+      li.treasure
+        div.card-header
+          background-color: $treasureCardColor
+
+        div.card-info
+          background-color: $treasureCardColor
+
+          p.card-cost
+            color: $lightTextColor
+
+      li.curse
+        div.card-header
+          background-color: $curseCardColor
+
+        div.card-info
+          background-color: $curseCardColor
+
+      li.hidden
+        display: none
+
+  #selectorContainer:after
+    content: ""
+    display: table
+    clear: both
 
 #header
   width: 100%
@@ -30,6 +387,19 @@ body
     height: 60px
     margin: 0 auto
     display: block
+
+    a.info
+      color: white
+      padding-left: 40px
+      padding-top: 15px
+      width: 30px
+      height: 30px
+      text-decoration: none
+      float: left
+
+      i
+        font-size: 1.7rem
+
 
     h1
       display: inline-block
@@ -52,7 +422,7 @@ body
         -moz-transition: all 150ms ease-in-out
         transition: all 150ms ease-in-out
 
-    a.menu:hover
+    a:hover
       i
         color: $treasureCardColor
         -webkit-transition: all 150ms ease-in-out
@@ -60,7 +430,7 @@ body
         transition: all 150ms ease-in-out
 
     ul
-      margin: 0 0 0 290px
+      margin: 0 0 0 195px
       padding: 0
       list-style-type: none
       text-align: center
@@ -106,7 +476,7 @@ div#market
     ul#discardDeckPile
       width: 225px
       float: right
-      margin-right: 3px
+      margin-right: 1px
       box-sizing: border-box
       display: inline-block
 
@@ -120,23 +490,39 @@ div#market
     ul#treasurePile
       float: right
       width: 685px
+      margin-right: 2px
 
-      .wideCard
-        background-color: $treasureCardColor
+      .wideCard:nth-child(1)
+        background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url('../images/cards/copper.jpg') no-repeat center center
 
-        .wideCard-cost
-          color: $lightTextColor
+      .wideCard:nth-child(2)
+        background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url('../images/cards/silver.jpg') no-repeat center center
+
+      .wideCard:nth-child(3)
+        background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url('../images/cards/gold.jpg') no-repeat center center
+
+      .wideCard-cost
+        color: $lightTextColor
+
+      .wideCard-count
+        color: $victoryCardColor
 
     ul#victoryPile
       float: right
       width: 685px
+      margin-right: 2px
 
-      .wideCard
-        background-color: $victoryCardColor
+      .wideCard:nth-child(1)
+        background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url('../images/cards/estate.jpg') no-repeat center center
+
+      .wideCard:nth-child(2)
+        background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url('../images/cards/duchy.jpg') no-repeat center center
+
+      .wideCard:nth-child(3)
+        background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url('../images/cards/province.jpg') no-repeat center center
 
     ul#trashCursePile
       width: 225px
-      padding-right: 2.5px
 
       .wideCard
         background-color: $deckCardColor
@@ -159,6 +545,13 @@ div#market
     -webkit-transition: all 150ms ease-in-out
     -moz-transition: all 150ms ease-in-out
     transition: all 150ms ease-in-out
+
+    .dim
+      width: 100%
+      height: 100%
+      z-index: 100
+      position: relative
+      background-color: $wideCardHidden
 
     p
       font-family: 'RobotoBold'
@@ -195,9 +588,9 @@ div#market
 
   .wideCard:hover
     cursor: pointer
-    -webkit-box-shadow: 0px 0px 5px 1px $cardHoverColor
-    -moz-box-shadow: 0px 0px 5px 1px $cardHoverColor
-    box-shadow: 0px 0px 5px 1px $cardHoverColor
+    -webkit-box-shadow: 0px 0px 5px 3px $cardHoverColor
+    -moz-box-shadow: 0px 0px 5px 3px $cardHoverColor
+    box-shadow: 0px 0px 5px 3px $cardHoverColor
     -webkit-transition: all 150ms ease-in-out
     -moz-transition: all 150ms ease-in-out
     transition: all 150ms ease-in-out
@@ -254,9 +647,9 @@ div#field
 
       li.miniCard:hover
         cursor: pointer
-        -webkit-box-shadow: 0px 0px 5px 1px $cardHoverColor
-        -moz-box-shadow: 0px 0px 5px 1px $cardHoverColor
-        box-shadow: 0px 0px 5px 1px $cardHoverColor
+        -webkit-box-shadow: 0px 0px 5px 3px $cardHoverColor
+        -moz-box-shadow: 0px 0px 5px 3px $cardHoverColor
+        box-shadow: 0px 0px 5px 3px $cardHoverColor
         -webkit-transition: all 150ms ease-in-out
         -moz-transition: all 150ms ease-in-out
         transition: all 150ms ease-in-out
@@ -368,10 +761,19 @@ div#hand
       list-style-type: none
       float: left
 
+      .dim
+        width: 100%
+        height: 100%
+        position: relative
+        top: -320px
+        left: 0
+        z-index: 10
+        background-color: $cardInactiveColor
+
       .card
-        width: 220px
+        width: 215px
         height: 320px
-        margin: 2.5px 2.5px
+        margin: 2.5px 5px
         display: inline-block
         background-color: $accentColor1
         -webkit-transition: all 150ms ease-in-out
@@ -399,17 +801,13 @@ div#hand
           color: $lightTextColor
           height: 264px
 
-          div.card-actionList
-            ul.card-actions
-              margin: 0
-              padding: 0
-              list-style-type: none
-
-              li.card-action
-                padding: 0
-                margin: 12px 0
-                width: 100%
-                text-align: center
+          p.card-description
+            padding: 0
+            margin: 5px
+            width: 95%
+            height: 104px
+            text-align: center
+            font-size: 0.9rem
 
         div.card-info
           background-color: $actionCardColor
@@ -434,9 +832,9 @@ div#hand
 
       li.card:hover
         cursor: pointer
-        -webkit-box-shadow: 0px 0px 5px 1px $cardHoverColor
-        -moz-box-shadow: 0px 0px 5px 1px $cardHoverColor
-        box-shadow: 0px 0px 5px 1px $cardHoverColor
+        -webkit-box-shadow: 0px 0px 5px 3px $cardHoverColor
+        -moz-box-shadow: 0px 0px 5px 3px $cardHoverColor
+        box-shadow: 0px 0px 5px 3px $cardHoverColor
         -webkit-transition: all 150ms ease-in-out
         -moz-transition: all 150ms ease-in-out
         transition: all 150ms ease-in-out

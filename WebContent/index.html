@@ -9,14 +9,21 @@
 
     <body>
         <main id="fullpage">
+            <div class="fp-section headroom">
+                <h2 class="config">Pick a Lobby</h1>
+
+                <button class="config page-down">Back To Menu</button>
+            </div>
+
             <div class="fp-section active headroom">
                 <h1 class="config">Dominion</h1>
 
-                <button class="config page-down">Play</button>
+                <button class="config page-up">Play Online</button>
+                <button class="config page-down">Play Locally</button>
             </div>
 
             <div class="fp-section">
-                <div class="fp-slide headroom">
+                <div class="headroom" id="config">
                     <h2 class="config">Game Configuration</h2>
 
                     <form id="game-config">
@@ -39,11 +46,11 @@
                         <div class="form-column">
                             <label for="card-set">Card Set</label>
                             <select name="card-set" id="card-set">
-                                <option value="first-game" active>First Game</option>
-                                <option value="big-money" active>Big Money</option>
+                                <option value="firstgame" active>First Game</option>
+                                <option value="bigmoney" active>Big Money</option>
                                 <option value="interaction" active>Interaction</option>
-                                <option value="size-distortion" active>Size Distortion</option>
-                                <option value="village-square" active>Village Square</option>
+                                <option value="sizedistortion" active>Size Distortion</option>
+                                <option value="villagesquare" active>Village Square</option>
                             </select>
                         </div>
                     </form>
@@ -52,10 +59,12 @@
                     <button class="config page-up">Back To Menu</button>
                 </div>
 
-                <div id="game" class="fp-slide">
+                <div id="game">
+                    <div class='overlay'></div>
                     <div id="header">
                         <div id="topStatus">
                             <h1 class="heading">Dominion</h1>
+                            <a href="" class="info"><i class="material-icons">info_outline</i></a>
                             <ul>
                                 <li>Actions <span class="actionC counter"></span></li>
                                 <li>Buys <span class="buyC counter"></span></li>
@@ -202,7 +211,7 @@
                                 </ul>
 
                                 <ul id="trashCursePile">
-                                    <li class="wideCard">
+                                    <li class="wideCard cursePile">
                                         <p class="wideCard-title">Curse</p>
                                         <div class="wideCard-info">
                                             <p class="wideCard-cost">0</p>
@@ -231,11 +240,9 @@
                                 </div>
                                 <div class="actionBtn phase">
                                     Phase
-                                    <div class="circle cleanupDisp"></div>
                                     <div class="circle buyDisp"></div>
                                     <div class="circle actionDisp"></div>
                                 </div>
-                                <a href="" class="actionBtn mainAction endTurn">End Turn</a>
                                 <a href="" class="actionBtn mainAction endPhase">End Phase</a>
                                 <a href="" class="actionBtn mainAction playCards">Play Cards</a>
                             </div>

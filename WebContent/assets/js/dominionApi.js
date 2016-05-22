@@ -39,7 +39,7 @@ Dominion.Api = (function(Api) {
 
     var handleDone = function(url, returnData, callback) {
         if(that.allowDebugging) {
-            //catchInvalidResponse(url, returnData);
+            catchInvalidResponse(url, returnData);
         }
 
         if(callback) {
@@ -55,7 +55,7 @@ Dominion.Api = (function(Api) {
         createUrl(data, multi);
 
         if (that.allowDebugging) {
-            //console.log("Outgoing AJAX call: " + this.callString);
+            console.log("Outgoing AJAX call: " + this.callString);
         }
 
         $.ajax(this.callString)

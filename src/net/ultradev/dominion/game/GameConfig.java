@@ -8,7 +8,7 @@ import net.sf.json.JSONObject;
 
 public class GameConfig {
 	
-	public enum CardSet { TEST }
+	public enum CardSet { TEST, FIRSTGAME, BIGMONEY, INTERACTION, SIZEDISTORTION, VILLAGESQUARE }
 	public enum Option { ADDCARD, REMOVECARD, SETCARDSET };
 	
 	private List<String> actionCardTypes;
@@ -23,34 +23,6 @@ public class GameConfig {
 		return game;
 	}
 	
-	/**
-	 * @param key
-	 * @param value
-	 * @return whether the handle is valid or not
-	 */
-	public boolean handle(String key, String value) {
-		Option option = null;
-		try { 
-			option = Option.valueOf(key.toUpperCase()); 
-		} catch(Exception ignored) { 
-			return false; 
-		}
-		switch(option) {
-			case SETCARDSET:
-				setCardset(value);
-				break;
-			case ADDCARD:
-				addActionCard(value);
-				break;
-			case REMOVECARD:
-				removeActionCard(value);
-				break;
-			default:
-				break;
-		}
-		return true;
-	}
-	
 	public boolean hasValidActionCards() {
 		return actionCardTypes.size() == 10;
 	}
@@ -60,9 +32,9 @@ public class GameConfig {
 		actionCardTypes.clear();
 		CardSet set;
 		try  {
-			set = CardSet.valueOf(cardSet);
+			set = CardSet.valueOf(cardSet.toUpperCase());
 		} catch(Exception ignored) { 
-			set = CardSet.TEST;
+			set = CardSet.FIRSTGAME;
 		}
 		switch(set) {
 			case TEST:
@@ -76,6 +48,66 @@ public class GameConfig {
 						"mine", 
 						"moat", 
 						"remodel");
+				break;
+			case FIRSTGAME:
+				addActionCards("cellar", 
+						"market", 
+						"militia", 
+						"mine", 
+						"moat", 
+						"remodel", 
+						"smithy", 
+						"village", 
+						"woodcutter", 
+						"workshop");
+				break;
+			case BIGMONEY:
+				addActionCards("adventurer", 
+						"bureaucrat", 
+						"chancellor", 
+						"chapel", 
+						"feast", 
+						"laboratory", 
+						"market", 
+						"mine", 
+						"moneylender", 
+						"throne_room");
+				break;
+			case INTERACTION:
+				addActionCards("bureaucrat", 
+						"chancellor", 
+						"council_room", 
+						"festival", 
+						"library", 
+						"militia", 
+						"moat", 
+						"spy", 
+						"thief", 
+						"village");
+				break;
+			case SIZEDISTORTION:
+				addActionCards("cellar", 
+						"chapel", 
+						"feast", 
+						"gardens", 
+						"laboratory", 
+						"thief", 
+						"village", 
+						"witch", 
+						"woodcutter", 
+						"workshop");
+				break;
+			case VILLAGESQUARE:
+				addActionCards("bureaucrat", 
+						"cellar", 
+						"festival", 
+						"library", 
+						"market", 
+						"remodel", 
+						"smithy", 
+						"throne_room", 
+						"village", 
+						"woodcutter");
 				break;
 			default:
 				break;
@@ -91,12 +123,6 @@ public class GameConfig {
 			if(!actionCardTypes.contains(actionCard) && actionCardTypes.size() < 10) {
 				actionCardTypes.add(actionCard);
 			}
-		}
-	}
-	
-	public void removeActionCard(String actionCard) {
-		if(actionCardTypes.contains(actionCard)) {
-			actionCardTypes.remove(actionCard);
 		}
 	}
 	
