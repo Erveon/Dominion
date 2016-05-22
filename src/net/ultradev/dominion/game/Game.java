@@ -119,11 +119,7 @@ public abstract class Game {
 	
 	public void endTurn() {
 		getTurn().getPlayer().increaseRounds();
-		if(getBoard().hasEndCondition()) {
-			endGame();
-		} else {
-			setTurn(getTurn().getNextTurn());
-		}
+		setTurn(getTurn().getNextTurn());
 	}
 	
 	public JSONObject endPhase() {
@@ -132,6 +128,9 @@ public abstract class Game {
 			getTurn().endPhase();
 			if(getTurn().getPhase().equals(Phase.CLEANUP)) {
 				endTurn();
+				if(getBoard().hasEndCondition()) {
+					return endGame();
+				}
 			}
 		} else {
 			response = getGameServer().getGameManager().getInvalid("Cannot end a phase when in an action!");
@@ -143,9 +142,12 @@ public abstract class Game {
 		this.turn = turn;
 	}
 	
-	public void endGame() {
-		//Player winner = getWinner();
-		//TODO win!
+	public JSONObject endGame() {
+		return new JSONObject()
+			.accumulate("response", "OK")
+			.accumulate("result", "GAMEOVER")
+			.accumulate("winner", getWinner().getDisplayname())
+			.accumulate("players", getPlayersAsJson());
 	}
 	
 	public void addPlayer(String name) {

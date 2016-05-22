@@ -8,7 +8,7 @@ import net.sf.json.JSONObject;
 
 public class GameConfig {
 	
-	public enum CardSet { TEST, FIRSTGAME, BIGMONEY }
+	public enum CardSet { TEST, FIRSTGAME, BIGMONEY, INTERACTION, SIZEDISTORTION, VILLAGESQUARE }
 	public enum Option { ADDCARD, REMOVECARD, SETCARDSET };
 	
 	private List<String> actionCardTypes;
@@ -100,6 +100,42 @@ public class GameConfig {
 						"mine", 
 						"moneylender", 
 						"throne_room");
+				break;
+			case INTERACTION:
+				addActionCards("bureaucrat", 
+						"chancellor", 
+						"council_room", 
+						"festival", 
+						"library", 
+						"militia", 
+						"moat", 
+						"spy", 
+						"thief", 
+						"village");
+				break;
+			case SIZEDISTORTION:
+				addActionCards("cellar", 
+						"chapel", 
+						"feast", 
+						"gardens", 
+						"laboratory", 
+						"thief", 
+						"village", 
+						"witch", 
+						"woodcutter", 
+						"workshop");
+				break;
+			case VILLAGESQUARE:
+				addActionCards("bureaucrat", 
+						"cellar", 
+						"festival", 
+						"library", 
+						"market", 
+						"remodel", 
+						"smithy", 
+						"throne_room", 
+						"village", 
+						"woodcutter");
 				break;
 			default:
 				break;

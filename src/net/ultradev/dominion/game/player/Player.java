@@ -221,7 +221,8 @@ public class Player {
 				.accumulate("displayname", getDisplayname())
 				.accumulate("deck", getCardsAsJson(getPile(Pile.DECK)))
 				.accumulate("hand", getCardsAsJson(getPile(Pile.HAND)))
-				.accumulate("discard", getCardsAsJson(getPile(Pile.DISCARD)));
+				.accumulate("discard", getCardsAsJson(getPile(Pile.DISCARD)))
+				.accumulate("victorypoints", getVictoryPoints());
 	}
 	
 }
