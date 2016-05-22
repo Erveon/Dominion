@@ -10,17 +10,20 @@ import net.ultradev.dominion.game.card.action.ActionResult;
 import net.ultradev.dominion.game.player.Player;
 
 public class GainCardAction extends Action {
-	
-	public enum GainCardType { TREASURE, ANY }
-	
-	private GainCardType type;
+		
+	private CardType type;
 	private int coins;
 	
 	private Card card;
 	private CardDestination destination;
 	
-	// If they can choose a card and get a budget
-	public GainCardAction(String identifier, String description, ActionTarget target, int cost, GainCardType type) {
+	public GainCardAction(String identifier, String description, ActionTarget target, int cost) {
+		super(identifier, description, target);
+		this.coins = cost;
+	}
+	
+	// If they can choose a card and get a budget (specific type)
+	public GainCardAction(String identifier, String description, ActionTarget target, int cost, CardType type) {
 		super(identifier, description, target);
 		this.coins = cost;
 		this.type = type;
@@ -60,7 +63,7 @@ public class GainCardAction extends Action {
 					.accumulate("response", "OK")
 					.accumulate("result", ActionResult.SELECT_CARD_BOARD)
 					.accumulate("force", false)
-					.accumulate("type", type)
+					.accumulate("type", type == null ? "ANY" : type)
 					.accumulate("player", turn.getPlayer().getDisplayname())
 					.accumulate("cost", getCost(turn.getPlayer()));
 		}
@@ -83,12 +86,10 @@ public class GainCardAction extends Action {
 	}
 	
 	public boolean isSelectable(Card card) {
-		switch(type) {
-			case TREASURE:
-				return card.getType().equals(CardType.TREASURE);
-			case ANY:
-			default:
-				return true;
+		if(type == null) {
+			return true;
+		} else {
+			return card.getType().equals(type);
 		}
 	}
 	

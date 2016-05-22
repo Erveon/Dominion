@@ -8,6 +8,7 @@ import net.ultradev.dominion.game.Turn.CardDestination;
 import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
+import net.ultradev.dominion.game.card.action.Action.AmountType;
 import net.ultradev.dominion.game.card.action.IllegalActionVariableException;
 import net.ultradev.dominion.game.card.action.MissingVariableException;
 import net.ultradev.dominion.game.card.action.actions.AdventurerAction;
@@ -19,9 +20,7 @@ import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuy
 import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
 import net.ultradev.dominion.game.card.action.actions.GainCardAction;
 import net.ultradev.dominion.game.card.action.actions.MultipleActionsAction;
-import net.ultradev.dominion.game.card.action.actions.GainCardAction.GainCardType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
-import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.AmountType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
 import net.ultradev.dominion.game.card.action.actions.TransferPileAction;
 import net.ultradev.dominion.game.player.Player;
@@ -120,6 +119,9 @@ public class CardManager {
 		Card witch = new Card("witch", "+2 Cards, each other player draws a Curse card", 5);
 		witch.addType("ATTACK");
 		getCards().put("witch", witch);
+		
+		Card library = new Card("library", "Draw until you have 7 cards in hand. You may set aside any Action cards drawn this way, as you draw them; discard the set aside cards after you finish drawing.", 5);
+		getCards().put("library", library);
 		
 		addActions();
 	}
@@ -225,6 +227,10 @@ public class CardManager {
 		witch.addAction(parseAction("draw_cards", "Draw 2 cards", "amount=2"));
 		witch.addAction(parseAction("gain_specific_card", "Draw a curse card", "card=curse;for=others"));
 		
+		Card library = getCards().get("library");
+		library.addAction(parseAction("draw_cards", "Draw until you have 7 cards", "amount=7;type=until"));
+		library.addAction(parseAction("discard_choose", "Discard any number of action cards.", "restricttype=action"));
+		
 	}
 	
 	/**
@@ -247,7 +253,11 @@ public class CardManager {
 		switch(identifier.toLowerCase()) {
 			case "draw_cards":
 				if(containsKeys(params, identifier, "amount")) {
-					return parseDrawCards(identifier, description, target, params.get("amount"));
+					AmountType type = AmountType.SPECIFIC_AMOUNT;
+					if(params.containsKey("type")) {
+						type = AmountType.valueOf(params.get("type").toUpperCase());
+					}
+					return parseDrawCards(identifier, description, target, params.get("amount"), type);
 				}
 				break;
 			case "trash_specific":
@@ -320,11 +330,12 @@ public class CardManager {
 				break;
 			case "gain_card":
 				if(containsKeys(params, identifier, "cost")) {
-					GainCardType gainType = GainCardType.ANY;
 					if(params.containsKey("type")) {
-						gainType = GainCardType.valueOf(params.get("type").toUpperCase());
+						CardType gainCardType = CardType.valueOf(params.get("type").toUpperCase());
+						return new GainCardAction(identifier, description, target, Integer.valueOf(params.get("cost")), gainCardType);
+					} else {
+						return new GainCardAction(identifier, description, target, Integer.valueOf(params.get("cost")));
 					}
-					return new GainCardAction(identifier, description, target, Integer.valueOf(params.get("cost")), gainType);
 				}
 				break;
 			case "gain_specific_card":
@@ -366,9 +377,9 @@ public class CardManager {
 	 * 
 	 *************/
 	
-	public Action parseDrawCards(String identifier, String description, ActionTarget target, String amountVar) {
+	public Action parseDrawCards(String identifier, String description, ActionTarget target, String amountVar, AmountType amountType) {
 		int amount = getGameServer().getUtils().parseInt(amountVar, 1);
-		return new DrawCardAction(identifier, description, target, amount);
+		return new DrawCardAction(identifier, description, target, amount, amountType);
 	}
 	
 	public Action parseAddActions(String identifier, String description, ActionTarget target, String amountVar) {
@@ -415,7 +426,14 @@ public class CardManager {
 				action = new RemoveCardAction(target, type, identifier, description);
 				break;
 		}
-		if(params.containsKey("restrict")) {
+		if(params.containsKey("restricttype")) {
+			CardType restricttype = CardType.valueOf(params.get("restricttype").toUpperCase());
+			for(Card c : getCards().values()) {
+				if(c.getType().equals(restricttype)) {
+					action.addPermitted(c);
+				}
+			}
+		} else if(params.containsKey("restrict")) {
 			String[] toPermit = params.get("restrict").split(",");
 			for(String permit : toPermit) {
 				action.addPermitted(gs.getCardManager().get(permit));

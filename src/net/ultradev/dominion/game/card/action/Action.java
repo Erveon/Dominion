@@ -11,7 +11,8 @@ import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.player.Player;
 
 public abstract class Action {
-
+	
+	public enum AmountType { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, UNTIL, RANGE, SELF };
 	public enum ActionTarget { EVERYONE, OTHERS, SELF };
 	
 	private List<Action> callbacks;

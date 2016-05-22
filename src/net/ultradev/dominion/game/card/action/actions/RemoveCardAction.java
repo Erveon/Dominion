@@ -18,7 +18,6 @@ import net.ultradev.dominion.game.player.Player.Pile;
 
 public class RemoveCardAction extends Action {
 	
-	public enum AmountType { CHOOSE_AMOUNT, SPECIFIC_AMOUNT, UNTIL, RANGE, SELF };
 	public enum RemoveType { TRASH, DISCARD };
 	
 	private int min, max;
