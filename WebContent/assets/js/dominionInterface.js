@@ -144,7 +144,7 @@ Dominion.Interface = (function(Interface) {
         var that = this;
 
         $("#mainPile .wideCard").on('click', function(e) {
-            gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase());
+            gameObj.buyCard($(this).children('.wideCard-title').text().toLowerCase().replace(/ /g, "_"));
             e.stopImmediatePropagation();
         });
         $('#treasurePile .wideCard').on('click', function(e) {
@@ -162,7 +162,7 @@ Dominion.Interface = (function(Interface) {
 
         $("#mainPile .wideCard").hover(function (e) {
             $('body').append("<div class='tooltip'></div>");
-            var cardname = $(this).children('.wideCard-title').text().toLowerCase();
+            var cardname = $(this).children('.wideCard-title').text().toLowerCase().replace(/ /g, "_");
             var pos = $(this).position();
             var actionCards = that.gameData.game.board.action;
             var cardID;
@@ -459,9 +459,10 @@ Dominion.Interface = (function(Interface) {
     };
 
     Interface.prototype.addCard = function(card, hand, element) {
+        var cardname = hand[card].name;
         var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
         cardHTML += "<div class='card-header'>";
-        cardHTML += "<p class='card-title'>" + hand[card].name + "</p></div>";
+        cardHTML += "<p class='card-title'>" + cardname.replace(/_/g, " ") + "</p></div>";
         cardHTML += "<div class='card-body'>";
         cardHTML += "<img src='assets/images/cards/" + hand[card].name + ".jpg' alt='" + hand[card].name + "' width='100%'>";
         cardHTML += "<p class='card-description'>" + hand[card].description + "</p></div>";
@@ -510,7 +511,7 @@ Dominion.Interface = (function(Interface) {
         var cardDisplay = $('#mainPile li.wideCard');
         var actionCards = data.game.board.action;
         for (var card in actionCards) {
-            cardDisplay.eq(card).children('p:first').text(actionCards[card].name);
+            cardDisplay.eq(card).children('p:first').text(actionCards[card].name.replace(/_/g, " "));
             cardDisplay.eq(card).children('div:first').children('p:first').text(actionCards[card].cost);
             cardDisplay.eq(card).children('div:first').children('p:last').text(actionCards[card].amount);
             cardDisplay.eq(card).css({
@@ -566,7 +567,7 @@ Dominion.Interface = (function(Interface) {
 
     Interface.prototype.showAvailibleCard = function(cardData, cardId, cardDOM) {
         var cardPile = cardDOM.eq(cardId);
-        var cardTitle = cardPile.children('.wideCard-title').text();
+        var cardTitle = cardPile.children('.wideCard-title').text().replace(/ /g, "_");
 
         if(cardData.name === cardTitle.toLowerCase()) {
             cardPile.children('.dim').remove();
