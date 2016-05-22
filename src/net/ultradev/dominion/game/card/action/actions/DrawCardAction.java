@@ -26,7 +26,11 @@ public class DrawCardAction extends Action {
 		} else if(getTarget().equals(ActionTarget.OTHERS)) {
 			for(Player p : turn.getGame().getPlayers()) {
 				if(!p.equals(turn.getPlayer())) {
-					drawCards(p);
+					// If it's a curse and they don't have a reaction or when it's not a curse
+					if((card.getName().equalsIgnoreCase("curse") && !p.hasReaction()) 
+							|| !card.getName().equalsIgnoreCase("curse")) {
+						drawCards(p);
+					}
 				}
 			}
 		}

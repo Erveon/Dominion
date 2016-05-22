@@ -195,7 +195,8 @@ public class RemoveCardAction extends Action {
 		if(amountType.equals(AmountType.SELF)) {
 			return false;
 		} else if(amountType.equals(AmountType.UNTIL)) {
-			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed "+ getRemovedCards(player) +" of minimum " + progress.get(player).getInteger("forceremovecount") + " cards");
+			player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed "
+						+ getRemovedCards(player) + " of minimum " + progress.get(player).getInteger("forceremovecount") + " cards");
 			return getRemovedCards(player) < progress.get(player).getInteger("forceremovecount");
 		}		
 		player.getGame().getGameServer().getUtils().debug(player.getDisplayname() + " has removed " + getRemovedCards(player) + " of " + max + " allowed cards");

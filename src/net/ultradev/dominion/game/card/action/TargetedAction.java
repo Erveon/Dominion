@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.ultradev.dominion.game.Game;
-import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
 import net.ultradev.dominion.game.player.Player;
-import net.ultradev.dominion.game.player.Player.Pile;
 
 public class TargetedAction {
 	
@@ -47,10 +45,9 @@ public class TargetedAction {
 				break;
 		}
 		
-		Card moat = player.getGame().getGameServer().getCardManager().get("moat");
 		List<Player> immume = new ArrayList<>();
 		for(Player p : todo) {
-			if(p.getPile(Pile.HAND).contains(moat)) {
+			if(p.hasReaction()) {
 				immume.add(p);
 			}
 		}

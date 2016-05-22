@@ -28,6 +28,10 @@ public class ActionProgress {
 		progress.put(key, value);
 	}
 	
+	public void set(String key, boolean value) {
+		progress.put(key, value);
+	}
+	
 	public void set(String key, int value) {
 		progress.put(key, String.valueOf(value));
 	}
@@ -42,6 +46,13 @@ public class ActionProgress {
 	public String getString(String key) {
 		if(progress.containsKey(key)) {
 			return (String) progress.get(key);
+		}
+		throw new IllegalArgumentException("The key does not exist (" + key + ")");
+	}
+	
+	public boolean getBoolean(String key) {
+		if(progress.containsKey(key)) {
+			return (boolean) progress.get(key);
 		}
 		throw new IllegalArgumentException("The key does not exist (" + key + ")");
 	}

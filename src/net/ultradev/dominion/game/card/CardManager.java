@@ -22,6 +22,8 @@ import net.ultradev.dominion.game.card.action.actions.GainCardAction;
 import net.ultradev.dominion.game.card.action.actions.MultipleActionsAction;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
+import net.ultradev.dominion.game.card.action.actions.SpyAction;
+import net.ultradev.dominion.game.card.action.actions.ThiefAction;
 import net.ultradev.dominion.game.card.action.actions.TransferPileAction;
 import net.ultradev.dominion.game.player.Player;
 import net.ultradev.dominion.game.player.Player.Pile;
@@ -122,6 +124,12 @@ public class CardManager {
 		
 		Card library = new Card("library", "Draw until you have 7 cards in hand. You may set aside any Action cards drawn this way, as you draw them; discard the set aside cards after you finish drawing.", 5);
 		getCards().put("library", library);
+		
+		Card thief = new Card("thief", "Each other player reveals the top 2 cards of his deck. If they revealed any Treasure cards, you gain all of those cards. They discard the other revealed cards.", 4);
+		getCards().put("thief", thief);
+		
+		Card spy = new Card("spy", "+1 Card, +1 Action, Each player (including you) reveals the top card of his deck and either discards it or puts it back, your choice.", 4);
+		getCards().put("spy", spy);
 		
 		addActions();
 	}
@@ -230,6 +238,14 @@ public class CardManager {
 		Card library = getCards().get("library");
 		library.addAction(parseAction("draw_cards", "Draw until you have 7 cards", "amount=7;type=until"));
 		library.addAction(parseAction("discard_choose", "Discard any number of action cards.", "restricttype=action"));
+		
+		Card thief = getCards().get("thief");
+		thief.addAction(parseAction("thief", "You reveal the top 2 cards from your deck, the thief grabs all the treasure.", "for=others"));
+		
+		Card spy = getCards().get("spy");
+		spy.addAction(parseAction("draw_cards", "Draw 1 card", "amount=1"));
+		spy.addAction(parseAction("add_actions", "Adds 1 action to your turn", "amount=1"));
+		spy.addAction(parseAction("spy", "Reveal the top card of your deck, discard or put it back. Your choice.", "for=everyone"));
 		
 	}
 	
@@ -367,6 +383,10 @@ public class CardManager {
 					int times = Integer.parseInt(params.get("times"));
 					return new MultipleActionsAction(identifier, description, target, times);
 				}
+			case "thief":
+				return new ThiefAction(identifier, description, target);
+			case "spy":
+				return new SpyAction(identifier, description, target);
 		}
 		throw new IllegalArgumentException("That action does not exist");
 	}

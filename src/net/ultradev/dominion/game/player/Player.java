@@ -203,6 +203,14 @@ public class Player {
 			getGame().getBoard().addTrash(card);
 		}
 	}
+	
+	public boolean hasReaction() {
+		Card moat = getGame().getGameServer().getCardManager().get("moat");
+		if(getPile(Pile.HAND).contains(moat)) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Discards a card
