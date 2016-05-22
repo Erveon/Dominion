@@ -194,7 +194,7 @@ public class CardManager {
 		
 		Card bureaucrat = getCards().get("bureaucrat");
 		bureaucrat.addAction(parseAction("gain_specific_card", "Gain a Silver card; put it on top of your deck", "card=silver;to=top_deck"));
-		bureaucrat.addAction(parseAction("bureaucrat", "Each other player reveals a Victory card from his hand and puts it on his deck", ""));
+		bureaucrat.addAction(parseAction("bureaucrat", "Each other player reveals a Victory card from his hand and puts it on his deck", "for=others"));
 		
 		Card chancellor = getCards().get("chancellor");
 		chancellor.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));

@@ -46,6 +46,10 @@ public class TargetedAction {
 		}
 	}
 	
+	public void setPlayers(List<Player> todo) {
+		this.todo = todo;
+	}
+	
 	public Player getPlayer() {
 		return player;
 	}

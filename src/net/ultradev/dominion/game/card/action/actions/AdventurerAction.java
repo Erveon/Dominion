@@ -9,6 +9,7 @@ import net.ultradev.dominion.game.card.Card;
 import net.ultradev.dominion.game.card.Card.CardType;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.ActionResult;
+import net.ultradev.dominion.game.card.action.Revealer;
 import net.ultradev.dominion.game.player.Player;
 import net.ultradev.dominion.game.player.Player.Pile;
 
@@ -39,8 +40,8 @@ public class AdventurerAction extends Action {
 		
 		return new JSONObject()
 				.accumulate("response", "OK")
-				.accumulate("result", ActionResult.DONE)
-				.accumulate("reveal", toReveal.stream().map(Card::getAsJson));
+				.accumulate("result", ActionResult.REVEAL)
+				.accumulate("reveal", new Revealer(toReveal).get());
 	}
 	
 	public void checkDeck(Player p, List<Card> toReveal, List<Card> treasures) {
