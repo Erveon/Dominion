@@ -42,7 +42,7 @@ public class AdventurerAction extends Action {
 				.accumulate("response", "OK")
 				.accumulate("result", ActionResult.REVEAL)
 				.accumulate("reveal", new Revealer(toReveal).get())
-				.accumulate("player", turn.getPlayer())
+				.accumulate("player", turn.getPlayer().getDisplayname())
 				.accumulate("force", false);
 	}
 	
