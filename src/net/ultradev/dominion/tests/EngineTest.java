@@ -40,52 +40,39 @@ public class EngineTest {
 	}
 	
 	@Test
-	public void logCreationOfCardsWhileTesting() {
-		try {
-		int provinces = board.getSupply(SupplyType.VICTORY).getCards().get("province");
-		int curses = board.getSupply(SupplyType.CURSE).getCards().get("curse");
-		int coppers = board.getSupply(SupplyType.TREASURE).getCards().get("copper");
-		int chapels = board.getSupply(SupplyType.ACTION).getCards().get("chapel");
-		System.out.println("\nprovinces: " + provinces + "\ncurses: " + curses + "\ncoppers: " + coppers + "\nchapels: " + chapels);
-		}
-		catch (Exception e) {
-			System.out.println("failed...");
-		}
-		System.out.println("done");
-	}
-	
-	
-	// onderstaande endcondition tests geven een nulpointer exception in klasse Board op lijn 66.
-	/*
-	@Test
 	public void testEndConditionNoProvinces() {
 		Card province = gameServer.getCardManager().get("province");
 		for(int players = 2; players <= 4; players++) {
 			int playerCount = game.getPlayers().size();
 			int amountOfCards = playerCount == 2 ? 8 : 12;
 			for(int i = 0; i < amountOfCards; i++){
+				int desiredSupplyAmount = amountOfCards - (i + 1);
 				board.getSupply(SupplyType.VICTORY).removeOne(province);
-				System.out.println("amount of provinces: " + board.getSupply(SupplyType.VICTORY).getCards().get("province"));
+				int amountOfProvinces = board.getSupply(SupplyType.VICTORY).getCards().get(province);
+				assertEquals("not the right amount of provinces...", desiredSupplyAmount, amountOfProvinces);
 			}
 			assertTrue("Game doesn't end when there are " + amountOfCards + " provinces removed", board.hasEndCondition());
 			String newPlayer = "player " + players;
 			game.addPlayer(newPlayer);
-			board.addActionCard(gameServer.getCardManager().get("province"));
+			board.initSupplies();
 		}
 	}
 	
 	@Test
 	public void testEndConditonThreeEmptyPiles() {
+		Card curse = gameServer.getCardManager().get("curse");
+		Card estate = gameServer.getCardManager().get("estate");
+		Card duchy = gameServer.getCardManager().get("duchy");
 		for(int players = 2; players <= 4; players++) {
 			int playerCount = game.getPlayers().size();
 			int amountOfCards = playerCount == 2 ? 8 : 12;
 			for(int i = 0; i < amountOfCards; i++) {
-				board.getSupply(SupplyType.CURSE).removeOne(gameServer.getCardManager().get("curse"));
-				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().get("estate"));
-				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().get("duchy"));
+				board.getSupply(SupplyType.CURSE).removeOne(gameServer.getCardManager().getCards().get(curse));
+				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().getCards().get(estate));
+				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().getCards().get(duchy));
+				System.out.println(board.getSupply(SupplyType.CURSE).getCards().get(curse));
 			}
 			assertTrue("Game doesn't end when there are " + amountOfCards + " removed from 3 piles", board.hasEndCondition());
 		}
 	}
-	*/
 }
