@@ -54,7 +54,9 @@ public class BureaucratAction extends Action {
 		return new JSONObject()
 				.accumulate("response", "OK")
 				.accumulate("result", ActionResult.REVEAL)
-				.accumulate("reveal", new Revealer(card).get());
+				.accumulate("reveal", new Revealer(card).get())
+				.accumulate("player", turn.getPlayer())
+				.accumulate("force", false);
 	}
 	
 	@Override

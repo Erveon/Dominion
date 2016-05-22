@@ -41,7 +41,9 @@ public class AdventurerAction extends Action {
 		return new JSONObject()
 				.accumulate("response", "OK")
 				.accumulate("result", ActionResult.REVEAL)
-				.accumulate("reveal", new Revealer(toReveal).get());
+				.accumulate("reveal", new Revealer(toReveal).get())
+				.accumulate("player", turn.getPlayer())
+				.accumulate("force", false);
 	}
 	
 	public void checkDeck(Player p, List<Card> toReveal, List<Card> treasures) {

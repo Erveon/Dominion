@@ -65,7 +65,8 @@ public class GainCardAction extends Action {
 					.accumulate("force", false)
 					.accumulate("type", type == null ? "ANY" : type)
 					.accumulate("player", turn.getPlayer().getDisplayname())
-					.accumulate("cost", getCost(turn.getPlayer()));
+					.accumulate("cost", getCost(turn.getPlayer()))
+					.accumulate("message", getDescripton());
 		}
 	}
 	
