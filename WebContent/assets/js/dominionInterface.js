@@ -104,7 +104,7 @@ Dominion.Interface = (function(Interface) {
                 $('body').append("<div class='info-overlay marketOverlay'><h2>MARKET</h2><p>This field contains all of the purchaseable cards. Buyable cards will be highlighted, unbuyable cards will be dimmed.</p></div>");
                 $('.marketOverlay').css({top: market.top + 'px', left: market.left + 'px'});
 
-                $('body').append("<div class='info-overlay fieldOverlay'><h2>PLAYING FIELD</h2><p>This field contains all of cards that have been played this turn.</p></div>");
+                $('body').append("<div class='info-overlay fieldOverlay'><h2>PLAYING FIELD</h2><p>This field contains all of the cards that have been played this turn.</p></div>");
                 $('.fieldOverlay').css({top: field.top + 10 + 'px', left: field.left + 'px'});
 
                 $('body').append("<div class='info-overlay controlsOverlay'><h2>CONTROLS</h2></div>");
