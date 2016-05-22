@@ -11,13 +11,13 @@ import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.card.CardManager;
 import net.ultradev.dominion.game.card.action.Action;
 import net.ultradev.dominion.game.card.action.Action.ActionTarget;
+import net.ultradev.dominion.game.card.action.Action.AmountType;
 import net.ultradev.dominion.game.card.action.actions.DrawCardAction;
 import net.ultradev.dominion.game.card.action.actions.GainActionsAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction;
 import net.ultradev.dominion.game.card.action.actions.GainBuypowerAction.GainBuypowerType;
 import net.ultradev.dominion.game.card.action.actions.GainBuysAction;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction;
-import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.AmountType;
 import net.ultradev.dominion.game.card.action.actions.RemoveCardAction.RemoveType;
 
 public class CardManagerTest {
@@ -33,7 +33,7 @@ public class CardManagerTest {
 
 	@Test
 	public void testParseDrawCards() {
-		Action parsedAction = cardmanager.parseDrawCards("Draw a card","Tests parsing the database by drawing a card", ActionTarget.SELF,"1");
+		Action parsedAction = cardmanager.parseDrawCards("Draw a card","Tests parsing the database by drawing a card", ActionTarget.SELF,"1", AmountType.SPECIFIC_AMOUNT);
 		assertTrue("Failed to parse a drawCard string", parsedAction instanceof DrawCardAction);
 
 	}
