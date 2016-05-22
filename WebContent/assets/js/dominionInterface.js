@@ -454,10 +454,6 @@ Dominion.Interface = (function(Interface) {
         this.handContents = $("ul#handPile").children();
     };
 
-    Interface.prototype.addTooltipCard = function(cardName) {
-
-    };
-
     Interface.prototype.addCard = function(card, hand, element) {
         var cardname = hand[card].name;
         var cardHTML = "<li class='card " + hand[card].type.toLowerCase() +"'>";
@@ -476,6 +472,14 @@ Dominion.Interface = (function(Interface) {
     Interface.prototype.addCarousels = function() {
         this.handCarousel = new Dominion.Interface.Carousel($('#handContainer'));
         this.fieldCarousel = new Dominion.Interface.Carousel($('#playedCardContainer'));
+    };
+
+    Interface.prototype.showGameOver = function(data) {
+        var overlayHTML = "<div class='overlay'></div>";
+        $('body').append(overlayHTML);
+        $('.overlay').append("<h2 class='message'> Congratulations " + data.winner + "</h2>");
+        $('.overlay').append("<a href='' class='actionBtn'>Back to Menu</a>");
+        $('.overlay').fadeIn(500);
     };
 
     Interface.prototype.updatePlayerCounters = function () {

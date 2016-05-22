@@ -132,9 +132,13 @@ Dominion.Game = (function(Game) {
     Game.prototype.endPhase = function () {
         var that = this;
         this.Api.doCall({'action': 'endphase'}, this.isMp,
-            function () {
+            function (data) {
                 console.log("Phase Ended!");
                 that.updateGameInfo();
+                if (data.result === "GAMEOVER") {
+                    $('.overlay').remove();
+                    that.Interface.showGameOver(data);
+                }
             }
         );
     };
