@@ -153,6 +153,10 @@ Dominion.Game = (function(Game) {
         );
     };
 
+    Game.prototype.stopAction = function() {
+        this.Api.doCall({'action': 'stopaction'}, this.isMP);
+    };
+
     Game.prototype.handleSelect = function(data, that) {
         that.cardsSelected++;
 

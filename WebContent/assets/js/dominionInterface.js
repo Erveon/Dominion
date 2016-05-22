@@ -278,96 +278,145 @@ Dominion.Interface = (function(Interface) {
         card.remove();
     };
 
-    Interface.prototype.showCardSelector = function(playResponse) {
+    Interface.prototype.showCardSelector = function(response) {
+        var that = this;
+        if (response.player === this.gameData.game.turn.player) {
+            this.determineAction(response);
+            $('.overlay').slideDown();
+            gameObj.returnToSamePlayer = true;
+        } else {
+            this.passTurn(response.player, function () {
+                $('.overlay').remove();
+                that.determineAction(response);
+                $('.overlay').show();
+            });
+        }
+    };
+
+    Interface.prototype.determineAction = function(response) {
+        switch(response.result) {
+            case 'SELECT_CARD_HAND':
+                this.selectCardsFromHand(response);
+                break;
+            case 'SELECT_CARD_BOARD':
+                this.selectCardsFromBoard(response);
+                break;
+            case 'REVEAL':
+                this.revealCards(response);
+                break;
+        }
+    };
+
+    Interface.prototype.selectCardsFromHand = function(response) {
+        var sourceArray = this.generateHandArray(response.player);
+        var message = response.message;
+        var force = response.force;
+        this.showActionOverlay(sourceArray, message, force);
+        this.addSelectorListeners();
+    };
+
+    Interface.prototype.selectCardsFromBoard = function(response) {
+        var sourceArray = this.generateBoardArray(response.cost);
+        var message = response.message;
+        var force = response.force;
+        this.showActionOverlay(sourceArray, message, force);
+        this.addSelectorListeners();
+    };
+
+    Interface.prototype.revealCards = function(response){
+        var sourceArray = response.reveal;
+        var message = response.message;
+        var force = response.force;
+        this.showActionOverlay(sourceArray, message, force);
+    };
+
+    Interface.prototype.showActionOverlay = function(sourceArray, message, force, type) {
         var overlayHTML = "<div class='overlay'></div>";
         var selectorContainer = "<div id='selectorContainer'></div>";
         var leftArrow = "<a href='' class='arrow prev'><i class='material-icons'>chevron_left</i></a>";
         var rightArrow = "<a href='' class='arrow next'><i class='material-icons'>chevron_right</i></a>";
         var selectorHand = "<ul id='selectorPile' class='cardContainer'></ul>";
+        var selectorCarousel = null;
         var that = this;
-
-        if (playResponse.player === this.gameData.game.turn.player) {
-            $('body').append(overlayHTML);
-            $('.overlay').append("<h2 class='message'></h2>").append(selectorContainer);
-            $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
-            that.appendSelectorCards(playResponse);
-            that.handleSelectButton(playResponse);
-            var selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
-            selectorCarousel.addCarousel();
-            $('.overlay').slideDown();
-            gameObj.returnToSamePlayer = true;
-        } else {
-            this.passTurn(playResponse.player, function () {
-                $('.overlay').remove();
-                $('body').append(overlayHTML);
-                $('.overlay').append("<h2 class='message'></h2>").append(selectorContainer);
-                $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
-                that.appendSelectorCards(playResponse);
-                that.handleSelectButton(playResponse);
-                var selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
-                selectorCarousel.addCarousel();
-                $('.overlay').fadeIn();
-            });
-        }
+        $('body').append(overlayHTML);
+        $('.overlay').append("<h2 class='message'>" + message + "</h2>").append(selectorContainer);
+        $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
+        that.addCardsFromSourceArray(sourceArray);
+        selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
+        that.handleSelectButton(force);
     };
 
-    Interface.prototype.handleSelectButton = function(playResponse) {
-        var that = this;
-
-        if(playResponse.force === false) {
-            $('.overlay').append("<a class='actionBtn continue' href=''>Continue</a>");
-            $('.overlay a').on('click', function (e) {
-            e.preventDefault();
-
-            if (gameObj.returnToSamePlayer === true) {
-                $('.overlay').slideUp(function() {
-                    gameObj.updateGameInfo();
-                    $('.overlay').remove();
-                });
-                gameObj.returnToSamePlayer = false;
-            } else {
-                that.passTurn(that.gameData.game.turn.player, function() {
-                    $('.overlay').slideUp(function() {
-                        gameObj.updateGameInfo();
-                        $('.overlay').remove();
-                    });
-                    gameObj.playingAction = false;
-                });
-            }
-
-            e.stopImmediatePropagation();
-        });
-        }
-
-
-    };
-
-    Interface.prototype.appendSelectorCards = function(playResponse) {
-        this.selectCardFromHand(playResponse.player);
-        $('.message').text(playResponse.message);
-        this.addSelectorListeners();
-    };
-
-    Interface.prototype.addSelectorListeners = function() {
-        $('#selectorPile .card').on('click', function() {
-            var card = $(this).children().first().children().text();
-            gameObj.selectCard(card, $(this));
-        });
-    };
-
-    Interface.prototype.selectCardFromHand = function(target) {
+    Interface.prototype.generateHandArray = function(targetHand) {
         var hand = [];
         var players = this.gameData.game.players;
 
         for(var player in players) {
-            if(players[player].displayname === target){
+            if(players[player].displayname === targetHand){
                 hand = this.gameData.game.players[player].hand;
             }
         }
 
-        for(var card in hand) {
-            this.addCard(card, hand, $("#selectorPile"));
+        return hand;
+    };
+
+    Interface.prototype.generateBoardArray = function(maxCost) {
+        var board = this.gameData.game.board;
+        var boardArray = [board.action, board.treasure, board.victory];
+        var buyableCards = [];
+
+        for(var array in boardArray) {
+            for(var card in boardArray[array]) {
+                if(boardArray[array][card].cost <= maxCost) {
+                    buyableCards.push(boardArray[array][card]);
+                }
+            }
         }
+
+        return buyableCards;
+    };
+
+    Interface.prototype.addCardsFromSourceArray = function(sourceArray) {
+        for(var item in sourceArray) {
+            this.addCard(item, sourceArray, $("#selectorPile"));
+        }
+    };
+
+    Interface.prototype.handleSelectButton = function(force) {
+        var that = this;
+
+        if(force === false) {
+            $('.overlay').append("<a class='actionBtn continue' href=''>Continue</a>");
+            $('.overlay a.actionBtn').on('click', function (e) {
+                e.preventDefault();
+                gameObj.stopAction();
+
+                if (gameObj.returnToSamePlayer === true) {
+                    $('.overlay').slideUp(function() {
+                        gameObj.updateGameInfo();
+                        $('.overlay').remove();
+                    });
+                    gameObj.returnToSamePlayer = false;
+                } else {
+                    that.passTurn(that.gameData.game.turn.player, function() {
+                        $('.overlay').slideUp(function() {
+                            gameObj.updateGameInfo();
+                            $('.overlay').remove();
+                        });
+                        gameObj.playingAction = false;
+                    });
+                }
+
+                e.stopImmediatePropagation();
+            });
+        }
+    };
+
+    Interface.prototype.addSelectorListeners = function(type) {
+        $('#selectorPile .card').on('click', function(e) {
+            var card = $(this).children().first().children().text();
+            gameObj.selectCard(card, $(this));
+            e.stopImmediatePropagation();
+        });
     };
 
     Interface.prototype.refreshField = function() {
