@@ -270,6 +270,9 @@ public class Turn {
 		getGame().getGameServer().getUtils().debug(getPlayer().getDisplayname() + " bought card: " + card.getName());
 		
 		if((getBuypower() >= card.getCost() && getBuys() > 0) || free) {
+			if(destination == null) {
+				destination = CardDestination.DECK;
+			}
 			switch(destination) {
 				case TOP_DECK:
 					// Shifts all other elements to the right

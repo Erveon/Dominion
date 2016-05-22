@@ -40,7 +40,7 @@ public class GainCardAction extends Action {
 	}
 	
 	public CardDestination getDestinaton() {
-		return destination;
+		return destination == null ? CardDestination.DECK : destination;
 	}
 
 	@Override
