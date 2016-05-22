@@ -145,8 +145,8 @@ Dominion.Game = (function(Game) {
             function (data) {
                 console.log('Card Selected: ', card);
                 console.log('Card Select Response', data);
-                that.handleSelect(data, that);
                 if(data.response === "OK") {
+                    that.handleSelect(data, that);
                     element.remove();
                 }
             }
@@ -181,7 +181,7 @@ Dominion.Game = (function(Game) {
             that.updateGameInfo();
         }
 
-        if (that.cardsSelected === data.max) {
+        if (that.cardsSelected === data.max && that.cardsSelected >= data.min) {
             that.cardsSelected = 0;
             that.Interface.showCardSelector(data);
         }
