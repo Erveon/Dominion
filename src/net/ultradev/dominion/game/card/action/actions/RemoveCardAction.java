@@ -218,6 +218,7 @@ public class RemoveCardAction extends Action {
 			response.accumulate("max", amountType.equals(AmountType.UNTIL) ? progress.get(player).getInteger("forceremovecount") : max);
 			response.accumulate("player", player.getDisplayname());
 			response.accumulate("message", getDescripton());
+			response.accumulate("type", "ANY");
 		} else {
 			response.accumulate("result", ActionResult.DONE);
 		}

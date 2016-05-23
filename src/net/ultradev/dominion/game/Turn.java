@@ -25,7 +25,7 @@ public class Turn {
 	
 	Card activeCard;
 	Action activeAction;
-	Action masterAction; // For actions like multiple actions that need an overhead over all other actions
+	Action triggerAction; // For actions like multiple actions that need an overhead over all other actions
 
 	/**
 	 * Represents a turn for a player in a game
@@ -439,11 +439,11 @@ public class Turn {
 			if(action.isCompleted(this)) {
 				response = playActions(getActiveCard(), getActiveAction());
 				activeAction = null;
-				if(response.get("result").equals(ActionResult.DONE) && getMasterAction() != null) {
-					response = getMasterAction().finish(this);
+				if(response.get("result").equals(ActionResult.DONE) && getTriggerAction() != null) {
+					response = getTriggerAction().finish(this);
 					// If the overhead action is done, end it
 					if(response.get("result").equals(ActionResult.DONE)) {
-						setMasterAction(null);
+						setTriggerAction(null);
 					}
 				}
 			}
@@ -479,12 +479,12 @@ public class Turn {
 	 * Action that is currently controlling the turn, like throne room
 	 * @param action
 	 */
-	public void setMasterAction(Action action) {
-		this.masterAction = action;
+	public void setTriggerAction(Action action) {
+		this.triggerAction = action;
 	}
 	
-	public Action getMasterAction() {
-		return this.masterAction;
+	public Action getTriggerAction() {
+		return this.triggerAction;
 	}
 	
 	/**

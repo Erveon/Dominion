@@ -31,7 +31,11 @@ public class MultipleActionsAction extends Action {
 		return new JSONObject().accumulate("response", "OK")
 				.accumulate("result", ActionResult.SELECT_CARD_HAND)
 				.accumulate("player", turn.getPlayer().getDisplayname())
-				.accumulate("select_type", CardType.ACTION);
+				.accumulate("type", CardType.ACTION)
+				.accumulate("message", getDescripton())
+				.accumulate("min", 0)
+				.accumulate("max", 0)
+				.accumulate("force", false);
 	}
 
 	@Override

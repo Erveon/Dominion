@@ -151,10 +151,17 @@ public abstract class Game {
 	}
 	
 	public void addPlayer(String name) {
-		if(getPlayerByName(name) == null) {
-			getPlayers().add(new Player(this, name));
-			getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
+		while(getPlayerByName(name) != null) {
+			if(Character.isDigit(name.charAt(name.length() - 1))) {
+				char num = name.charAt(name.length() - 1);
+				int newNum = Integer.parseInt(num + "") + 1;
+				name = name.substring(0, name.length() - 1) + newNum;
+			} else {
+				name = name + "2";
+			}
 		}
+		getPlayers().add(new Player(this, name));
+		getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
 	}
 	
 	public Player getPlayerByName(String name) {

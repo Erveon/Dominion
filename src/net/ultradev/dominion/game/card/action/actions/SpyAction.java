@@ -61,7 +61,11 @@ public class SpyAction extends Action {
 					.accumulate("result", ActionResult.REVEAL)
 					.accumulate("reveal", new Revealer(getCard(target)).get())
 					.accumulate("force", false)
-					.accumulate("player", target.getDisplayname());
+					.accumulate("player", target.getDisplayname())
+					.accumulate("min", 0)
+					.accumulate("max", 0)
+					.accumulate("message", getDescripton())
+					.accumulate("type", "ANY");
 		}
 	}
 	

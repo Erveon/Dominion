@@ -35,6 +35,7 @@ public class BureaucratAction extends Action {
 				for(Card c : p.getPile(Pile.HAND)) {
 					if(c.getType().equals(CardType.VICTORY)) {
 						affected.add(p);
+						continue;
 					}
 				}
 			}
@@ -50,13 +51,20 @@ public class BureaucratAction extends Action {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Card is not a victory card");
 		}
 		TargetedAction ta = getTargeted(turn.getGame());
+		Player target = ta.getCurrentPlayer();
+		target.getPile(Pile.HAND).remove(card);
+		target.getPile(Pile.DECK).add(0, card);
 		ta.completeForCurrentPlayer();
 		return new JSONObject()
 				.accumulate("response", "OK")
 				.accumulate("result", ActionResult.REVEAL)
 				.accumulate("reveal", new Revealer(card).get())
-				.accumulate("player", turn.getPlayer().getDisplayname())
-				.accumulate("force", false);
+				.accumulate("player", target.getDisplayname())
+				.accumulate("force", false)
+				.accumulate("min", 0)
+				.accumulate("max", 0)
+				.accumulate("type", "ALL")
+				.accumulate("message", getDescripton());
 	}
 	
 	@Override
@@ -79,9 +87,12 @@ public class BureaucratAction extends Action {
 			return new JSONObject()
 					.accumulate("response", "OK")
 					.accumulate("result", ActionResult.SELECT_CARD_HAND)
-					.accumulate("select_type", CardType.VICTORY)
+					.accumulate("type", CardType.VICTORY)
 					.accumulate("force", true)
-					.accumulate("player", ta.getCurrentPlayer().getDisplayname());
+					.accumulate("player", ta.getCurrentPlayer().getDisplayname())
+					.accumulate("min", 0)
+					.accumulate("max", 0)
+					.accumulate("message", getDescripton());
 		}
 	}
 	

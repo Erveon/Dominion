@@ -100,7 +100,7 @@ public class CardManager {
 		Card bureaucrat = new Card("bureaucrat", "Gain a Silver card; put it on top of your deck. Each other player reveals a Victory card from his hand and puts it on his deck", 4);
 		getCards().put("bureaucrat", bureaucrat);
 		
-		Card chancellor = new Card("chancellor", "+2 coins, you may immediately put your deck into your discard pile.", 3);
+		Card chancellor = new Card("chancellor", "+2 coins, you immediately put your deck into your discard pile.", 3);
 		getCards().put("chancellor", chancellor);
 		
 		Card feast = new Card("feast", "Trash this card. Gain a card costing up to 5 coins.", 4);
@@ -208,7 +208,7 @@ public class CardManager {
 		
 		Card chancellor = getCards().get("chancellor");
 		chancellor.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
-		chancellor.addAction(parseAction("transferpile", "You may immediately put your deck into your discard pile.", "from=deck;to=discard"));
+		chancellor.addAction(parseAction("transferpile", "You immediately put your deck into your discard pile.", "from=deck;to=discard"));
 		
 		Card feast = getCards().get("feast");
 		feast.addAction(parseAction("trash_self", "Trash this card", ""));

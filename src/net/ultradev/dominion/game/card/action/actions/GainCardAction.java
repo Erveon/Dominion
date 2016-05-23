@@ -66,7 +66,9 @@ public class GainCardAction extends Action {
 					.accumulate("type", type == null ? "ANY" : type)
 					.accumulate("player", turn.getPlayer().getDisplayname())
 					.accumulate("cost", getCost(turn.getPlayer()))
-					.accumulate("message", getDescripton());
+					.accumulate("message", getDescripton())
+					.accumulate("min", 0)
+					.accumulate("max", 0);
 		}
 	}
 	
@@ -76,13 +78,8 @@ public class GainCardAction extends Action {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Can't select that card");
 		} else if(card.getCost() <= getCost(turn.getPlayer())) {
 			turn.buyCard(card.getName(), true, getDestinaton());
-			if(hasTrigger(turn.getPlayer())) {
-				return turn.getActiveAction().finish(turn);
-			} else {
-				return new JSONObject().accumulate("response", "OK")
-									   .accumulate("result", ActionResult.DONE);
-			}
-		}			
+			return turn.stopAction();
+		}
 		return turn.getGame().getGameServer().getGameManager().getInvalid("Card is too expensive");
 	}
 	

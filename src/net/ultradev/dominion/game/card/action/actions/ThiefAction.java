@@ -70,7 +70,11 @@ public class ThiefAction extends Action {
 					.accumulate("result", ActionResult.REVEAL)
 					.accumulate("reveal", new Revealer(toReveal).get())
 					.accumulate("force", false)
-					.accumulate("player", p.getDisplayname());
+					.accumulate("player", p.getDisplayname())
+					.accumulate("min", 0)
+					.accumulate("max", 0)
+					.accumulate("message", getDescripton())
+					.accumulate("type", "ANY");
 		}
 	}
 	
