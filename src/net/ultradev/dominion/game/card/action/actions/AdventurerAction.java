@@ -61,11 +61,8 @@ public class AdventurerAction extends Action {
 				}
 			}
 		}
-		int amount = toReveal.size() + treasures.size();
-		// Remove the cards to reveal from the deck
-		for(int i = 0; i < amount; i++) {
-			p.getPile(Pile.DECK).remove(0);
-		}
+		p.getPile(Pile.DECK).removeAll(toReveal);
+		p.getPile(Pile.DECK).removeAll(treasures);
 	}
 
 }

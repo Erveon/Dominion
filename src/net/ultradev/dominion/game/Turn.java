@@ -220,7 +220,7 @@ public class Turn {
 	 * @return The response
 	 */
 	public JSONObject buyCard(String cardid, boolean free) {
-		return buyCard(cardid, free, CardDestination.DECK);
+		return buyCard(cardid, free, CardDestination.DISCARD);
 	}
 	
 	public void gainCard(Player player, Card card, CardDestination destination) {
@@ -236,6 +236,7 @@ public class Turn {
 			case DECK:
 				getPlayer().getPile(Pile.DECK).add(card);
 				break;
+			case DISCARD:
 			default:
 				getPlayer().getPile(Pile.DISCARD).add(card);
 				break;

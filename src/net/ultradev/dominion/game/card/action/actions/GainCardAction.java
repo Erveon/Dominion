@@ -1,6 +1,7 @@
 package net.ultradev.dominion.game.card.action.actions;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.Turn.CardDestination;
 import net.ultradev.dominion.game.card.Card;
@@ -77,6 +78,10 @@ public class GainCardAction extends Action {
 		if(!isSelectable(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Can't select that card");
 		} else if(card.getCost() <= getCost(turn.getPlayer())) {
+			Board board = turn.getGame().getBoard();
+			if(board.getSupply(board.getSupplyTypeForCard(card)).getCards().get(card) <= 0) {
+				return turn.getGame().getGameServer().getGameManager().getInvalid("No supply left for that card");
+			}
 			turn.buyCard(card.getName(), true, getDestinaton());
 			return turn.stopAction();
 		}

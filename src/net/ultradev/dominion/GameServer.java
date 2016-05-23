@@ -13,11 +13,11 @@ public class GameServer {
 	private Utils utils;
 	
 	public GameServer() {
+		this.database = new Database(this, "localhost", "3306", "Dominion", "root", "password");
 		this.utils = new Utils();
 		getUtils().setDebugging(true);
 		this.cm = new CardManager(this);
 		this.gm = new GameManager(this);
-		this.database = new Database(this, "localhost", "3306", "Dominion", "root", "password");
 		getDatabase().openConnection();
 		setup();
 	}
