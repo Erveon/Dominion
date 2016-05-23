@@ -628,17 +628,18 @@ div#field div#controls .players {
 
 div#field div#controls .players p.player {
     display: inline;
-    padding: 0 10px;
+    padding: 0 6px;
     font-family: "RobotoItalic";
     text-transform: none;
 }
 
-div#field div#controls .players .player:last-of-type {
-    padding-left: 10px;
-}
-
 div#field div#controls .players p.active {
     color: #f1c40f;
+    margin: 0;
+}
+
+div#field div#controls .players p:first-of-type {
+    margin-right: 10px;
 }
 
 div#field div#controls .phase {
@@ -651,14 +652,26 @@ div#field div#controls .circle {
     height: 15px;
     margin: 1px 5px;
     background-color: #ecf0f1;
+    float: left;
+}
+
+div#field div#controls p {
+    float: left;
+    margin: 0;
+}
+
+div#field div#controls p.currPhase {
     float: right;
+    margin-right: 0;
+    margin-left: 6px;
+    color: $treasureCardColor;
 }
 
 div#field div#controls .activePhase {
     background-color: #f1c40f;
 }
 
-div#field div#controls .circle:last-of-type {
+div#field div#controls .circle:first-of-type {
     margin-left: 14px;
 }
 
