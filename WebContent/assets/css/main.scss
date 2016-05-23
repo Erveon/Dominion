@@ -36,6 +36,23 @@ $cardInactiveColor: rgba(44, 62, 80, 0.6);
     src: url("../fonts/MaterialIcons-Regular.woff2") format('woff2'), url("../fonts/MaterialIcons-Regular.woff") format('woff');
 }
 
+.material-icons {
+    font-family: "MaterialIcons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 48px;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    font-feature-settings: "liga";
+}
+
 /* GENERAL PURPOSE */
 html {
     font-family: "Roboto", "Arial", "Helvetica", sans-serif;
@@ -804,9 +821,10 @@ a.arrow:hover {
     height: 320px;
     display: inline-block;
     background-color: #7f8c8d;
-    -webkit-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    margin-right: 8px;
+    //-webkit-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    //-moz-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    //box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
     -webkit-transition: all 150ms ease-in-out;
     -moz-transition: all 150ms ease-in-out;
     transition: all 150ms ease-in-out;
@@ -839,7 +857,7 @@ a.arrow:hover {
 
 .card-description {
     padding: 0;
-    margin: 2.5px 5px;
+    margin: 2.5px;
     width: 95%;
     height: 108px;
     text-align: center;
@@ -902,22 +920,4 @@ a.arrow:hover {
 
 .hidden {
     display: none;
-}
-
-/* UTILITY CLASSES */
-.material-icons {
-    font-family: "MaterialIcons";
-    font-weight: normal;
-    font-style: normal;
-    font-size: 48px;
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    line-height: 1;
-    text-transform: none;
-    letter-spacing: normal;
-    word-wrap: normal;
-    white-space: nowrap;
-    direction: ltr;
-    font-feature-settings: "liga";
 }
