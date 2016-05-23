@@ -117,15 +117,11 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.handlePhaseSkip = function () {
-        /*if(this.gameData.game.turn.phase === "ACTION") {
-            if(this.checkHandForActions() === false && !this.playingAction) {
+        if(this.gameData.game.turn.phase === "ACTION") {
+            if((this.checkHandForActions() === false || this.gameData.game.turn.actionsleft === 0) && !this.playingAction) {
                 this.Interface.handlePhaseEnd();
             }
-
-            if(this.gameData.game.turn.actionsleft === 0 && !this.playingAction) {
-                this.Interface.handlePhaseEnd();
-            }
-        }*/
+        }
     };
 
     Game.prototype.endPhase = function () {
@@ -144,7 +140,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.selectCard = function(card, element) {
         var that = this;
-        this.Api.doCall({'action': 'selectcard', 'card': card.replace(/ /g, "_")}, this.isMP,
+        this.Api.doCall({'action': 'selectcard', 'card': card.replace(/ /g, "_")},
             function (data) {
                 console.log('Card Selected: ', card);
                 console.log('Card Select Response', data);
@@ -157,7 +153,7 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.stopAction = function() {
-        this.Api.doCall({'action': 'stopaction'}, this.isMP);
+        this.Api.doCall({'action': 'stopaction'});
     };
 
     Game.prototype.handleSelect = function(data, that) {
@@ -169,8 +165,8 @@ Dominion.Game = (function(Game) {
                     $('.overlay').remove();
                 });
                 that.playingAction = false;
-                that.handlePhaseSkip();
                 this.returnToSamePlayer = false;
+                that.handlePhaseSkip();
             } else {
                 that.Interface.passTurn(that.gameData.game.turn.player, function() {
                     $('.overlay').slideUp(function() {
