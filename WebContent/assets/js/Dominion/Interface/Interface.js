@@ -273,7 +273,7 @@ Dominion.Interface = (function(Interface) {
         var cardName = card.children().first().children().text();
         var html = "<li class='miniCard'>";
         html += "<p class='miniCard-title'>" + cardName + "</p>";
-        html += "<img src='assets/images/cards/" + cardName + ".jpg' width='100%'></li>";
+        html += "<img src='assets/images/cards/" + cardName.replace(/ /g, "_") + ".jpg' width='100%'></li>";
         $("#playedCards").append($(html));
         card.remove();
     };
@@ -327,7 +327,12 @@ Dominion.Interface = (function(Interface) {
         var sourceArray = response.reveal;
         var message = response.message;
         var force = response.force;
-        this.showActionOverlay(sourceArray, message, force);
+
+        if(response.reveal.length !== 0) {
+            this.showActionOverlay(sourceArray, message, force);
+        } else {
+            gameObj.stopAction();
+        }
     };
 
     Interface.prototype.showActionOverlay = function(sourceArray, message, force, type) {
@@ -531,11 +536,13 @@ Dominion.Interface = (function(Interface) {
         $("#mainPile .wideCard").children('.dim').remove();
         $("#treasurePile .wideCard").children('.dim').remove();
         $("#victoryPile .wideCard").children('.dim').remove();
-        $(".cursePile").children('.dim').remove();
+        $("#trashCursePile .wideCard").children('.dim').remove();
+        $("#discardDeckPile .wideCard").children('.dim').remove();
         $("#mainPile .wideCard").append("<div class='dim'></div>");
         $("#treasurePile .wideCard").append("<div class='dim'></div>");
         $("#victoryPile .wideCard").append("<div class='dim'></div>");
-        $(".cursePile").append("<div class='dim'></div>");
+        $("#trashCursePile .wideCard").append("<div class='dim'></div>");
+        $("#discardDeckPile .wideCard").append("<div class='dim'></div>");
     };
 
     Interface.prototype.handleActiveMarketCards = function() {
@@ -559,6 +566,7 @@ Dominion.Interface = (function(Interface) {
         this.showAvailibleCards(availibleCoins, actionPile, actionDOM);
         this.showAvailibleCards(availibleCoins, treasurePile, treasureDOM);
         this.showAvailibleCards(availibleCoins, victoryPile, victoryDOM);
+        $('.cursePile .dim').remove();
     };
 
     Interface.prototype.showAvailibleCards = function(availibleCoins, pile, cardDOM) {

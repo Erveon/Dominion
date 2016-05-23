@@ -6,7 +6,6 @@ Dominion.Game = (function(Game) {
         this.gameData = null;
         this.Interface = null;
         this.playingAction = false;
-        this.isMp = false;
         this.returnToSamePlayer = true;
         this.cardsSelected = 0;
         this.initGame();
@@ -16,7 +15,7 @@ Dominion.Game = (function(Game) {
     Game.prototype.startGame = function (players, cardset) {
         var that = this;
         var playerString = this.constructPlayerString(players);
-        this.Api.doCall({'action': 'setup', 'cardset': cardset, 'players': playerString}, this.isMp,
+        this.Api.doCall({'action': 'setup', 'cardset': cardset, 'players': playerString},
             function() {
                 console.log("The game has been started.");
                 that.Interface = new Dominion.Interface();
@@ -46,7 +45,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.buyCard = function(card) {
         var that = this;
-        this.Api.doCall({'action': 'buycard', 'card': card.toLowerCase().replace(/ /g, "_")}, this.isMp,
+        this.Api.doCall({'action': 'buycard', 'card': card.toLowerCase().replace(/ /g, "_")},
             function() {
                 console.log("Card has been purchased.");
                 that.updateGameInfo();
@@ -58,7 +57,7 @@ Dominion.Game = (function(Game) {
         var cardToPlay = card.children().first().children().text().toLowerCase().replace(/ /g, "_");
         var that = this;
 
-        this.Api.doCall({'action': 'playcard', 'card': cardToPlay}, this.isMp,
+        this.Api.doCall({'action': 'playcard', 'card': cardToPlay},
             function(data) {
                 console.log("CARD PLAY RESPONSE: ", data);
                 if (data.response == "OK") {
@@ -76,7 +75,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.updateGameInfo = function (callback) {
         var that = this;
-        this.Api.doCall({'action': 'info'}, this.isMp,
+        this.Api.doCall({'action': 'info'},
             function (data) {
                 that.gameData = data;
                 that.Interface.setGameData(that.gameData);
@@ -131,7 +130,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.endPhase = function () {
         var that = this;
-        this.Api.doCall({'action': 'endphase'}, this.isMp,
+        this.Api.doCall({'action': 'endphase'},
             function (data) {
                 console.log("Phase Ended!");
                 that.updateGameInfo();
@@ -193,7 +192,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.initGame = function() {
         var that = this;
-        this.Api.doCall({'action': 'create'}, this.isMp,
+        this.Api.doCall({'action': 'create'},
             function() {
                 console.log('The game has been created.');
                 that.startGame(that.players, that.cardSet);

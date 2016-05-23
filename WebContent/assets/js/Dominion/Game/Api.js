@@ -13,10 +13,9 @@ Dominion.Api = (function(Api) {
         that = this; //Assignment of globally accessible pointer to the API object.
     };
 
-    var createUrl = function(data, isMultiplayer) {
+    var createUrl = function(data) {
         that.callString = "";
         that.callString += that.url;
-        that.callString += isMultiplayer ? "type=mp&" : "type=local&";
         that.callString += stringifyKeys(data);
     };
 
@@ -51,8 +50,8 @@ Dominion.Api = (function(Api) {
         console.log(error);
     };
 
-    Api.prototype.doCall = function(data, multi, callback) {
-        createUrl(data, multi);
+    Api.prototype.doCall = function(data, callback) {
+        createUrl(data);
 
         if (that.allowDebugging) {
             console.log("Outgoing AJAX call: " + this.callString);
