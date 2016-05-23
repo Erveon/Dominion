@@ -61,12 +61,14 @@ public class MultipleActionsAction extends Action {
 		if(isCompleted(turn)) {
 			turn.getGame().getGameServer().getUtils().debug(turn.getPlayer().getDisplayname() + " finished playing multi action card");
 			turn.stopAction();
+			progress.remove(turn.getPlayer());
 			return new JSONObject()
 					.accumulate("response", "OK")
 					.accumulate("result", ActionResult.DONE);
 		} else {
 			turn.getGame().getGameServer().getUtils().debug(turn.getPlayer().getDisplayname() + " is playing '"+card.getName()+"' for the multi action card");
 			turn.addActions(1);
+			setProgress(turn.getPlayer(), getProgress(turn.getPlayer()) + 1);
 			JSONObject response = turn.playCard(card.getName(), true);
 			if(!response.get("result").equals(ActionResult.DONE)) {
 				return response;

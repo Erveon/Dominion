@@ -47,11 +47,11 @@ public class GainCardAction extends Action {
 	public JSONObject play(Turn turn, Card card) {
 		if(this.card != null) {
 			if(getTarget().equals(ActionTarget.SELF)) {
-				turn.buyCard(card.getName(), true, getDestinaton());
+				turn.buyCard(this.card.getName(), true, getDestinaton());
 			} else if(getTarget().equals(ActionTarget.OTHERS)) {
 				for(Player p : turn.getGame().getPlayers()) {
 					if(!p.equals(turn.getPlayer())) {
-						turn.gainCard(p, card, getDestinaton());
+						turn.gainCard(p, this.card, getDestinaton());
 					}
 				}
 			}
