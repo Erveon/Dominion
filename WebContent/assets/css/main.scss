@@ -17,6 +17,7 @@ $treasureCardColor: #f1c40f;
 $curseCardColor: #8e44ad;
 $cardHoverColor: rgba(241, 196, 15, 0.7);
 $cardInactiveColor: rgba(44, 62, 80, 0.6);
+
 /* FONT IMPORTS */
 @font-face {
     font-family: "Roboto";
@@ -34,6 +35,7 @@ $cardInactiveColor: rgba(44, 62, 80, 0.6);
     font-family: "MaterialIcons";
     src: url("../fonts/MaterialIcons-Regular.woff2") format('woff2'), url("../fonts/MaterialIcons-Regular.woff") format('woff');
 }
+
 /* GENERAL PURPOSE */
 html {
     font-family: "Roboto", "Arial", "Helvetica", sans-serif;
@@ -140,7 +142,7 @@ body {
     text-transform: uppercase;
     font-family: "RobotoBold";
     padding: 10px;
-    font-size: 0.9rem;
+    font-size: .9rem;
     display: block;
     width: 150px;
     text-align: center;
@@ -164,107 +166,6 @@ body {
     height: 320px;
     position: fixed;
     background-color: #7f8c8d;
-}
-
-.tooltip .card {
-    width: 216px;
-    height: 320px;
-    display: inline-block;
-    background-color: #7f8c8d;
-    -webkit-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-.tooltip .card div {
-    width: 100%;
-    float: left;
-}
-
-.tooltip .card div.card-header {
-    height: 18px;
-    padding: 5px 0;
-    background-color: #7f8c8d;
-}
-
-.tooltip .card div.card-header p.card-title {
-    padding: 1px 0;
-    margin: 0;
-    color: #ecf0f1;
-    text-transform: uppercase;
-    text-align: center;
-    font-family: "RobotoBold";
-}
-
-.tooltip .card div.card-body {
-    color: #ecf0f1;
-    height: 264px;
-}
-
-.tooltip .card div.card-body p.card-description {
-    padding: 0;
-    margin: 2.5px 5px;
-    width: 95%;
-    height: 108px;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.tooltip .card div.card-info {
-    background-color: #7f8c8d;
-    padding: 5px 0;
-    height: 18px;
-}
-
-.tooltip .card div.card-info p {
-    color: #ecf0f1;
-    margin: 0;
-    padding: 0;
-    display: inline-block;
-    font-family: "RobotoBold";
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-.tooltip .card div.card-info p.card-cost {
-    margin-left: 10px;
-    color: #f1c40f;
-}
-
-.tooltip .card div.card-info p.card-type {
-    float: right;
-    margin-right: 10px;
-}
-
-.tooltip li.victory div.card-header {
-    background-color: #27ae60;
-}
-
-.tooltip li.victory div.card-info {
-    background-color: #27ae60;
-}
-
-.tooltip li.treasure div.card-header {
-    background-color: #f1c40f;
-}
-
-.tooltip li.treasure div.card-info {
-    background-color: #f1c40f;
-}
-
-.tooltip li.treasure div.card-info p.card-cost {
-    color: #ecf0f1;
-}
-
-.tooltip li.curse div.card-header {
-    background-color: #8e44ad;
-}
-
-.tooltip li.curse div.card-info {
-    background-color: #8e44ad;
 }
 
 .overlay {
@@ -291,7 +192,7 @@ body {
     text-transform: uppercase;
     font-family: "RobotoBold";
     padding: 10px;
-    font-size: 0.9rem;
+    font-size: .9rem;
     display: block;
     width: 150px;
     text-align: center;
@@ -325,21 +226,6 @@ body {
     margin: 50px auto;
 }
 
-.overlay #selectorContainer a.arrow {
-    margin-top: 140px;
-    color: #607D8B;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-.overlay #selectorContainer a.arrow:hover {
-    color: #f1c40f;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
 .overlay #selectorContainer #selectorPile {
     margin: 0;
     padding-left: 14px;
@@ -356,119 +242,6 @@ body {
     left: 0;
     z-index: 10;
     background-color: rgba(44, 62, 80, 0.6);
-}
-
-.overlay #selectorContainer #selectorPile .card {
-    width: 215px;
-    height: 320px;
-    margin: 5px;
-    display: inline-block;
-    background-color: #607D8B;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-.overlay #selectorContainer #selectorPile .card div {
-    width: 100%;
-    float: left;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-header {
-    height: 18px;
-    padding: 5px 0;
-    background-color: #7f8c8d;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-header p.card-title {
-    padding: 1px 0;
-    margin: 0;
-    color: #ecf0f1;
-    text-transform: uppercase;
-    text-align: center;
-    font-family: "RobotoBold";
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-body {
-    color: #ecf0f1;
-    height: 264px;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-body p.card-description {
-    padding: 0;
-    margin: 2.5px 5px;
-    width: 95%;
-    height: 109px;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-info {
-    background-color: #7f8c8d;
-    padding: 5px 0;
-    height: 18px;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-info p {
-    color: #ecf0f1;
-    margin: 0;
-    padding: 0;
-    display: inline-block;
-    font-family: "RobotoBold";
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-info p.card-cost {
-    margin-left: 10px;
-    color: #f1c40f;
-}
-
-.overlay #selectorContainer #selectorPile .card div.card-info p.card-type {
-    float: right;
-    margin-right: 10px;
-}
-
-.overlay #selectorContainer #selectorPile li.card:hover {
-    cursor: pointer;
-    -webkit-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
-    -moz-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
-    box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-.overlay #selectorContainer #selectorPile li.victory div.card-header {
-    background-color: #27ae60;
-}
-
-.overlay #selectorContainer #selectorPile li.victory div.card-info {
-    background-color: #27ae60;
-}
-
-.overlay #selectorContainer #selectorPile li.treasure div.card-header {
-    background-color: #f1c40f;
-}
-
-.overlay #selectorContainer #selectorPile li.treasure div.card-info {
-    background-color: #f1c40f;
-}
-
-.overlay #selectorContainer #selectorPile li.treasure div.card-info p.card-cost {
-    color: #ecf0f1;
-}
-
-.overlay #selectorContainer #selectorPile li.curse div.card-header {
-    background-color: #8e44ad;
-}
-
-.overlay #selectorContainer #selectorPile li.curse div.card-info {
-    background-color: #8e44ad;
-}
-
-.overlay #selectorContainer #selectorPile li.hidden {
-    display: none;
 }
 
 .overlay #selectorContainer:after {
@@ -518,7 +291,7 @@ body {
     display: inline-block;
     float: right;
     margin-top: 6px;
-    font-size: 0.8rem;
+    font-size: .8rem;
 }
 
 #header div#topStatus a.menu i {
@@ -548,7 +321,7 @@ body {
     width: 100px;
     padding: 9px 10px;
     font-family: "RobotoBold";
-    font-size: 0.9rem;
+    font-size: .9rem;
     text-transform: uppercase;
     color: #ecf0f1;
 }
@@ -697,7 +470,7 @@ div#market .wideCard p {
 div#market .wideCard .wideCard-title {
     width: 100%;
     margin: 5px 0 0;
-    font-size: 0.9rem;
+    font-size: .9rem;
     display: block;
     text-align: center;
 }
@@ -745,21 +518,6 @@ div#field div#playedCardContainer {
     margin: 0 auto;
 }
 
-div#field div#playedCardContainer a.arrow {
-    margin-top: 75px;
-    color: #607D8B;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-div#field div#playedCardContainer a.arrow:hover {
-    color: #f1c40f;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
 div#field div#playedCardContainer ul#playedCards {
     margin: 0;
     padding: 0;
@@ -783,7 +541,7 @@ div#field div#playedCardContainer ul#playedCards li.miniCard p.miniCard-title {
     text-transform: uppercase;
     color: #ecf0f1;
     font-family: "RobotoBold";
-    font-size: 0.9rem;
+    font-size: .9rem;
     text-align: center;
 }
 
@@ -822,7 +580,7 @@ div#field div#controls .actionBtn {
     padding: 9px 10px;
     float: right;
     text-transform: uppercase;
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-family: "RobotoBold";
 }
 
@@ -904,21 +662,6 @@ div#hand div#handContainer {
     margin: 0 auto;
 }
 
-div#hand div#handContainer a.arrow {
-    margin-top: 140px;
-    color: #607D8B;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-div#hand div#handContainer a.arrow:hover {
-    color: #f1c40f;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
 div#hand div#handContainer ul#handPile {
     margin: 0;
     padding-left: 14px;
@@ -935,119 +678,6 @@ div#hand div#handContainer ul#handPile .dim {
     left: 0;
     z-index: 10;
     background-color: rgba(44, 62, 80, 0.6);
-}
-
-div#hand div#handContainer ul#handPile .card {
-    width: 215px;
-    height: 320px;
-    margin: 2.5px 5px;
-    display: inline-block;
-    background-color: #607D8B;
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-div#hand div#handContainer ul#handPile .card div {
-    width: 100%;
-    float: left;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-header {
-    height: 18px;
-    padding: 5px 0;
-    background-color: #7f8c8d;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-header p.card-title {
-    padding: 1px 0;
-    margin: 0;
-    color: #ecf0f1;
-    text-transform: uppercase;
-    text-align: center;
-    font-family: "RobotoBold";
-}
-
-div#hand div#handContainer ul#handPile .card div.card-body {
-    color: #ecf0f1;
-    height: 264px;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-body p.card-description {
-    padding: 0;
-    margin: 5px;
-    width: 95%;
-    height: 104px;
-    text-align: center;
-    font-size: 0.9rem;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-info {
-    background-color: #7f8c8d;
-    padding: 5px 0;
-    height: 18px;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-info p {
-    color: #ecf0f1;
-    margin: 0;
-    padding: 0;
-    display: inline-block;
-    font-family: "RobotoBold";
-    text-transform: uppercase;
-    font-size: 0.9rem;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-info p.card-cost {
-    margin-left: 10px;
-    color: #f1c40f;
-}
-
-div#hand div#handContainer ul#handPile .card div.card-info p.card-type {
-    float: right;
-    margin-right: 10px;
-}
-
-div#hand div#handContainer ul#handPile li.card:hover {
-    cursor: pointer;
-    -webkit-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
-    -moz-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
-    box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
-    -webkit-transition: all 150ms ease-in-out;
-    -moz-transition: all 150ms ease-in-out;
-    transition: all 150ms ease-in-out;
-}
-
-div#hand div#handContainer ul#handPile li.victory div.card-header {
-    background-color: #27ae60;
-}
-
-div#hand div#handContainer ul#handPile li.victory div.card-info {
-    background-color: #27ae60;
-}
-
-div#hand div#handContainer ul#handPile li.treasure div.card-header {
-    background-color: #f1c40f;
-}
-
-div#hand div#handContainer ul#handPile li.treasure div.card-info {
-    background-color: #f1c40f;
-}
-
-div#hand div#handContainer ul#handPile li.treasure div.card-info p.card-cost {
-    color: #ecf0f1;
-}
-
-div#hand div#handContainer ul#handPile li.curse div.card-header {
-    background-color: #8e44ad;
-}
-
-div#hand div#handContainer ul#handPile li.curse div.card-info {
-    background-color: #8e44ad;
-}
-
-div#hand div#handContainer ul#handPile li.hidden {
-    display: none;
 }
 
 div#hand div#handcontainer:after {
@@ -1085,7 +715,7 @@ button.config {
     text-transform: uppercase;
     font-family: "RobotoBold";
     padding: 10px;
-    font-size: 0.9rem;
+    font-size: .9rem;
     display: block;
     width: 200px;
     margin: 5px auto;
@@ -1149,6 +779,131 @@ button.config:focus {
 #game-config div.form-column label.hidden {
     display: none;
 }
+
+/* CAROUSEL ARROWS */
+
+a.arrow {
+    margin-top: 140px;
+    color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+a.arrow:hover {
+    color: #f1c40f;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+/* FULLSIZE CARD CSS */
+
+.card {
+    width: 216px;
+    height: 320px;
+    display: inline-block;
+    background-color: #7f8c8d;
+    -webkit-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.card div {
+    width: 100%;
+    float: left;
+}
+
+.card-header {
+    height: 18px;
+    padding: 5px 0;
+    background-color: #7f8c8d;
+}
+
+.card-title {
+    padding: 1px 0;
+    margin: 0;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    text-align: center;
+    font-family: "RobotoBold";
+}
+
+.card-body {
+    color: #ecf0f1;
+    height: 264px;
+}
+
+.card-description {
+    padding: 0;
+    margin: 2.5px 5px;
+    width: 95%;
+    height: 108px;
+    text-align: center;
+    font-size: .9rem;
+}
+
+.card-info {
+    background-color: #7f8c8d;
+    padding: 5px 0;
+    height: 18px;
+}
+
+.card-info p {
+    color: #ecf0f1;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-family: "RobotoBold";
+    text-transform: uppercase;
+    font-size: .9rem;
+}
+
+.card-cost {
+    margin-left: 10px;
+    color: #f1c40f;
+}
+
+.card-type {
+    float: right;
+    margin-right: 10px;
+}
+
+.victory .card-header {
+    background-color: #27ae60;
+}
+
+.victory .card-info {
+    background-color: #27ae60;
+}
+
+.treasure .card-header {
+    background-color: #f1c40f;
+}
+
+.treasure .card-info {
+    background-color: #f1c40f;
+}
+
+.treasure .card-cost {
+    color: #ecf0f1;
+}
+
+.curse .card-header {
+    background-color: #8e44ad;
+}
+
+.curse .card-info {
+    background-color: #8e44ad;
+}
+
+.hidden {
+    display: none;
+}
+
 /* UTILITY CLASSES */
 .material-icons {
     font-family: "MaterialIcons";
