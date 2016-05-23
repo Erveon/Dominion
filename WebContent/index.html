@@ -4,17 +4,22 @@
         <meta charset="UTF-8">
         <title>Dominion</title>
 
+        <link rel="stylesheet" type="text/css" href="library/css/normalize/normalize.css">
+        <link rel="stylesheet" type="text/css" href="library/css/material-icons/material-icons.css">
+        <link rel="stylesheet" type="text/css" href="library/css/jquery/fullpage/jquery.fullpage.min.css">
         <link rel="stylesheet" type="text/css" href="assets/css/main.min.css">
     </head>
 
     <body>
-        <main id="fullpage">
+        <div id="fullpage">
+            <!-- Online multiplayer screen -->
             <div class="fp-section headroom">
-                <h2 class="config">Pick a Lobby</h1>
+                <h2 class="config">Multiplayer not integrated.</h2>
 
                 <button class="config page-down">Back To Menu</button>
             </div>
 
+            <!-- Landing screen -->
             <div class="fp-section active headroom">
                 <h1 class="config">Dominion</h1>
 
@@ -22,7 +27,9 @@
                 <button class="config page-down">Play Locally</button>
             </div>
 
+            <!-- Local multiplayer screen -->
             <div class="fp-section">
+                <!-- Local game configuration screen -->
                 <div class="headroom" id="config">
                     <h2 class="config">Game Configuration</h2>
 
@@ -30,7 +37,7 @@
                         <div class="form-column">
                             <label for="player-amount">Players</label>
                             <select name="player-amount" id="player-amount">
-                                <option value="2" active>2</option>
+                                <option value="2" selected>2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                             </select>
@@ -46,11 +53,11 @@
                         <div class="form-column">
                             <label for="card-set">Card Set</label>
                             <select name="card-set" id="card-set">
-                                <option value="firstgame" active>First Game</option>
-                                <option value="bigmoney" active>Big Money</option>
-                                <option value="interaction" active>Interaction</option>
-                                <option value="sizedistortion" active>Size Distortion</option>
-                                <option value="villagesquare" active>Village Square</option>
+                                <option value="firstgame" selected>First Game</option>
+                                <option value="bigmoney" selected>Big Money</option>
+                                <option value="interaction" selected>Interaction</option>
+                                <option value="sizedistortion" selected>Size Distortion</option>
+                                <option value="villagesquare" selected>Village Square</option>
                             </select>
                         </div>
                     </form>
@@ -59,6 +66,7 @@
                     <button class="config page-up">Back To Menu</button>
                 </div>
 
+                <!-- Local game screen -->
                 <div id="game">
                     <div class='overlay'></div>
                     <div id="header">
@@ -258,16 +266,16 @@
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
 
         <script type="text/javascript" src="library/jquery/jquery-2.2.2.min.js"></script>
         <script type="text/javascript" src="library/fullpage/jquery.fullpage.min.js"></script>
-        <script type="text/javascript" src="assets/js/dominion.js"></script>
-        <script type="text/javascript" src="assets/js/dominionApi.js"></script>
-        <script type="text/javascript" src="assets/js/dominionInterface.js"></script>
-        <script type="text/javascript" src="assets/js/dominionGame.js"></script>
-        <script type="text/javascript" src="assets/js/dominionMenu.js"></script>
-        <script type="text/javascript" src="assets/js/dominionInterfaceCarousel.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Dominion.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Game/Api.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Game/Game.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Interface/Menu.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Interface/Interface.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Interface/Carousel.js"></script>
         <script type="text/javascript" src="assets/js/main.js"></script>
     </body>
 </html>

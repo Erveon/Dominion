@@ -1,0 +1,1168 @@
+/* COLOR DEFINITIIONS */
+$mainColor: rgba(44, 62, 80, 1);
+$accentColor1: #607D8B;
+$accentColor2: rgba(243, 156, 18, 1);
+$accentColor3: rgba(192, 57, 43, 1);
+$accentColor4: rgba(211, 84, 0, 1);
+$bgColorFull: rgba(44, 62, 80, 1);
+$bgColor: rgba(44, 62, 80, 0.75);
+$lightTextColor: #ecf0f1;
+$overlayColor: rgba(44, 62, 80, 0.8);
+$wideCardHidden: rgba(118, 53, 104, 0.6);
+$infoOverlayBg: rgba(142, 68, 173, 0.8);
+$actionCardColor: #7f8c8d;
+$deckCardColor: #2980b9;
+$victoryCardColor: #27ae60;
+$treasureCardColor: #f1c40f;
+$curseCardColor: #8e44ad;
+$cardHoverColor: rgba(241, 196, 15, 0.7);
+$cardInactiveColor: rgba(44, 62, 80, 0.6);
+/* FONT IMPORTS */
+@font-face {
+    font-family: "Roboto";
+    src: url("../fonts/Roboto-Regular.woff2") format('woff2'), url("../fonts/Roboto-Regular.woff") format('woff');
+}
+@font-face {
+    font-family: "RobotoItalic";
+    src: url("../fonts/Roboto-Italic.woff2") format('woff2'), url("../fonts/Roboto-Italic.woff") format('woff');
+}
+@font-face {
+    font-family: "RobotoBold";
+    src: url("../fonts/Roboto-Bold.woff2") format('woff2'), url("../fonts/Roboto-Bold.woff") format('woff');
+}
+@font-face {
+    font-family: "MaterialIcons";
+    src: url("../fonts/MaterialIcons-Regular.woff2") format('woff2'), url("../fonts/MaterialIcons-Regular.woff") format('woff');
+}
+/* GENERAL PURPOSE */
+html {
+    font-family: "Roboto", "Arial", "Helvetica", sans-serif;
+    font-size: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: url("../images/bg.png");
+    background-size: cover;
+    overflow: hidden;
+}
+
+body {
+    background-color: rgba(44, 62, 80, 0.75);
+}
+
+#game {
+    display: none;
+}
+
+.info-overlay {
+    background-color: rgba(142, 68, 173, 0.8);
+    position: absolute;
+    display: none;
+    z-index: 50;
+    text-align: center;
+    color: #ecf0f1;
+}
+
+.info-overlay h2 {
+    margin-top: 100px;
+    font-size: 2.5rem;
+}
+
+.info-overlay p {
+    width: 450px;
+    margin: 0 auto;
+}
+
+.handOverlay {
+    width: 1125px;
+    height: 329px;
+}
+
+.marketOverlay {
+    width: 1142px;
+    height: 316px;
+}
+
+.fieldOverlay {
+    width: 680px;
+    height: 165px;
+}
+
+.fieldOverlay h2 {
+    margin-top: 25px;
+}
+
+.controlsOverlay {
+    width: 1124px;
+    height: 37px;
+}
+
+.controlsOverlay h2 {
+    margin-top: 8px;
+    font-size: 1.2rem;
+}
+
+.countersOverlay {
+    width: 360px;
+    height: 50px;
+}
+
+.countersOverlay h2 {
+    font-size: 1.2rem;
+    margin-top: 13px;
+}
+
+.settings {
+    width: 100%;
+    height: 325px;
+    position: absolute;
+    top: 60px;
+    display: none;
+    background-color: #2c3e50;
+}
+
+.settings ul {
+    list-style-type: none;
+    margin: 50px auto;
+    padding: 0;
+    width: 1142px;
+}
+
+.settings ul li {
+    padding: 0;
+    margin: 0;
+}
+
+.settings ul li a {
+    background-color: #f39c12;
+    border: none;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    font-family: "RobotoBold";
+    padding: 10px;
+    font-size: 0.9rem;
+    display: block;
+    width: 150px;
+    text-align: center;
+    text-decoration: none;
+    margin: 50px auto;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.settings ul li a:hover {
+    background-color: #d35400;
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.tooltip {
+    width: 216px;
+    height: 320px;
+    position: fixed;
+    background-color: #7f8c8d;
+}
+
+.tooltip .card {
+    width: 216px;
+    height: 320px;
+    display: inline-block;
+    background-color: #7f8c8d;
+    -webkit-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 0 50px 10px rgba(0, 0, 0, 0.75);
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.tooltip .card div {
+    width: 100%;
+    float: left;
+}
+
+.tooltip .card div.card-header {
+    height: 18px;
+    padding: 5px 0;
+    background-color: #7f8c8d;
+}
+
+.tooltip .card div.card-header p.card-title {
+    padding: 1px 0;
+    margin: 0;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    text-align: center;
+    font-family: "RobotoBold";
+}
+
+.tooltip .card div.card-body {
+    color: #ecf0f1;
+    height: 264px;
+}
+
+.tooltip .card div.card-body p.card-description {
+    padding: 0;
+    margin: 2.5px 5px;
+    width: 95%;
+    height: 108px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.tooltip .card div.card-info {
+    background-color: #7f8c8d;
+    padding: 5px 0;
+    height: 18px;
+}
+
+.tooltip .card div.card-info p {
+    color: #ecf0f1;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-family: "RobotoBold";
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.tooltip .card div.card-info p.card-cost {
+    margin-left: 10px;
+    color: #f1c40f;
+}
+
+.tooltip .card div.card-info p.card-type {
+    float: right;
+    margin-right: 10px;
+}
+
+.tooltip li.victory div.card-header {
+    background-color: #27ae60;
+}
+
+.tooltip li.victory div.card-info {
+    background-color: #27ae60;
+}
+
+.tooltip li.treasure div.card-header {
+    background-color: #f1c40f;
+}
+
+.tooltip li.treasure div.card-info {
+    background-color: #f1c40f;
+}
+
+.tooltip li.treasure div.card-info p.card-cost {
+    color: #ecf0f1;
+}
+
+.tooltip li.curse div.card-header {
+    background-color: #8e44ad;
+}
+
+.tooltip li.curse div.card-info {
+    background-color: #8e44ad;
+}
+
+.overlay {
+    background-color: #2c3e50;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+.overlay h2 {
+    font-size: 2rem;
+    color: #ecf0f1;
+    text-align: center;
+    padding-top: 200px;
+}
+
+.overlay a.actionBtn {
+    background-color: #f39c12;
+    border: none;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    font-family: "RobotoBold";
+    padding: 10px;
+    font-size: 0.9rem;
+    display: block;
+    width: 150px;
+    text-align: center;
+    text-decoration: none;
+    margin: 50px auto;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay a.actionBtn:hover {
+    background-color: #d35400;
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay button.config:hover {
+    background-color: #d35400;
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay #selectorContainer {
+    width: 1250px;
+    height: 340px;
+    padding-top: 10px;
+    margin: 50px auto;
+}
+
+.overlay #selectorContainer a.arrow {
+    margin-top: 140px;
+    color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay #selectorContainer a.arrow:hover {
+    color: #f1c40f;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay #selectorContainer #selectorPile {
+    margin: 0;
+    padding-left: 14px;
+    width: 1125px;
+    list-style-type: none;
+    float: left;
+}
+
+.overlay #selectorContainer #selectorPile .dim {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: -320px;
+    left: 0;
+    z-index: 10;
+    background-color: rgba(44, 62, 80, 0.6);
+}
+
+.overlay #selectorContainer #selectorPile .card {
+    width: 215px;
+    height: 320px;
+    margin: 5px;
+    display: inline-block;
+    background-color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay #selectorContainer #selectorPile .card div {
+    width: 100%;
+    float: left;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-header {
+    height: 18px;
+    padding: 5px 0;
+    background-color: #7f8c8d;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-header p.card-title {
+    padding: 1px 0;
+    margin: 0;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    text-align: center;
+    font-family: "RobotoBold";
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-body {
+    color: #ecf0f1;
+    height: 264px;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-body p.card-description {
+    padding: 0;
+    margin: 2.5px 5px;
+    width: 95%;
+    height: 109px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-info {
+    background-color: #7f8c8d;
+    padding: 5px 0;
+    height: 18px;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-info p {
+    color: #ecf0f1;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-family: "RobotoBold";
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-info p.card-cost {
+    margin-left: 10px;
+    color: #f1c40f;
+}
+
+.overlay #selectorContainer #selectorPile .card div.card-info p.card-type {
+    float: right;
+    margin-right: 10px;
+}
+
+.overlay #selectorContainer #selectorPile li.card:hover {
+    cursor: pointer;
+    -webkit-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -moz-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+.overlay #selectorContainer #selectorPile li.victory div.card-header {
+    background-color: #27ae60;
+}
+
+.overlay #selectorContainer #selectorPile li.victory div.card-info {
+    background-color: #27ae60;
+}
+
+.overlay #selectorContainer #selectorPile li.treasure div.card-header {
+    background-color: #f1c40f;
+}
+
+.overlay #selectorContainer #selectorPile li.treasure div.card-info {
+    background-color: #f1c40f;
+}
+
+.overlay #selectorContainer #selectorPile li.treasure div.card-info p.card-cost {
+    color: #ecf0f1;
+}
+
+.overlay #selectorContainer #selectorPile li.curse div.card-header {
+    background-color: #8e44ad;
+}
+
+.overlay #selectorContainer #selectorPile li.curse div.card-info {
+    background-color: #8e44ad;
+}
+
+.overlay #selectorContainer #selectorPile li.hidden {
+    display: none;
+}
+
+.overlay #selectorContainer:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+#header {
+    width: 100%;
+    height: 60px;
+    background-color: #2c3e50;
+}
+
+#header div#topStatus {
+    width: 1124px;
+    height: 60px;
+    margin: 0 auto;
+    display: block;
+}
+
+#header div#topStatus a.info {
+    color: white;
+    padding-left: 40px;
+    padding-top: 15px;
+    width: 30px;
+    height: 30px;
+    text-decoration: none;
+    float: left;
+}
+
+#header div#topStatus a.info i {
+    font-size: 1.7rem;
+}
+
+#header div#topStatus h1 {
+    display: inline-block;
+    float: left;
+    padding: 14px 0;
+    margin: 0;
+    font-family: "RobotoBold";
+    font-size: 1.6rem;
+    color: #ecf0f1;
+}
+
+#header div#topStatus a.menu {
+    display: inline-block;
+    float: right;
+    margin-top: 6px;
+    font-size: 0.8rem;
+}
+
+#header div#topStatus a.menu i {
+    color: #ecf0f1;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+#header div#topStatus a:hover i {
+    color: #f1c40f;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+#header div#topStatus ul {
+    margin: 0 0 0 195px;
+    padding: 0;
+    list-style-type: none;
+    text-align: center;
+    float: left;
+}
+
+#header div#topStatus ul li {
+    display: inline-block;
+    width: 100px;
+    padding: 9px 10px;
+    font-family: "RobotoBold";
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #ecf0f1;
+}
+
+#header div#topStatus ul span.counter {
+    display: block;
+    padding: 4px 0;
+    font-size: 1.1rem;
+    color: #f1c40f;
+}
+
+#main {
+    width: 100%;
+    height: 900px;
+}
+
+div#market {
+    width: 100%;
+    height: 316px;
+}
+
+div#market ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+div#market ul#mainPile {
+    width: 1142px;
+    margin: 5px auto 0;
+}
+
+div#market div#altCards {
+    width: 1142px;
+    display: block;
+    margin: 1px auto 0;
+}
+
+div#market div#altCards ul#discardDeckPile {
+    width: 225px;
+    float: right;
+    margin-right: 1px;
+    box-sizing: border-box;
+    display: inline-block;
+}
+
+div#market div#altCards ul#discardDeckPile .wideCard {
+    background-color: #2980b9;
+}
+
+div#market div#altCards ul#discardDeckPile .wideCard:first-of-type .wideCard-title {
+    margin-top: 28px;
+}
+
+div#market div#altCards ul#treasurePile {
+    float: right;
+    width: 685px;
+    margin-right: 2px;
+}
+
+div#market div#altCards ul#treasurePile .wideCard:nth-child(1) {
+    background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url("../images/cards/copper.jpg") no-repeat center center;
+}
+
+div#market div#altCards ul#treasurePile .wideCard:nth-child(2) {
+    background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url("../images/cards/silver.jpg") no-repeat center center;
+}
+
+div#market div#altCards ul#treasurePile .wideCard:nth-child(3) {
+    background: linear-gradient(rgba(241, 196, 15, 0.8), rgba(241, 196, 15, 0.8)), url("../images/cards/gold.jpg") no-repeat center center;
+}
+
+div#market div#altCards ul#treasurePile .wideCard-cost {
+    color: #ecf0f1;
+}
+
+div#market div#altCards ul#treasurePile .wideCard-count {
+    color: #27ae60;
+}
+
+div#market div#altCards ul#victoryPile {
+    float: right;
+    width: 685px;
+    margin-right: 2px;
+}
+
+div#market div#altCards ul#victoryPile .wideCard:nth-child(1) {
+    background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url("../images/cards/estate.jpg") no-repeat center center;
+}
+
+div#market div#altCards ul#victoryPile .wideCard:nth-child(2) {
+    background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url("../images/cards/duchy.jpg") no-repeat center center;
+}
+
+div#market div#altCards ul#victoryPile .wideCard:nth-child(3) {
+    background: linear-gradient(rgba(39, 174, 96, 0.8), rgba(39, 174, 96, 0.8)), url("../images/cards/province.jpg") no-repeat center center;
+}
+
+div#market div#altCards ul#trashCursePile {
+    width: 225px;
+}
+
+div#market div#altCards ul#trashCursePile .wideCard {
+    background-color: #2980b9;
+}
+
+div#market div#altCards ul#trashCursePile .wideCard:first-of-type {
+    background-color: #8e44ad;
+}
+
+div#market div#altCards:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+div#market .wideCard {
+    width: 220px;
+    height: 70px;
+    margin: 2.5px;
+    padding: 0;
+    display: inline-block;
+    background-color: #7f8c8d;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#market .wideCard .dim {
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    position: relative;
+    background-color: rgba(118, 53, 104, 0.6);
+}
+
+div#market .wideCard p {
+    font-family: "RobotoBold";
+    color: #ecf0f1;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    padding: 0;
+    float: left;
+}
+
+div#market .wideCard .wideCard-title {
+    width: 100%;
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    display: block;
+    text-align: center;
+}
+
+div#market .wideCard .wideCard-info {
+    width: 100%;
+}
+
+div#market .wideCard .wideCard-info .wideCard-cost {
+    color: #f1c40f;
+    margin: 0 0 0 20px;
+}
+
+div#market .wideCard .wideCard-info .wideCard-count {
+    color: #f39c12;
+    float: right;
+    margin: 0 20px 0 0;
+}
+
+div#market .wideCard .wideCard-info .wideCard-counter {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
+}
+
+div#market .wideCard:hover {
+    cursor: pointer;
+    -webkit-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -moz-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field {
+    height: 234px;
+    width: 100%;
+}
+
+div#field div#playedCardContainer {
+    width: 680px;
+    height: 171px !important;
+    margin: 0 auto;
+}
+
+div#field div#playedCardContainer a.arrow {
+    margin-top: 75px;
+    color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field div#playedCardContainer a.arrow:hover {
+    color: #f1c40f;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field div#playedCardContainer ul#playedCards {
+    margin: 0;
+    padding: 0;
+    display: block;
+    list-style-type: none;
+}
+
+div#field div#playedCardContainer ul#playedCards li.miniCard {
+    height: 150px;
+    width: 110px;
+    display: inline-block;
+    float: left;
+    margin: 20px 2.5px 0;
+    background-color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field div#playedCardContainer ul#playedCards li.miniCard p.miniCard-title {
+    text-transform: uppercase;
+    color: #ecf0f1;
+    font-family: "RobotoBold";
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+div#field div#playedCardContainer ul#playedCards li.hidden {
+    display: none;
+}
+
+div#field div#playedCardContainer ul#playedCards li.miniCard:hover {
+    cursor: pointer;
+    -webkit-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -moz-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field div#playedCardContainer:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+div#field div#controls {
+    width: 1124px;
+    height: 30px;
+    display: block;
+    margin: 22px auto 0;
+}
+
+div#field div#controls .actionBtn {
+    color: #ecf0f1;
+    text-decoration: none;
+    background-color: #2c3e50;
+    margin: 0 0 0 5px;
+    padding: 9px 10px;
+    float: right;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    font-family: "RobotoBold";
+}
+
+div#field div#controls .mainAction {
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field div#controls .mainAction:hover {
+    background-color: #607D8B;
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#field div#controls .players {
+    float: left;
+    margin-left: 0;
+}
+
+div#field div#controls .players p.player {
+    display: inline;
+    padding: 0 10px;
+    font-family: "RobotoItalic";
+    text-transform: none;
+}
+
+div#field div#controls .players .player:last-of-type {
+    padding-left: 10px;
+}
+
+div#field div#controls .players p.active {
+    color: #f1c40f;
+}
+
+div#field div#controls .phase {
+    float: left;
+}
+
+div#field div#controls .circle {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    margin: 1px 5px;
+    background-color: #ecf0f1;
+    float: right;
+}
+
+div#field div#controls .activePhase {
+    background-color: #f1c40f;
+}
+
+div#field div#controls .circle:last-of-type {
+    margin-left: 14px;
+}
+
+a.prev {
+    float: left;
+}
+
+a.next {
+    float: right;
+}
+
+div#hand {
+    width: 100%;
+    height: 340px;
+    padding-bottom: 1000px;
+    overflow: hidden;
+    background-color: #2c3e50;
+}
+
+div#hand div#handContainer {
+    width: 1250px;
+    height: 340px;
+    padding-top: 10px;
+    margin: 0 auto;
+}
+
+div#hand div#handContainer a.arrow {
+    margin-top: 140px;
+    color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#hand div#handContainer a.arrow:hover {
+    color: #f1c40f;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#hand div#handContainer ul#handPile {
+    margin: 0;
+    padding-left: 14px;
+    width: 1125px;
+    list-style-type: none;
+    float: left;
+}
+
+div#hand div#handContainer ul#handPile .dim {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: -320px;
+    left: 0;
+    z-index: 10;
+    background-color: rgba(44, 62, 80, 0.6);
+}
+
+div#hand div#handContainer ul#handPile .card {
+    width: 215px;
+    height: 320px;
+    margin: 2.5px 5px;
+    display: inline-block;
+    background-color: #607D8B;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#hand div#handContainer ul#handPile .card div {
+    width: 100%;
+    float: left;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-header {
+    height: 18px;
+    padding: 5px 0;
+    background-color: #7f8c8d;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-header p.card-title {
+    padding: 1px 0;
+    margin: 0;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    text-align: center;
+    font-family: "RobotoBold";
+}
+
+div#hand div#handContainer ul#handPile .card div.card-body {
+    color: #ecf0f1;
+    height: 264px;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-body p.card-description {
+    padding: 0;
+    margin: 5px;
+    width: 95%;
+    height: 104px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-info {
+    background-color: #7f8c8d;
+    padding: 5px 0;
+    height: 18px;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-info p {
+    color: #ecf0f1;
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    font-family: "RobotoBold";
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-info p.card-cost {
+    margin-left: 10px;
+    color: #f1c40f;
+}
+
+div#hand div#handContainer ul#handPile .card div.card-info p.card-type {
+    float: right;
+    margin-right: 10px;
+}
+
+div#hand div#handContainer ul#handPile li.card:hover {
+    cursor: pointer;
+    -webkit-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -moz-box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    box-shadow: 0 0 5px 3px rgba(241, 196, 15, 0.7);
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+div#hand div#handContainer ul#handPile li.victory div.card-header {
+    background-color: #27ae60;
+}
+
+div#hand div#handContainer ul#handPile li.victory div.card-info {
+    background-color: #27ae60;
+}
+
+div#hand div#handContainer ul#handPile li.treasure div.card-header {
+    background-color: #f1c40f;
+}
+
+div#hand div#handContainer ul#handPile li.treasure div.card-info {
+    background-color: #f1c40f;
+}
+
+div#hand div#handContainer ul#handPile li.treasure div.card-info p.card-cost {
+    color: #ecf0f1;
+}
+
+div#hand div#handContainer ul#handPile li.curse div.card-header {
+    background-color: #8e44ad;
+}
+
+div#hand div#handContainer ul#handPile li.curse div.card-info {
+    background-color: #8e44ad;
+}
+
+div#hand div#handContainer ul#handPile li.hidden {
+    display: none;
+}
+
+div#hand div#handcontainer:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+h1.config,
+h2.config,
+h3.config {
+    font-family: "RobotoBold";
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 105px;
+    color: #ecf0f1;
+}
+
+h3.config {
+    margin-top: 300px;
+}
+
+h1.config {
+    font-size: 3rem;
+}
+
+.headroom {
+    padding-top: 80px;
+}
+
+button.config {
+    background-color: #f39c12;
+    border: none;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    font-family: "RobotoBold";
+    padding: 10px;
+    font-size: 0.9rem;
+    display: block;
+    width: 200px;
+    margin: 5px auto;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+button.config:hover {
+    background-color: #d35400;
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+button.config:focus {
+    outline: none;
+}
+
+#game {
+    margin: 0;
+    padding: 0;
+}
+
+#game-config {
+    width: 400px;
+    display: block;
+    margin: 0 auto 50px;
+}
+
+#game-config div.form-column {
+    width: 200px;
+    float: left;
+}
+
+#game-config:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+#game-config label {
+    font-family: "RobotoBold";
+    text-transform: uppercase;
+    color: #ecf0f1;
+    display: inline-block;
+    margin: 0 5px 10px;
+}
+
+#game-config input,
+#game-config select {
+    display: block;
+    width: 190px;
+    margin: 0 5px 20px;
+    box-sizing: border-box;
+    font-family: "Roboto";
+}
+
+#game-config div.form-column input.hidden,
+#game-config div.form-column label.hidden {
+    display: none;
+}
+/* UTILITY CLASSES */
+.material-icons {
+    font-family: "MaterialIcons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 48px;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    font-feature-settings: "liga";
+}

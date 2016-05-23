@@ -460,7 +460,7 @@ Dominion.Interface = (function(Interface) {
         cardHTML += "<div class='card-header'>";
         cardHTML += "<p class='card-title'>" + cardname.replace(/_/g, " ") + "</p></div>";
         cardHTML += "<div class='card-body'>";
-        cardHTML += "<img src='assets/images/cards/" + hand[card].name + ".jpg' alt='" + hand[card].name + "' width='100%'>";
+        cardHTML += "<img src='assets/images/cards/" + cardname.replace(/ /g, "_") + ".jpg' alt='" + hand[card].name + "' width='100%'>";
         cardHTML += "<p class='card-description'>" + hand[card].description + "</p></div>";
         cardHTML += "<div class='card-info'>";
         cardHTML += "<p class='card-cost'>" + hand[card].cost + "</p>";

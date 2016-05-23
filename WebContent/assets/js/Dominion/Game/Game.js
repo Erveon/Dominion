@@ -46,7 +46,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.buyCard = function(card) {
         var that = this;
-        this.Api.doCall({'action': 'buycard', 'card': card}, this.isMp,
+        this.Api.doCall({'action': 'buycard', 'card': card.toLowerCase().replace(/ /g, "_")}, this.isMp,
             function() {
                 console.log("Card has been purchased.");
                 that.updateGameInfo();
@@ -55,7 +55,7 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.playCard = function(card) {
-        var cardToPlay = card.children().first().children().text();
+        var cardToPlay = card.children().first().children().text().toLowerCase().replace(/ /g, "_");
         var that = this;
 
         this.Api.doCall({'action': 'playcard', 'card': cardToPlay}, this.isMp,
@@ -145,7 +145,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.selectCard = function(card, element) {
         var that = this;
-        this.Api.doCall({'action': 'selectcard', 'card': card}, this.isMP,
+        this.Api.doCall({'action': 'selectcard', 'card': card.replace(/ /g, "_")}, this.isMP,
             function (data) {
                 console.log('Card Selected: ', card);
                 console.log('Card Select Response', data);
