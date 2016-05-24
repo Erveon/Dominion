@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.websocket.Session;
 
@@ -17,15 +18,21 @@ public class OnlineGame extends Game {
 
 	private Map<Session, Player> players;
 	private String name;
+	private UUID uuid;
 	
-	public OnlineGame(GameServer gs) {
+	public OnlineGame(GameServer gs, UUID uuid) {
 		super(gs);
+		this.uuid = uuid;
 		this.players = new HashMap<>();
 	}
 
 	@Override
 	public boolean isOnline() {
 		return true;
+	}
+	
+	public UUID getUniqueId() {
+		return uuid;
 	}
 
 	/**
@@ -65,6 +72,7 @@ public class OnlineGame extends Game {
 	
 	public JSONObject getLobbyInfo() {
 		return new JSONObject()
+				.accumulate("id", getUniqueId().toString())
 				.accumulate("name", name)
 				.accumulate("players", getPlayers().size())
 				.accumulate("canjoin", !hasStarted());

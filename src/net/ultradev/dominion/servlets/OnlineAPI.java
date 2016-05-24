@@ -1,7 +1,6 @@
 package net.ultradev.dominion.servlets;
 
 import java.io.IOException;
-
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -45,6 +44,7 @@ public class OnlineAPI {
 	@OnOpen
     public void onOpen(Session session) throws IOException {
     	System.out.println(session.getId() + " connected");
+    	getGameServer().getGameManager().addConnection(session);
     }
 
 	@OnMessage
@@ -72,14 +72,6 @@ public class OnlineAPI {
 			send(session, gm.getInvalid("Requests require a type").toString());
 		}
     }
-	
-	public void send(Session session, String message) {
-		try {
-			session.getBasicRemote().sendText(message);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 
     @OnError
     public void onError(Throwable t) {
@@ -89,7 +81,16 @@ public class OnlineAPI {
     @OnClose
     public void onClose(Session session) {
     	System.out.println(session.getId() + " disconnected");
+    	getGameServer().getGameManager().removeConnection(session);
     }
+	
+	public void send(Session session, String message) {
+		try {
+			session.getBasicRemote().sendText(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
     
     public boolean isJSONValid(String message) {
         try {

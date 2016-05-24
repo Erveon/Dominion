@@ -43,6 +43,11 @@ Dominion.Online = (function(Online) {
         }
     }
 
+    var closeConnection = function() {
+        socket.close();
+        
+    }
+
     var createLobbies = function(lobbies) {
         console.log(lobbies);
         if(lobbies.length == 0) {
@@ -52,7 +57,7 @@ Dominion.Online = (function(Online) {
         for(var i = 0; i < lobbies.length; i++) {
             var lobby = lobbies[i];
             console.log(lobby);
-            that.menu.addLobby(lobby["name"], lobby["players"], lobby["canjoin"]);
+            that.menu.addLobby(lobby["id"], lobby["name"], lobby["players"], lobby["canjoin"]);
         }
     }
 

@@ -1,9 +1,10 @@
 package net.ultradev.dominion.game;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,32 +20,95 @@ public class GameManager {
 	
 	GameServer gs;
 	private Map<HttpSession, LocalGame> localGames;
-	private List<OnlineGame> onlineGames;
-	private Map<Session, OnlineGame> inGames;
+	private Map<UUID, OnlineGame> onlineGames;
+	private Map<Session, UUID> connected;
 	
 	public GameManager(GameServer gs) {
 		this.localGames = new HashMap<>();
-		this.onlineGames = new ArrayList<>();
-		this.inGames = new HashMap<>();
+		this.onlineGames = new HashMap<>();
+		this.connected = new HashMap<>();
 		this.gs = gs;
-		OnlineGame og = new OnlineGame(gs);
-		og.setName("This is a test game from the server");
-		onlineGames.add(og);
+		createOnlineGame("This is a test game from the server", null);
 	}
 	
 	public GameServer getGameServer() {
 		return gs;
 	}
 	
-	public List<OnlineGame> getOnlineGames() {
+	public void addConnection(Session session) {
+		connected.put(session, null);
+	}
+	
+	public void removeConnection(Session session) {
+		if(connected.containsKey(session)) {
+			if(isinGame(session)) {
+				//TODO broadcast logout to others
+			}
+			connected.remove(session);
+		}
+	}
+	
+	public void setOnlineGameFor(Session session, OnlineGame game) {
+		connected.put(session, game.getUniqueId());
+	}
+	
+	public Map<UUID, OnlineGame> getOnlineGames() {
 		return onlineGames;
 	}
 	
-	public OnlineGame getOnlineGame(Session session) {
-		if(inGames.containsKey(session)) {
-			return inGames.get(session);
+	public void createOnlineGame(String name, Session owner) {
+		UUID uuid = UUID.randomUUID();
+		while(getOnlineGame(uuid) != null) {
+			uuid = UUID.randomUUID();
+		}
+		OnlineGame game = new OnlineGame(getGameServer(), uuid);
+		game.setName(name);
+		onlineGames.put(uuid, game);
+		String message = new JSONObject()
+				.accumulate("type", "addlobby")
+				.accumulate("lobby", game.getLobbyInfo()).toString();
+		broadcast(message);
+	}
+	
+	public void removeOnlineGame(UUID uuid) {
+		if(onlineGames.containsKey(uuid)) {
+			String message = new JSONObject()
+					.accumulate("type", "dellobby")
+					.accumulate("id", uuid.toString()).toString();
+			broadcast(message);
+			onlineGames.remove(uuid);
+		}
+	}
+	
+	public OnlineGame getOnlineGame(UUID uuid) {
+		if(onlineGames.containsKey(uuid)) {
+			return onlineGames.get(uuid);
 		}
 		return null;
+	}
+	
+	public boolean isinGame(Session session) {
+		return connected.containsKey(session) && connected.get(session) != null;
+	}
+	
+	public OnlineGame getGameFor(Session session) {
+		if(connected.containsKey(session)) {
+			UUID gameId = connected.get(session);
+			if(gameId != null) {
+				return onlineGames.get(gameId);
+			}
+		}
+		return null;
+	}
+	
+	public void broadcast(String message) {
+		for(Session sess : connected.keySet()) {
+			try {
+				sess.getBasicRemote().sendText(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public LocalGame getLocalGame(HttpSession session) {
@@ -143,7 +207,7 @@ public class GameManager {
 	}
 	
 	public List<JSONObject> getLobbies() {
-		return onlineGames.stream().map(OnlineGame::getLobbyInfo).collect(Collectors.toList());
+		return onlineGames.values().stream().map(OnlineGame::getLobbyInfo).collect(Collectors.toList());
 	}
 	
 	public JSONObject handleOnlineRequest(Map<String, String> map, Session session) {

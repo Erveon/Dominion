@@ -966,6 +966,11 @@ a.arrow:hover {
     background-color: #aaa;
 }
 
+#lobby-browser {
+    height: 50%;
+    position: relative;
+}
+
 #lobbymessage {
     color: white;
     text-align: center;
@@ -973,7 +978,7 @@ a.arrow:hover {
 
 #lobbies {
     width: 60%;
-    height: 50%;
+    height: 100%;
     overflow-y: scroll;
     margin: 25px auto;
     background-color: rgba(#6a4668, 0.77);
@@ -993,14 +998,11 @@ a.arrow:hover {
     height: 30px;
 }
 
-#lobbies tr:first-child {
-    width: 50%;
-}
-
 #lobbies tr th, #lobbies tr td {
     color: white;
     text-align: left;
     padding-left: 10px;
+    min-width: 100px;
 }
 
 button.lobby {

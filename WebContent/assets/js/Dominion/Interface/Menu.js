@@ -1,4 +1,7 @@
 Dominion.Menu = (function(Menu) {
+
+    var onlineApi;
+
     Menu = function() {
         this.setFullpageConfig();
         this.disableScroll();
@@ -64,16 +67,32 @@ Dominion.Menu = (function(Menu) {
     	};
     };
 
-    Menu.prototype.addLobby = function(name, players, joinable) {
+    Menu.prototype.addLobby = function(id, name, players, joinable) {
         var classes = joinable ? "lobby" : "lobby nojoin";
         var btnMsg = joinable ? "Join" : "In progress";
         $("#lobbies table").append(
-            "<tr>"
+            "<tr data-id='" + id + "'>"
                 + "<td>" + name + "</td>"
                 + "<td>" + players + "</td>"
-                + "<td><button class='" + classes + "'>" + btnMsg + "</button></td>"
+                + "<td><button data-id='" + id + "' class='" + classes + "'>" + btnMsg + "</button></td>"
             + "</tr>"
         );
+    }
+
+    Menu.prototype.clearLobbies = function() {
+        $("#lobbies table tr").each(function() {
+            if($(this).attr("data-id")) {
+                $(this).remove();
+            }
+        })
+    }
+
+    Menu.prototype.removeLobby = function(uuid) {
+        $("#lobbies table tr").each(function() {
+            if($(this).attr("data-id") && $(this).data("id").equals(uuid)) {
+                $(this).remove();
+            }
+        })
     }
 
     Menu.prototype.addListeners = function() {
@@ -87,9 +106,7 @@ Dominion.Menu = (function(Menu) {
         $('.start-game').on('click', function() {
         	that.startGame(that);
         });
-        $('.play-online').on('click', function() {
-            new Dominion.Online(that);
-        });
+        $(".create-online-game").on('click', this.clearLobbies);
     };
 
     return Menu;
