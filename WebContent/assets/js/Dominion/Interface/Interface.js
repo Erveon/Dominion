@@ -325,10 +325,17 @@ Dominion.Interface = (function(Interface) {
         card.remove();
     };
 
-    Interface.prototype.showCardSelector = function(response) {
+    Interface.prototype.showCardSelector = function(response, originCardName) {
         var that = this;
         if (response.player === this.gameData.game.turn.player) {
             this.determineAction(response);
+            var originCardRemoved = false;
+            $("#selectorPile .card").each(function() {
+                if($(this).children().first().children().text().toLowerCase().replace(/ /g, "_") === originCardName && originCardRemoved === false) {
+                    $(this).remove();
+                    originCardRemoved = true;
+                }
+            });
             $('.overlay').slideDown();
             gameObj.returnToSamePlayer = true;
         } else {
@@ -418,7 +425,7 @@ Dominion.Interface = (function(Interface) {
 
         for(var array in boardArray) {
             for(var card in boardArray[array]) {
-                if(boardArray[array][card].cost <= maxCost) {
+                if(boardArray[array][card].cost <= maxCost && boardArray[array][card].amount > 0) {
                     buyableCards.push(boardArray[array][card]);
                 }
             }

@@ -64,7 +64,8 @@ Dominion.Game = (function(Game) {
                     that.Interface.addCardToField(card);
                     if(data.result !== "DONE") {
                         that.playingAction = true;
-                        that.Interface.showCardSelector(data);
+                        that.updateGameInfo();
+                        that.Interface.showCardSelector(data, cardToPlay);
                     } else {
                         that.updateGameInfo();
                     }
