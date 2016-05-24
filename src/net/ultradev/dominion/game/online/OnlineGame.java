@@ -2,6 +2,7 @@ package net.ultradev.dominion.game.online;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,11 @@ import net.ultradev.dominion.game.player.Player;
 public class OnlineGame extends Game {
 
 	private Map<Session, Player> players;
+	private String name;
 	
 	public OnlineGame(GameServer gs) {
 		super(gs);
+		this.players = new HashMap<>();
 	}
 
 	@Override
@@ -50,6 +53,21 @@ public class OnlineGame extends Game {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public JSONObject getLobbyInfo() {
+		return new JSONObject()
+				.accumulate("name", name)
+				.accumulate("players", getPlayers().size())
+				.accumulate("canjoin", !hasStarted());
 	}
 
 }

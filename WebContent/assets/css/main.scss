@@ -741,7 +741,7 @@ h1.config {
 }
 
 .headroom {
-    padding-top: 80px;
+    padding-top: 5%;
 }
 
 button.config {
@@ -948,4 +948,92 @@ a.arrow:hover {
     -webkit-transition: all 150ms ease-in-out;
     -moz-transition: all 150ms ease-in-out;
     transition: all 150ms ease-in-out;
+}
+
+/* MULTIPLAYER MENU */
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    background-color: #eaeaea;
+    border-left: 1px solid #ccc;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+#lobbymessage {
+    color: white;
+    text-align: center;
+}
+
+#lobbies {
+    width: 60%;
+    height: 50%;
+    overflow-y: scroll;
+    margin: 25px auto;
+    background-color: rgba(#6a4668, 0.77);
+}
+
+#lobbies table {
+    width: 100%;
+}
+
+#lobbies tr:first-of-type {
+    background-color: #6a4668;
+}
+
+#lobbies tr {
+    vertical-align: top;
+    line-height: 30px;
+    height: 30px;
+}
+
+#lobbies tr:first-child {
+    width: 50%;
+}
+
+#lobbies tr th, #lobbies tr td {
+    color: white;
+    text-align: left;
+    padding-left: 10px;
+}
+
+button.lobby {
+    background-color: #12b7f4;
+    border: none;
+    color: #ecf0f1;
+    text-transform: uppercase;
+    font-family: "RobotoBold";
+    font-size: .9rem;
+    display: block;
+    width: 60%;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+button.lobby.nojoin {
+    background-color: #636266;
+}
+
+button.lobby.nojoin:hover {
+    cursor: auto;
+    background-color: #636266;
+}
+
+button.lobby:hover {
+    background-color: #1c9fd0;
+    cursor: pointer;
+    -webkit-transition: all 150ms ease-in-out;
+    -moz-transition: all 150ms ease-in-out;
+    transition: all 150ms ease-in-out;
+}
+
+button.lobby:focus {
+    outline: none;
 }

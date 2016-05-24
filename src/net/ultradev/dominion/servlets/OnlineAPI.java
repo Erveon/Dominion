@@ -44,7 +44,6 @@ public class OnlineAPI {
 	
 	@OnOpen
     public void onOpen(Session session) throws IOException {
-        session.getBasicRemote().sendText("connected");
     	System.out.println(session.getId() + " connected");
     }
 
@@ -62,6 +61,9 @@ public class OnlineAPI {
 			switch(json.getString("type").toLowerCase()) {
 				case "lobbies":
 					getGameServer().getUtils().debug("Session " + session.getId() + " has asked for the lobbies");
+					send(session, new JSONObject()
+							.accumulate("type", "lobbies")
+							.accumulate("lobbies", getGameServer().getGameManager().getLobbies()).toString());
 					break;
 				default:
 					send(session, gm.getInvalid("Type not found: " + json.getString("type")).toString());

@@ -15,8 +15,18 @@
         <div id="fullpage">
             <!-- Online multiplayer screen -->
             <div class="fp-section headroom">
-                <h2 class="config">Multiplayer not integrated.</h2>
-
+                <h2 class="config">Join or create a game</h2>
+                <h3 id="lobbymessage"></h3>
+                <div id="lobbies">
+                    <table>
+                        <tr>
+                            <th>Game</th>
+                            <th>Players</th>
+                            <th>Status</th>
+                        </tr>
+    				</table>
+                </div>
+                <button class="config">Create</button>
                 <button class="config page-down">Back To Menu</button>
             </div>
 
@@ -24,7 +34,7 @@
             <div class="fp-section active headroom">
                 <h1 class="config">Dominion</h1>
 
-                <button class="config page-up">Play Online</button>
+                <button class="config page-up play-online">Play Online</button>
                 <button class="config page-down">Play Locally</button>
             </div>
 
@@ -275,6 +285,7 @@
         <script type="text/javascript" src="library/js/jquery/fullpage/jquery.fullpage.min.js"></script>
         <script type="text/javascript" src="assets/js/Dominion/Dominion.js"></script>
         <script type="text/javascript" src="assets/js/Dominion/Game/Api.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Game/Online.js"></script>
         <script type="text/javascript" src="assets/js/Dominion/Game/Game.js"></script>
         <script type="text/javascript" src="assets/js/Dominion/Interface/Menu.js"></script>
         <script type="text/javascript" src="assets/js/Dominion/Interface/Interface.js"></script>

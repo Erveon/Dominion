@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpSession;
@@ -26,6 +27,9 @@ public class GameManager {
 		this.onlineGames = new ArrayList<>();
 		this.inGames = new HashMap<>();
 		this.gs = gs;
+		OnlineGame og = new OnlineGame(gs);
+		og.setName("This is a test game from the server");
+		onlineGames.add(og);
 	}
 	
 	public GameServer getGameServer() {
@@ -136,6 +140,10 @@ public class GameManager {
 			default:
 				return getInvalid("Action not recognized: " + action);
 		}
+	}
+	
+	public List<JSONObject> getLobbies() {
+		return onlineGames.stream().map(OnlineGame::getLobbyInfo).collect(Collectors.toList());
 	}
 	
 	public JSONObject handleOnlineRequest(Map<String, String> map, Session session) {

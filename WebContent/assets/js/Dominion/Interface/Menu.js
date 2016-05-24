@@ -64,6 +64,18 @@ Dominion.Menu = (function(Menu) {
     	};
     };
 
+    Menu.prototype.addLobby = function(name, players, joinable) {
+        var classes = joinable ? "lobby" : "lobby nojoin";
+        var btnMsg = joinable ? "Join" : "In progress";
+        $("#lobbies table").append(
+            "<tr>"
+                + "<td>" + name + "</td>"
+                + "<td>" + players + "</td>"
+                + "<td><button class='" + classes + "'>" + btnMsg + "</button></td>"
+            + "</tr>"
+        );
+    }
+
     Menu.prototype.addListeners = function() {
     	var that = this;
         $('#player-amount').on('change', function() {
@@ -74,6 +86,9 @@ Dominion.Menu = (function(Menu) {
         $('button.page-up').on('click', this.moveUp);
         $('.start-game').on('click', function() {
         	that.startGame(that);
+        });
+        $('.play-online').on('click', function() {
+            new Dominion.Online(that);
         });
     };
 
