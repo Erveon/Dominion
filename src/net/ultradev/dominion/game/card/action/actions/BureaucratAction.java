@@ -63,7 +63,7 @@ public class BureaucratAction extends Action {
 				.accumulate("player", target.getDisplayname())
 				.accumulate("force", false)
 				.accumulate("min", 0)
-				.accumulate("max", 1)
+				.accumulate("max", 0)
 				.accumulate("type", "ALL")
 				.accumulate("message", "Reveal " + target.getDisplayname() + "'s card(s) to everyone");
 	}
@@ -92,7 +92,7 @@ public class BureaucratAction extends Action {
 					.accumulate("force", true)
 					.accumulate("player", ta.getCurrentPlayer().getDisplayname())
 					.accumulate("min", 0)
-					.accumulate("max", 0)
+					.accumulate("max", 1)
 					.accumulate("message", getDescripton());
 		}
 	}
