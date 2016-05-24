@@ -45,6 +45,17 @@ public class OnlineGame extends Game {
 		}
 	}
 	
+	public void sendChatMessage(Session session, String message) {
+		if(players.containsKey(session)) {
+			Player from = players.get(session);
+			JSONObject chatmessage = new JSONObject()
+					.accumulate("type", "chat")
+					.accumulate("username", from.getDisplayname())
+					.accumulate("message", message);
+			broadcast(chatmessage);
+		}
+	}
+	
 	@Override
 	public void start() {
 		super.start();

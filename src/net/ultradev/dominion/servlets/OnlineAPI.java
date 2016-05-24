@@ -67,6 +67,12 @@ public class OnlineAPI {
 				case "lobbies":
 					sendLobbies(session);
 					break;
+				case "chat":
+					if(game != null) {
+						String chatmessage = json.getString("message");
+						game.sendChatMessage(session, chatmessage);
+					}
+					break;
 				case "createlobby":
 					String lobbyname = json.getString("name");
 					String displayname = json.getString("displayname");
