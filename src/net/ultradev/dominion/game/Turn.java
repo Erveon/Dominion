@@ -11,7 +11,7 @@ import net.ultradev.dominion.game.player.Player.Pile;
 
 public class Turn {
 
-	public enum CardDestination { TOP_DECK, DECK, DISCARD }
+	public enum CardDestination { TOP_DECK, DECK, DISCARD, HAND }
 	public enum Phase { ACTION, BUY, CLEANUP };
 	private enum BuyResponse { CANTAFFORD, BOUGHT };
 	
@@ -235,6 +235,9 @@ public class Turn {
 				break;
 			case DECK:
 				getPlayer().getPile(Pile.DECK).add(card);
+				break;
+			case HAND:
+				getPlayer().getPile(Pile.HAND).add(card);
 				break;
 			case DISCARD:
 			default:

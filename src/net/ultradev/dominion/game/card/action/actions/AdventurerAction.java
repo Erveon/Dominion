@@ -47,7 +47,7 @@ public class AdventurerAction extends Action {
 				.accumulate("min", 0)
 				.accumulate("max", 0)
 				.accumulate("type", "ALL")
-				.accumulate("message", getDescripton());
+				.accumulate("message", "Reveal " + turn.getPlayer().getDisplayname() + "'s card(s) to everyone");
 	}
 	
 	public void checkDeck(Player p, List<Card> toReveal, List<Card> treasures) {

@@ -42,11 +42,9 @@ public class DrawCardAction extends Action {
 	public void drawCards(Player p) {
 		if(amountType.equals(AmountType.UNTIL)) {
 			int current = p.getPile(Pile.HAND).size();
-			// The amount is how many they have to draw (in negative form)
-			// If less than 0 then they have to draw cards
 			int amount = this.amount - current;
-			if(amount < 0) {
-				for(int i = 0; i < Math.abs(amount); i++) {
+			if(amount > 0) {
+				for(int i = 0; i < amount; i++) {
 					p.drawCardFromDeck();
 				}
 			}

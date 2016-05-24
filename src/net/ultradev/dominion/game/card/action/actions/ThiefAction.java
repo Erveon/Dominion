@@ -73,7 +73,7 @@ public class ThiefAction extends Action {
 					.accumulate("player", p.getDisplayname())
 					.accumulate("min", 0)
 					.accumulate("max", 0)
-					.accumulate("message", getDescripton())
+					.accumulate("message", "Reveal " + p.getDisplayname() + "'s card(s) to everyone")
 					.accumulate("type", "ANY");
 		}
 	}

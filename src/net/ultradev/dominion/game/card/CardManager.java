@@ -59,6 +59,7 @@ public class CardManager {
 		if(db.hasConnection()) {
 			db.loadCards();
 			db.loadActions();
+			addSubTypes();
 		} else {
             new Fallback(getGameServer());
 		}
@@ -72,6 +73,13 @@ public class CardManager {
 		silver.addAction(parseAction("add_buypower", "Adds 2 coins to your turn", "amount=2"));
 		Card gold = getCards().get("gold");
 		gold.addAction(parseAction("add_buypower", "Adds 3 coins to your turn", "amount=3"));
+	}
+	
+	public void addSubTypes() {
+		Card moat = getCards().get("moat");
+		moat.addType("REACTION");
+		Card witch = getCards().get("witch");
+		witch.addType("ATTACK");
 	}
 	
 	/**

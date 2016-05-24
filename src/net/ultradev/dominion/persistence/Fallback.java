@@ -182,7 +182,7 @@ public class Fallback {
 		
 		Card witch = cm.getCards().get("witch");
 		witch.addAction(cm.parseAction("draw_cards", "Draw 2 cards", "amount=2"));
-		witch.addAction(cm.parseAction("gain_specific_card", "Draw a curse card", "card=curse;for=others"));
+		witch.addAction(cm.parseAction("gain_specific_card", "Draw a curse card", "card=curse;for=others;to=hand"));
 		
 		Card library = cm.getCards().get("library");
 		library.addAction(cm.parseAction("draw_cards", "Draw until you have 7 cards", "amount=7;type=until"));

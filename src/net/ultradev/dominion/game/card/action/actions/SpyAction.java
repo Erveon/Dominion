@@ -45,8 +45,10 @@ public class SpyAction extends Action {
 	public JSONObject finish(Turn turn) {
 		Player target = getTargeted(turn.getGame()).getCurrentPlayer();
 		Card card = getCard(target);
-		target.getPile(Pile.DECK).remove(0);
-		target.getPile(Pile.DISCARD).add(card);
+		if(card != null) {
+			target.getPile(Pile.DECK).remove(0);
+			target.getPile(Pile.DISCARD).add(card);
+		}
 		getTargeted(turn.getGame()).completeForCurrentPlayer();
 		return continueAction(turn);
 	}
@@ -64,13 +66,16 @@ public class SpyAction extends Action {
 					.accumulate("player", target.getDisplayname())
 					.accumulate("min", 0)
 					.accumulate("max", 0)
-					.accumulate("message", getDescripton())
+					.accumulate("message", "Reveal " + target.getDisplayname() + "'s card(s) to everyone")
 					.accumulate("type", "ANY");
 		}
 	}
 	
 	public Card getCard(Player p) {
-		return p.getPile(Pile.DECK).get(0);
+		if(p.getPile(Pile.DECK).size() > 0) {
+			return p.getPile(Pile.DECK).get(0);
+		}
+		return null;
 	}
 	
 	@Override

@@ -86,7 +86,7 @@ INSERT INTO Actions VALUES ('festival', 'add_actions', 'Adds 2 actions to your t
 INSERT INTO Actions VALUES ('festival', 'add_buys', 'Adds 1 buy to your turn', 'amount=1');
 INSERT INTO Actions VALUES ('festival', 'add_buypower', 'Adds 2 coins to your turn', 'amount=2');
 INSERT INTO Actions VALUES ('witch', 'draw_cards', 'Draw 2 cards', 'amount=2');
-INSERT INTO Actions VALUES ('witch', 'gain_specific_card', 'Draw a curse card', 'card=curse;for=others');
+INSERT INTO Actions VALUES ('witch', 'gain_specific_card', 'Draw a curse card', 'card=curse;for=others;to=hand');
 INSERT INTO Actions VALUES ('library', 'draw_cards', 'Draw until you have 7 cards', 'amount=7;type=until');
 INSERT INTO Actions VALUES ('library', 'discard_choose', 'Discard any number of action cards', 'restricttype=action');
 INSERT INTO Actions VALUES ('thief', 'thief', 'You reveal the top 2 cards from your deck, the thief grabs all the treasure', 'for=others');

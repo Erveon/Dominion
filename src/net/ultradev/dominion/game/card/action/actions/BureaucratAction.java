@@ -34,6 +34,7 @@ public class BureaucratAction extends Action {
 			if(!p.equals(turn.getPlayer())) {
 				for(Card c : p.getPile(Pile.HAND)) {
 					if(c.getType().equals(CardType.VICTORY)) {
+						System.out.println(p.getDisplayname() + " has a " + c.getName());
 						affected.add(p);
 						continue;
 					}
@@ -64,7 +65,7 @@ public class BureaucratAction extends Action {
 				.accumulate("min", 0)
 				.accumulate("max", 1)
 				.accumulate("type", "ALL")
-				.accumulate("message", getDescripton());
+				.accumulate("message", "Reveal " + target.getDisplayname() + "'s card(s) to everyone");
 	}
 	
 	@Override
