@@ -7,7 +7,6 @@ Dominion.Menu = (function(Menu) {
         this.disableScroll();
         this.addListeners();
         this.preventImageDragging();
-        this.updateLobby();
     };
 
     Menu.prototype.setFullpageConfig = function() {
