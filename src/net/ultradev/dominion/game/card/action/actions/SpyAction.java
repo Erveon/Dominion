@@ -58,6 +58,10 @@ public class SpyAction extends Action {
 			return new JSONObject().accumulate("response", "OK").accumulate("result", ActionResult.DONE);
 		} else {
 			Player target = getTargeted(turn.getGame()).getCurrentPlayer();
+			if(getCard(target) == null) {
+				getTargeted(turn.getGame()).completeForCurrentPlayer();
+				return finish(turn);
+			}
 			return new JSONObject()
 					.accumulate("response", "OK")
 					.accumulate("result", ActionResult.REVEAL)

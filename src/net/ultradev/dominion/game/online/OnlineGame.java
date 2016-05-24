@@ -1,11 +1,13 @@
 package net.ultradev.dominion.game.online;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.websocket.Session;
 
+import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.player.Player;
@@ -35,6 +37,19 @@ public class OnlineGame extends Game {
 	public void addPlayer(String name, Session session) {
 		players.put(session, new Player(this, getValidNameFor(name)));
 		getGameServer().getUtils().debug("A player named " + name + " has been added to an online game");
+	}
+	
+	public void broadcast(JSONObject message) {
+		String toSend = new JSONObject()
+							.accumulate("action", "chat")
+							.accumulate("message", message.toString()).toString();
+		for(Session sess : players.keySet()) {
+			try {
+				sess.getBasicRemote().sendText(toSend);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
