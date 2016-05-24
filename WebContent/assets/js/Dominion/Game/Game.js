@@ -175,6 +175,7 @@ Dominion.Game = (function(Game) {
 
         if (data.result === "DONE") {
             if (this.returnToSamePlayer === true) {
+                this.stopAction();
                 $('.overlay').slideUp(function() {
                     $('.overlay').remove();
                 });

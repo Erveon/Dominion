@@ -463,7 +463,6 @@ Dominion.Interface = (function(Interface) {
                             gameObj.updateGameInfo();
                             $('.overlay').remove();
                         });
-                        gameObj.playingAction = false;
                     });
                 }
 
@@ -495,6 +494,8 @@ Dominion.Interface = (function(Interface) {
         $('body').append(html);
         $('.continue').on('click', function(e) {
             e.preventDefault();
+            gameObj.stopAction();
+            gameObj.handlePhaseSkip();
             endAction();
         });
         $('.overlay').slideDown();
