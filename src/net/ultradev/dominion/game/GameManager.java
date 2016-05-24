@@ -28,7 +28,7 @@ public class GameManager {
 		this.onlineGames = new HashMap<>();
 		this.connected = new HashMap<>();
 		this.gs = gs;
-		createOnlineGame("This is a test game from the server", null);
+		createOnlineGame("This is a test game from the server");
 	}
 	
 	public GameServer getGameServer() {
@@ -56,7 +56,7 @@ public class GameManager {
 		return onlineGames;
 	}
 	
-	public void createOnlineGame(String name, Session owner) {
+	public OnlineGame createOnlineGame(String name) {
 		UUID uuid = UUID.randomUUID();
 		while(getOnlineGame(uuid) != null) {
 			uuid = UUID.randomUUID();
@@ -64,17 +64,18 @@ public class GameManager {
 		OnlineGame game = new OnlineGame(getGameServer(), uuid);
 		game.setName(name);
 		onlineGames.put(uuid, game);
-		String message = new JSONObject()
+		JSONObject message = new JSONObject()
 				.accumulate("type", "addlobby")
-				.accumulate("lobby", game.getLobbyInfo()).toString();
+				.accumulate("lobby", game.getLobbyInfo());
 		broadcast(message);
+		return game;
 	}
 	
 	public void removeOnlineGame(UUID uuid) {
 		if(onlineGames.containsKey(uuid)) {
-			String message = new JSONObject()
+			JSONObject message = new JSONObject()
 					.accumulate("type", "dellobby")
-					.accumulate("id", uuid.toString()).toString();
+					.accumulate("id", uuid.toString());
 			broadcast(message);
 			onlineGames.remove(uuid);
 		}
@@ -101,10 +102,10 @@ public class GameManager {
 		return null;
 	}
 	
-	public void broadcast(String message) {
+	public void broadcast(JSONObject message) {
 		for(Session sess : connected.keySet()) {
 			try {
-				sess.getBasicRemote().sendText(message);
+				sess.getBasicRemote().sendText(message.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

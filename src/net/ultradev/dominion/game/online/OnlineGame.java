@@ -19,11 +19,28 @@ public class OnlineGame extends Game {
 	private Map<Session, Player> players;
 	private String name;
 	private UUID uuid;
+	private Session creator;
 	
 	public OnlineGame(GameServer gs, UUID uuid) {
 		super(gs);
 		this.uuid = uuid;
 		this.players = new HashMap<>();
+	}
+	
+	public void setCreator(Player player) {
+		players.put(player.getSession(), player);
+		creator = player.getSession();
+	}
+	
+	public Session getCreator() {
+		return creator;
+	}
+	
+	@Override
+	public void start() {
+		super.start();
+		broadcast(new JSONObject().accumulate("type", "startgame"));
+		broadcast(getAsJson().accumulate("type", "game"));
 	}
 
 	@Override
@@ -46,16 +63,14 @@ public class OnlineGame extends Game {
 	@Override
 	public void addPlayer(String name, Session session) {
 		players.put(session, new Player(this, getValidNameFor(name)));
+		updateLobby();
 		getGameServer().getUtils().debug("A player named " + name + " has been added to an online game");
 	}
 	
 	public void broadcast(JSONObject message) {
-		String toSend = new JSONObject()
-							.accumulate("action", "chat")
-							.accumulate("message", message.toString()).toString();
 		for(Session sess : players.keySet()) {
 			try {
-				sess.getBasicRemote().sendText(toSend);
+				sess.getBasicRemote().sendText(message.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -64,10 +79,33 @@ public class OnlineGame extends Game {
 	
 	public void setName(String name) {
 		this.name = name;
+		updateGameInfo();
 	}
 	
 	public String getName() {
 		return name;
+	}
+	
+	public void updateGameInfo() {
+		JSONObject message = new JSONObject()
+				.accumulate("type", "gameinfo")
+				.accumulate("game", getGameInfo());
+		broadcast(message);
+	}
+	
+	public void updateLobby() {
+		JSONObject message = new JSONObject()
+				.accumulate("type", "updatelobby")
+				.accumulate("lobby", getLobbyInfo());
+		broadcast(message);
+	}
+	
+	public JSONObject getGameInfo() {
+		return new JSONObject()
+				.accumulate("id", getUniqueId().toString())
+				.accumulate("cardset", getConfig().getCardset())
+				.accumulate("name", name)
+				.accumulate("players", players.values().stream().map(Player::getDisplayname));
 	}
 	
 	public JSONObject getLobbyInfo() {

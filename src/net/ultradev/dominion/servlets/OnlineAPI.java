@@ -13,6 +13,8 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.GameManager;
+import net.ultradev.dominion.game.online.OnlineGame;
+import net.ultradev.dominion.game.player.Player;
 
 @ServerEndpoint("/socket")
 public class OnlineAPI {
@@ -56,14 +58,39 @@ public class OnlineAPI {
 		}
 		
 		JSONObject json = JSONObject.fromObject(message);
+		OnlineGame game = gm.getGameFor(session);
 		
 		if(json.containsKey("type")) {
 			switch(json.getString("type").toLowerCase()) {
 				case "lobbies":
-					getGameServer().getUtils().debug("Session " + session.getId() + " has asked for the lobbies");
-					send(session, new JSONObject()
-							.accumulate("type", "lobbies")
-							.accumulate("lobbies", getGameServer().getGameManager().getLobbies()).toString());
+					sendLobbies(session);
+					break;
+				case "createlobby":
+					String lobbyname = json.getString("name");
+					String displayname = json.getString("displayname");
+					OnlineGame newgame = gm.createOnlineGame(lobbyname);
+					Player creator = new Player(newgame, displayname, session);
+					newgame.setCreator(creator);
+					break;
+				case "changelobbyname":
+					if(game != null) {
+						String name = json.getString("name");
+						game.setName(name);
+					}
+					break;
+				case "startgame":
+					if(game != null) {
+						if(game.getCreator().equals(session)) {
+							game.start();
+						}
+					}
+					break;
+				case "setcardset":
+					if(game != null) {
+						if(game.getCreator().equals(session)) {
+							game.getConfig().setCardset(json.getString("cardset"));
+						}
+					}
 					break;
 				default:
 					send(session, gm.getInvalid("Type not found: " + json.getString("type")).toString());
@@ -82,6 +109,12 @@ public class OnlineAPI {
     public void onClose(Session session) {
     	System.out.println(session.getId() + " disconnected");
     	getGameServer().getGameManager().removeConnection(session);
+    }
+    
+    public void sendLobbies(Session session) {
+		send(session, new JSONObject()
+				.accumulate("type", "lobbies")
+				.accumulate("lobbies", getGameServer().getGameManager().getLobbies()).toString());
     }
 	
 	public void send(Session session, String message) {
