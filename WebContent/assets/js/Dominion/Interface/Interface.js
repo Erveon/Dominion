@@ -292,8 +292,10 @@ Dominion.Interface = (function(Interface) {
                 that.handCarousel.currentTab = 0;
                 $('#playedCards').empty();
                 gameObj.endPhase();
+                gameObj.hasSkippedThisTurn = false;
             });
         } else {
+            gameObj.stopAction();
             gameObj.endPhase();
         }
     };
