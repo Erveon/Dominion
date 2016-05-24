@@ -231,17 +231,17 @@ public class Turn {
 		switch(destination) {
 			case TOP_DECK:
 				// Shifts all other elements to the right
-				getPlayer().getPile(Pile.DECK).add(0, card);
+				player.getPile(Pile.DECK).add(0, card);
 				break;
 			case DECK:
-				getPlayer().getPile(Pile.DECK).add(card);
+				player.getPile(Pile.DECK).add(card);
 				break;
 			case HAND:
-				getPlayer().getPile(Pile.HAND).add(card);
+				player.getPile(Pile.HAND).add(card);
 				break;
 			case DISCARD:
 			default:
-				getPlayer().getPile(Pile.DISCARD).add(card);
+				player.getPile(Pile.DISCARD).add(card);
 				break;
 		}
 		board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
