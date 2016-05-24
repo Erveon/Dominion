@@ -41,8 +41,8 @@ public class GameManager {
 	
 	public void removeConnection(Session session) {
 		if(connected.containsKey(session)) {
-			if(isinGame(session)) {
-				//TODO broadcast logout to others
+			if(isinGame(session) && getGameFor(session).hasStarted()) {
+				getGameFor(session).end();
 			}
 			connected.remove(session);
 		}
@@ -179,7 +179,8 @@ public class GameManager {
 				return response.accumulate("response", "OK");
 			case "destroy":
 				destroyFor(session);
-				return response.accumulate("response", "OK");case "info":
+				return response.accumulate("response", "OK");
+			case "info":
 				return response
 						.accumulate("response", "OK")
 						.accumulate("game", g.getAsJson());

@@ -1,6 +1,8 @@
 package net.ultradev.dominion.servlets;
 
 import java.io.IOException;
+import java.util.UUID;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -53,7 +55,7 @@ public class OnlineAPI {
     public void onMessage(String message, Session session){
 		GameManager gm = getGameServer().getGameManager();
 		if(!isJSONValid(message)) {
-			send(session, gm.getInvalid("Object sent is not valid JSON").toString());
+			send(session, gm.getInvalid("Object sent is not valid JSON"));
 			return;
 		}
 		
@@ -78,6 +80,17 @@ public class OnlineAPI {
 						game.setName(name);
 					}
 					break;
+				case "joinlobby":
+					UUID uuid = UUID.fromString(json.getString("id"));
+					String joinname = json.getString("name");
+					OnlineGame tojoin = getGameServer().getGameManager().getOnlineGame(uuid);
+					tojoin.addPlayer(joinname, session);
+					break;
+				case "leavelobby":
+					if(game != null) {
+						game.leave(session);
+					}
+					break;
 				case "startgame":
 					if(game != null) {
 						if(game.getCreator().equals(session)) {
@@ -92,11 +105,28 @@ public class OnlineAPI {
 						}
 					}
 					break;
+				case "info":
+					if(game != null) {
+						send(session, game.getAsJson());
+					}
+					break;
+				case "play":
+					if(game != null) {
+						play(session, game, json);
+					}
+					break;
+				case "destroy":
+					if(game != null) {
+						if(game.getCreator().equals(session)) {
+							game.end();
+						}
+					}
+					break;
 				default:
-					send(session, gm.getInvalid("Type not found: " + json.getString("type")).toString());
+					send(session, gm.getInvalid("Type not found: " + json.getString("type")));
 			}
 		} else {
-			send(session, gm.getInvalid("Requests require a type").toString());
+			send(session, gm.getInvalid("Requests require a type"));
 		}
     }
 
@@ -111,15 +141,61 @@ public class OnlineAPI {
     	getGameServer().getGameManager().removeConnection(session);
     }
     
+    public void play(Session session, OnlineGame game, JSONObject json) {
+    	JSONObject response = null;
+    	switch(json.getString("action").toLowerCase()) {
+	    	case "endphase":
+	    		response = game.endPhase();
+	    		game.broadcast(game.getAsJson());
+	    		break;
+	    	case "playcard":
+	    		if(json.containsKey("card")) {
+	    			response = game.getTurn().playCard(json.getString("card"));
+	    		}
+	    		break;
+	    	case "buycard":
+	    		if(json.containsKey("card")) {
+	    			response = game.getTurn().buyCard(json.getString("card"));
+	    		}
+	    		break;
+	    	case "selectcard":
+	    		if(json.containsKey("card")) {
+	    			response = game.getTurn().selectCard(json.getString("card"));
+	    		}
+	    		break;
+			case "stopaction":
+				response = game.getTurn().stopAction();
+				break;
+	    	default:
+	    		getGameServer().getUtils().debug("Unrecognized action in online game: " + json.getString("action"));
+	    		break;
+    	}
+		if(response != null && isWorthSending(response)) {
+			game.broadcast(response);
+		} else if(response != null) {
+			// Notify the current player all is OK
+			send(session, response);
+		}
+    }
+    
+    public boolean isWorthSending(JSONObject json) {
+    	if(json.containsKey("result")) {
+    		if(json.getString("result").equalsIgnoreCase("DONE")) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
     public void sendLobbies(Session session) {
 		send(session, new JSONObject()
 				.accumulate("type", "lobbies")
-				.accumulate("lobbies", getGameServer().getGameManager().getLobbies()).toString());
+				.accumulate("lobbies", getGameServer().getGameManager().getLobbies()));
     }
 	
-	public void send(Session session, String message) {
+	public void send(Session session, JSONObject message) {
 		try {
-			session.getBasicRemote().sendText(message);
+			session.getBasicRemote().sendText(message.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

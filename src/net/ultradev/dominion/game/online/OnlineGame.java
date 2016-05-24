@@ -36,11 +36,21 @@ public class OnlineGame extends Game {
 		return creator;
 	}
 	
+	public void leave(Session session) {
+		if(players.containsKey(session)) {
+			players.remove(session);
+			if(hasStarted()) {
+				end();
+			}
+		}
+	}
+	
 	@Override
 	public void start() {
 		super.start();
 		broadcast(new JSONObject().accumulate("type", "startgame"));
 		broadcast(getAsJson().accumulate("type", "game"));
+		updateLobby();
 	}
 
 	@Override
@@ -64,6 +74,7 @@ public class OnlineGame extends Game {
 	public void addPlayer(String name, Session session) {
 		players.put(session, new Player(this, getValidNameFor(name)));
 		updateLobby();
+		updateGameInfo();
 		getGameServer().getUtils().debug("A player named " + name + " has been added to an online game");
 	}
 	
@@ -84,6 +95,13 @@ public class OnlineGame extends Game {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public void end() {
+		JSONObject message = new JSONObject()
+				.accumulate("type", "endgame");
+		broadcast(message);
+		getGameServer().getGameManager().removeOnlineGame(getUniqueId());
 	}
 	
 	public void updateGameInfo() {
