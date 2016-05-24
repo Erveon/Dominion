@@ -27,8 +27,8 @@ public class EngineTest {
 		game = new LocalGame(gameServer);
 		board = game.getBoard();
 		gameConfig = game.getConfig();
-		game.addPlayer("Bob");
-		game.addPlayer("Jos");
+		game.addPlayer("Bob", null);
+		game.addPlayer("Jos", null);
 		gameConfig.setCardset("test");
 		game.start();
 	}
@@ -53,7 +53,7 @@ public class EngineTest {
 			}
 			assertTrue("Game doesn't end when there are " + amountOfCards + " provinces removed", board.hasEndCondition());
 			String newPlayer = "player " + players;
-			game.addPlayer(newPlayer);
+			game.addPlayer(newPlayer, null);
 			board.initSupplies();
 		}
 	}

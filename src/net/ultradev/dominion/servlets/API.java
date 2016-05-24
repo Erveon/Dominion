@@ -46,7 +46,7 @@ public class API extends HttpServlet {
     }
     
     public void init() throws ServletException {
-        this.gs = new GameServer();
+        this.gs = GameServer.get();
     }
     
     public GameServer getGameServer() {
@@ -65,7 +65,7 @@ public class API extends HttpServlet {
 			return;
 		}
 		
-		LocalGame g = getGameServer().getGameManager().getGame(req.getSession());
+		LocalGame g = getGameServer().getGameManager().getLocalGame(req.getSession());
 		res.getWriter().append(getGameServer().getGameManager().handleLocalRequest(getParameters(req), g, req.getSession()).toString());
 	}
 	

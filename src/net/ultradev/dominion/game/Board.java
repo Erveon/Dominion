@@ -108,7 +108,9 @@ public class Board {
 
 	public List<JSONObject> getPlayedCards() {
 		List<JSONObject> json = new ArrayList<>();
-		playedcards.forEach(card -> json.add(card.getAsJson()));
+		// avoid concurrent modification exceptions
+		List<Card> played = new ArrayList<>(playedcards);
+		played.forEach(card -> json.add(card.getAsJson()));
 		return json;
 	}
 	

@@ -7,6 +7,8 @@ import net.ultradev.dominion.persistence.Database;
 
 public class GameServer {
 	
+	private static GameServer instance;
+	
 	private CardManager cm;
 	private GameManager gm;
 	private Database database;
@@ -20,6 +22,18 @@ public class GameServer {
 		this.gm = new GameManager(this);
 		getDatabase().openConnection();
 		setup();
+	}
+	
+	/**
+	 * Static because the 2 APIs initialised by Tomcat need access to the server
+	 * It is synchronized just in case it's using multiple threads, to avoid accidental fuckups
+	 * @return
+	 */
+	synchronized public static GameServer get() {
+		if(instance == null) {
+			instance = new GameServer();
+		}
+		return instance;
 	}
 	
 	private void setup() {

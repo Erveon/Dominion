@@ -1,21 +1,30 @@
 package net.ultradev.dominion.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.local.LocalGame;
+import net.ultradev.dominion.game.online.OnlineGame;
 
 public class GameManager {
 	
 	GameServer gs;
-	private Map<HttpSession, LocalGame> games = new HashMap<>();
+	private Map<HttpSession, LocalGame> localGames;
+	private List<OnlineGame> onlineGames;
+	private Map<Session, OnlineGame> inGames;
 	
 	public GameManager(GameServer gs) {
+		this.localGames = new HashMap<>();
+		this.onlineGames = new ArrayList<>();
+		this.inGames = new HashMap<>();
 		this.gs = gs;
 	}
 	
@@ -23,9 +32,20 @@ public class GameManager {
 		return gs;
 	}
 	
-	public LocalGame getGame(HttpSession session) {
-		if(games.containsKey(session)) {
-			return games.get(session);
+	public List<OnlineGame> getOnlineGames() {
+		return onlineGames;
+	}
+	
+	public OnlineGame getOnlineGame(Session session) {
+		if(inGames.containsKey(session)) {
+			return inGames.get(session);
+		}
+		return null;
+	}
+	
+	public LocalGame getLocalGame(HttpSession session) {
+		if(localGames.containsKey(session)) {
+			return localGames.get(session);
 		}
 		return null;
 	}
@@ -33,13 +53,13 @@ public class GameManager {
 	// If null, it's a java GUI game
 	public LocalGame createLocalGame(HttpSession session) {
 		LocalGame game = new LocalGame(getGameServer());
-		games.put(session, game);
+		localGames.put(session, game);
 		return game;
 	}
 	
 	public void destroyFor(HttpSession session) {
-		if(games.containsKey(session)) {
-			games.remove(session);
+		if(localGames.containsKey(session)) {
+			localGames.remove(session);
 			System.gc(); // Free the memory!!
 			getGameServer().getUtils().debug("A local game has been destroyed");
 		}
@@ -82,7 +102,7 @@ public class GameManager {
 					return getInvalid("Requires at least 2 players");
 				}
 				Game game = createLocalGame(session);
-				Stream.of(players).forEach(game::addPlayer);
+				Stream.of(players).forEach(player -> game.addPlayer(player, null));
 				String cardset = map.get("cardset");
 				game.getConfig().setCardset(cardset);
 				game.start();
@@ -116,6 +136,10 @@ public class GameManager {
 			default:
 				return getInvalid("Action not recognized: " + action);
 		}
+	}
+	
+	public JSONObject handleOnlineRequest(Map<String, String> map, Session session) {
+		return new JSONObject().accumulate("response", "OK");
 	}
 	
 	public JSONObject getInvalid(String reason) {
