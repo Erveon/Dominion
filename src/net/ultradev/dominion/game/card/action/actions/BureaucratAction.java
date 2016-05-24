@@ -62,7 +62,7 @@ public class BureaucratAction extends Action {
 				.accumulate("player", target.getDisplayname())
 				.accumulate("force", false)
 				.accumulate("min", 0)
-				.accumulate("max", 0)
+				.accumulate("max", 1)
 				.accumulate("type", "ALL")
 				.accumulate("message", getDescripton());
 	}
