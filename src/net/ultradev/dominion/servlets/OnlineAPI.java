@@ -126,7 +126,7 @@ public class OnlineAPI {
 					break;
 				case "play":
 					if(isGame(game, session)) {
-						play(session, game, json);
+						play(session, game, json.getJSONObject("request"));
 					}
 					break;
 				case "destroy":
@@ -165,7 +165,7 @@ public class OnlineAPI {
     
     public void play(Session session, OnlineGame game, JSONObject json) {
     	JSONObject response = null;
-    	switch(json.getJSONObject("request").getString("action").toLowerCase()) {
+    	switch(json.getString("action").toLowerCase()) {
 	    	case "endphase":
 	    		response = game.endPhase();
 	    		game.broadcast(game.getAsJson());
