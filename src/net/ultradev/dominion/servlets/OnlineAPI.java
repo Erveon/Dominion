@@ -193,11 +193,13 @@ public class OnlineAPI {
 	    		break;
     	}
 		if(response != null) {
-			response.accumulate("type", "game");
+			JSONObject message = new JSONObject()
+					.accumulate("type", "game")
+					.accumulate("response", response);
 			if(isWorthSending(response)) {
-				game.broadcast(response);
+				game.broadcast(message);
 			} else {
-				send(session, response);
+				send(session, message);
 			}
 			game.broadcast(game.getAsJson());
 		}
