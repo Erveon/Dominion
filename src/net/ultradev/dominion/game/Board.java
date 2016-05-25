@@ -89,7 +89,7 @@ public class Board {
 		// Curse supply (2 = 10, 3 = 20, 4 = 30)
 		int curseamount = (Math.max(playercount, 2) - 1) * 10;
 		getSupply(SupplyType.CURSE).add(getCard("curse"), curseamount);
-		
+				
 		// Action supply
 		for(String cardid : getGame().getConfig().getActionCards()) {
 			getSupply(SupplyType.ACTION).add(getCard(cardid), 10);

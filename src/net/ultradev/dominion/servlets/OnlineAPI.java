@@ -47,7 +47,7 @@ public class OnlineAPI {
 	
 	@OnOpen
     public void onOpen(Session session) throws IOException {
-    	System.out.println(session.getId() + " connected");
+    	getGameServer().getUtils().debug(session.getId() + " connected");
     	getGameServer().getGameManager().addConnection(session);
     }
 
@@ -80,6 +80,7 @@ public class OnlineAPI {
 					OnlineGame newgame = gm.createOnlineGame(lobbyname);
 					Player creator = new Player(newgame, displayname, session);
 					newgame.setCreator(creator);
+					newgame.getConfig().setCardset("FIRSTGAME");
 					newgame.updateGameInfo();
 					break;
 				case "changelobbyname":
@@ -150,7 +151,7 @@ public class OnlineAPI {
 
     @OnClose
     public void onClose(Session session) {
-    	System.out.println(session.getId() + " disconnected");
+    	getGameServer().getUtils().debug(session.getId() + " disconnected");
     	getGameServer().getGameManager().removeConnection(session);
     }
     
