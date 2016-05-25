@@ -88,7 +88,7 @@ Dominion.Online = (function(Online) {
                         break;
 
                     case "game":
-                        if(data.response !== "OK" && data.result !== "DONE") {
+                        if(data.hasOwnProperty('players')) {
                             updateGameData(data);
                         } else {
                             requestUpdatedGameInfo();
