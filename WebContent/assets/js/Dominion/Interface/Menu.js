@@ -45,12 +45,12 @@ Dominion.Menu = (function(Menu) {
 
     Menu.prototype.getPlayerNames = function() {
         return $('.player').map(function() {
-            return $(this).val();
+            return $(this).val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }).get();
     };
 
     Menu.prototype.getCardSet = function() {
-        return $('#card-set').val();
+        return $('#card-set').val().replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
 
     Menu.prototype.startGame = function(that) {

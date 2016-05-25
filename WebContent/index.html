@@ -15,7 +15,7 @@
         <div id="fullpage">
             <!-- Online multiplayer screen -->
             <div class="fp-section headroom">
-                <div id="lobby-browser">
+                <div id="lobby-browser" class="multiconfig">
                     <h2 class="config">Join or create a game</h2>
                     <h3 class="lobbymessage"></h3>
                     <div id="lobbies">
@@ -31,14 +31,14 @@
                     <button class="config page-down">Back To Menu</button>
                 </div>
 
-                <div id="join-lobby">
+                <div id="join-lobby" class="multiconfig">
                     <h2 class="config">Enter your username</h2>
                     <input id="connecting-username" type='text'>
                     <button class="config join-lobby">Join</button>
                     <button class="config show-lobby-browser">Back To Lobby Browser</button>
                 </div>
 
-                <div id="lobby-creator">
+                <div id="lobby-creator" class="multiconfig">
                     <h2 class="config">Create a lobby</h2>
                     <form>
                         <label for="create-lobby-name">Lobby Name</label>
@@ -50,23 +50,23 @@
                     <button class="config show-lobby-browser">Back To Lobby Browser</button>
                 </div>
 
-                <div id="lobby-screen">
+                <div id="lobby-screen" class="multiconfig">
                     <h2 class="config lobby-title"></h2>
                     <div class="container">
                         <div id="lobby-players">
                             <table>
                                 <tr>
                                     <th>Players</th>
-                                    <th>Host</th>
                                 </tr>
                             </table>
                         </div>
                         <div id="lobby-settings">
                         </div>
                         <div id="lobby-chat">
-                            <h3>Chat</h3>
                         </div>
+                        <input id='message-bar' type="text" placeholder='Type a message here.'>
                     </div>
+                    <button class="config leave-lobby">Leave Lobby</button>
                 </div>
             </div>
 
