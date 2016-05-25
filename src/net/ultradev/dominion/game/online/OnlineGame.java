@@ -107,6 +107,28 @@ public class OnlineGame extends Game {
 		}
 	}
 	
+	public void sendToHost(JSONObject message) {
+		try {
+			if(creator.isOpen()) {
+			creator.getBasicRemote().sendText(message.toString());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void broadcastAllButHost(JSONObject message) {
+		for(Session sess : players.keySet()) {
+			try {
+				if(sess.isOpen() && !sess.equals(creator)) {
+					sess.getBasicRemote().sendText(message.toString());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 		updateGameInfo();
@@ -127,7 +149,8 @@ public class OnlineGame extends Game {
 		JSONObject message = new JSONObject()
 				.accumulate("type", "gameinfo")
 				.accumulate("game", getGameInfo());
-		broadcast(message);
+		broadcastAllButHost(message.accumulate("host", false));
+		sendToHost(message.accumulate("host", true));
 	}
 	
 	public void updateLobby() {
