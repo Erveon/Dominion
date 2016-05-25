@@ -1100,6 +1100,22 @@ a.arrow:hover {
     margin: 0;
 }
 
+#lobby-settings .lobby-start-game {
+    width: 200px;
+    margin: 120px auto;
+}
+
+#lobby-settings .greyed,
+#lobby-settings .lobby-start-game {
+    background-color: gray;
+}
+
+#lobby-settings .greyed:hover,
+#lobby-settings .lobby-start-game {
+    background-color: gray;
+    cursor: default;
+}
+
 #lobby-settings label {
     font-family: "RobotoBold";
     text-transform: uppercase;

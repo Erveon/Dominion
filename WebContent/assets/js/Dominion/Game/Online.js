@@ -110,7 +110,8 @@ Dominion.Online = (function(Online, Incoming, Outgoing, Interface) {
                 "<option value='interaction'>Interaction</option>" +
                 "<option value='sizedistortion'>Size Distortion</option>" +
                 "<option value='villagesquare'>Village Square</option>" +
-                "</select>"
+                "</select>" +
+                "<button class='config lobby-start-game'>Start Game</button>"
             );
             $('.confirm-change-name').on('click', function(e) {
                 e.preventDefault();
@@ -122,6 +123,19 @@ Dominion.Online = (function(Online, Incoming, Outgoing, Interface) {
                 changeCardSet($(this).val().replace(/</g, "&lt;").replace(/>/g, "&gt;"));
                 e.stopImmediatePropagation();
             });
+
+
+            if(($("#lobby-players table").children().size() > 2)) {
+                $('.lobby-start-game').removeClass('greyed');
+                $('.lobby-start-game').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                });
+            } else {
+                $('.lobby-start-game').addClass('greyed');
+                $('.lobby-start-game').off();
+            }
+
         } else {
             $("#lobby-settings").append(
                 "<h3>Card Set</h3>" +
@@ -221,8 +235,8 @@ Dominion.Online = (function(Online, Incoming, Outgoing, Interface) {
     var updateLobbyBrowser = function(id, name, players, joinable) {
         $("#lobbies table tr").each(function () {
             if($(this).attr("data-id") === id) {
-                $(this).eq(0).val(name).replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                $(this).eq(1).val(players).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                $(this).eq(0).val(name);
+                $(this).eq(1).val(players);
                 $(this).eq(2).toggleClass("nojoin", !joinable);
             }
         });
