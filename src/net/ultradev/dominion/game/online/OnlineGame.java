@@ -41,7 +41,7 @@ public class OnlineGame extends Game {
 	public void leave(Session session) {
 		if(players.containsKey(session)) {
 			players.remove(session);
-			if(hasStarted()) {
+			if(hasStarted() || session.equals(creator)) {
 				end();
 			} else {
 				updateGameInfo();
@@ -111,9 +111,12 @@ public class OnlineGame extends Game {
 		}
 	}
 	
-	public void setName(String name) {
+	public void setName(String name, boolean push) {
 		this.name = name;
-		updateGameInfo();
+		if(push) {
+			updateGameInfo();
+			updateLobby();
+		}
 	}
 	
 	public String getName() {
@@ -140,7 +143,7 @@ public class OnlineGame extends Game {
 		JSONObject message = new JSONObject()
 				.accumulate("type", "updatelobby")
 				.accumulate("lobby", getLobbyInfo());
-		broadcast(message);
+		getGameServer().getGameManager().broadcast(message);
 	}
 	
 	public JSONObject getGameInfo(Session session) {
@@ -149,7 +152,7 @@ public class OnlineGame extends Game {
 				.accumulate("cardset", getConfig().getCardset())
 				.accumulate("name", name)
 				.accumulate("players", players.values().stream().map(Player::getDisplayname).collect(Collectors.toList()))
-				.accumulate("host", creator.equals(session));
+				.accumulate("host", session.equals(creator));
 	}
 	
 	public JSONObject getLobbyInfo() {

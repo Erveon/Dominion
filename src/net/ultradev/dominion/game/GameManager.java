@@ -62,8 +62,8 @@ public class GameManager {
 			uuid = UUID.randomUUID();
 		}
 		OnlineGame game = new OnlineGame(getGameServer(), uuid);
-		game.setName(name);
 		onlineGames.put(uuid, game);
+		game.setName(name, false);
 		JSONObject message = new JSONObject()
 				.accumulate("type", "addlobby")
 				.accumulate("lobby", game.getLobbyInfo());

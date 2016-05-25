@@ -85,7 +85,7 @@ public class OnlineAPI {
 				case "changelobbyname":
 					if(isGame(game, session)) {
 						String name = json.getString("name");
-						game.setName(name);
+						game.setName(name, true);
 					}
 					break;
 				case "joinlobby":
@@ -102,13 +102,15 @@ public class OnlineAPI {
 				case "startgame":
 					if(isGame(game, session)) {
 						if(game.getCreator().equals(session)) {
-							game.start();
+							if(game.getPlayers().size() >= 2) {
+								game.start();
+							}
 						}
 					}
 					break;
 				case "setcardset":
 					if(isGame(game, session)) {
-						if(game.getCreator().equals(session)) {
+						if(game.getCreator().equals(session) && !game.hasStarted()) {
 							game.getConfig().setCardset(json.getString("cardset"));
 						}
 					}
