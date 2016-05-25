@@ -41,8 +41,8 @@ public class GameManager {
 	
 	public void removeConnection(Session session) {
 		if(connected.containsKey(session)) {
-			if(isinGame(session) && getGameFor(session).hasStarted()) {
-				getGameFor(session).end();
+			if(isinGame(session)) {
+				getGameFor(session).leave(session);
 			}
 			connected.remove(session);
 		}
@@ -105,7 +105,9 @@ public class GameManager {
 	public void broadcast(JSONObject message) {
 		for(Session sess : connected.keySet()) {
 			try {
-				sess.getBasicRemote().sendText(message.toString());
+				if(sess.isOpen()) {
+					sess.getBasicRemote().sendText(message.toString());
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

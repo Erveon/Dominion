@@ -43,6 +43,9 @@ public class OnlineGame extends Game {
 			players.remove(session);
 			if(hasStarted()) {
 				end();
+			} else {
+				updateGameInfo();
+				updateLobby();
 			}
 		}
 	}
@@ -95,7 +98,9 @@ public class OnlineGame extends Game {
 	public void broadcast(JSONObject message) {
 		for(Session sess : players.keySet()) {
 			try {
-				sess.getBasicRemote().sendText(message.toString());
+				if(sess.isOpen()) {
+					sess.getBasicRemote().sendText(message.toString());
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

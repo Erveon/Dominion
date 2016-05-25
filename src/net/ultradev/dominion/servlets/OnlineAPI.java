@@ -210,7 +210,9 @@ public class OnlineAPI {
 	
 	public void send(Session session, JSONObject message) {
 		try {
-			session.getBasicRemote().sendText(message.toString());
+			if(session.isOpen()) {
+				session.getBasicRemote().sendText(message.toString());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
