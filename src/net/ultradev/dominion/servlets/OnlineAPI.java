@@ -80,6 +80,7 @@ public class OnlineAPI {
 					OnlineGame newgame = gm.createOnlineGame(lobbyname);
 					Player creator = new Player(newgame, displayname, session);
 					newgame.setCreator(creator);
+					newgame.updateGameInfo();
 					break;
 				case "changelobbyname":
 					if(isGame(game, session)) {

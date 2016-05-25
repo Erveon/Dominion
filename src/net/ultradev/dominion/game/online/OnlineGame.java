@@ -97,35 +97,17 @@ public class OnlineGame extends Game {
 	
 	public void broadcast(JSONObject message) {
 		for(Session sess : players.keySet()) {
-			try {
-				if(sess.isOpen()) {
-					sess.getBasicRemote().sendText(message.toString());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			send(sess, message);
 		}
 	}
 	
-	public void sendToHost(JSONObject message) {
+	public void send(Session session, JSONObject message) {
 		try {
-			if(creator != null && creator.isOpen()) {
-				creator.getBasicRemote().sendText(message.toString());
+			if(session.isOpen()) {
+				session.getBasicRemote().sendText(message.toString());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	public void broadcastAllButHost(JSONObject message) {
-		for(Session sess : players.keySet()) {
-			try {
-				if(sess.isOpen() && !sess.equals(creator)) {
-					sess.getBasicRemote().sendText(message.toString());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	
@@ -146,11 +128,12 @@ public class OnlineGame extends Game {
 	}
 	
 	public void updateGameInfo() {
-		JSONObject message = new JSONObject()
-				.accumulate("type", "gameinfo")
-				.accumulate("game", getGameInfo());
-		broadcastAllButHost(message.accumulate("host", false));
-		sendToHost(message.accumulate("host", true));
+		for(Session session : players.keySet()) {
+			JSONObject message = new JSONObject()
+					.accumulate("type", "gameinfo")
+					.accumulate("game", getGameInfo(session));
+			send(session, message);
+		}
 	}
 	
 	public void updateLobby() {
@@ -160,12 +143,13 @@ public class OnlineGame extends Game {
 		broadcast(message);
 	}
 	
-	public JSONObject getGameInfo() {
+	public JSONObject getGameInfo(Session session) {
 		return new JSONObject()
 				.accumulate("id", getUniqueId().toString())
 				.accumulate("cardset", getConfig().getCardset())
 				.accumulate("name", name)
-				.accumulate("players", players.values().stream().map(Player::getDisplayname).collect(Collectors.toList()));
+				.accumulate("players", players.values().stream().map(Player::getDisplayname).collect(Collectors.toList()))
+				.accumulate("host", creator.equals(session));
 	}
 	
 	public JSONObject getLobbyInfo() {
