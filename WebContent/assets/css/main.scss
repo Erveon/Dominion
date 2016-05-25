@@ -1105,13 +1105,11 @@ a.arrow:hover {
     margin: 120px auto;
 }
 
-#lobby-settings .greyed,
-#lobby-settings .lobby-start-game {
+#lobby-settings .greyed {
     background-color: gray;
 }
 
-#lobby-settings .greyed:hover,
-#lobby-settings .lobby-start-game {
+#lobby-settings .greyed:hover {
     background-color: gray;
     cursor: default;
 }
