@@ -195,12 +195,15 @@ public class OnlineAPI {
 	    		break;
     	}
 		if(response != null) {
-			JSONObject message = new JSONObject()
-					.accumulate("type", "game")
-					.accumulate("response", response);
 			if(isWorthSending(response)) {
+				JSONObject message = new JSONObject()
+						.accumulate("type", "cardaction")
+						.accumulate("response", response);
 				game.broadcast(message);
 			} else {
+				JSONObject message = new JSONObject()
+						.accumulate("type", "game")
+						.accumulate("response", response);
 				send(session, message);
 			}
 			game.broadcast(game.getAsJson());
