@@ -147,12 +147,15 @@ public class OnlineGame extends Game {
 	}
 	
 	public JSONObject getGameInfo(Session session) {
-		return new JSONObject()
+		JSONObject response = new JSONObject()
 				.accumulate("id", getUniqueId().toString())
-				.accumulate("cardset", getConfig().getCardset())
 				.accumulate("name", name)
 				.accumulate("players", players.values().stream().map(Player::getDisplayname).collect(Collectors.toList()))
 				.accumulate("host", session.equals(creator));
+		if(!session.equals(creator)) {
+			response.accumulate("cardset", getConfig().getCardset());
+		}
+		return response;
 	}
 	
 	public JSONObject getLobbyInfo() {
