@@ -62,13 +62,14 @@ public class OnlineAPI {
 		JSONObject json = JSONObject.fromObject(message);
 		OnlineGame game = gm.getGameFor(session);
 		
+		
 		if(json.containsKey("type")) {
 			switch(json.getString("type").toLowerCase()) {
 				case "lobbies":
 					sendLobbies(session);
 					break;
 				case "chat":
-					if(game != null) {
+					if(isGame(game, session)) {
 						String chatmessage = json.getString("message");
 						game.sendChatMessage(session, chatmessage);
 					}
@@ -81,7 +82,7 @@ public class OnlineAPI {
 					newgame.setCreator(creator);
 					break;
 				case "changelobbyname":
-					if(game != null) {
+					if(isGame(game, session)) {
 						String name = json.getString("name");
 						game.setName(name);
 					}
@@ -93,36 +94,36 @@ public class OnlineAPI {
 					tojoin.addPlayer(joinname, session);
 					break;
 				case "leavelobby":
-					if(game != null) {
+					if(isGame(game, session)) {
 						game.leave(session);
 					}
 					break;
 				case "startgame":
-					if(game != null) {
+					if(isGame(game, session)) {
 						if(game.getCreator().equals(session)) {
 							game.start();
 						}
 					}
 					break;
 				case "setcardset":
-					if(game != null) {
+					if(isGame(game, session)) {
 						if(game.getCreator().equals(session)) {
 							game.getConfig().setCardset(json.getString("cardset"));
 						}
 					}
 					break;
 				case "info":
-					if(game != null) {
+					if(isGame(game, session)) {
 						send(session, game.getAsJson());
 					}
 					break;
 				case "play":
-					if(game != null) {
+					if(isGame(game, session)) {
 						play(session, game, json);
 					}
 					break;
 				case "destroy":
-					if(game != null) {
+					if(isGame(game, session)) {
 						if(game.getCreator().equals(session)) {
 							game.end();
 						}
@@ -145,6 +146,14 @@ public class OnlineAPI {
     public void onClose(Session session) {
     	System.out.println(session.getId() + " disconnected");
     	getGameServer().getGameManager().removeConnection(session);
+    }
+    
+    public boolean isGame(OnlineGame game, Session session) {
+    	if(game == null) {
+			getGameServer().getUtils().debug("Request without a game for session " + session.getId());
+			return false;
+    	}
+    	return true;
     }
     
     public void play(Session session, OnlineGame game, JSONObject json) {

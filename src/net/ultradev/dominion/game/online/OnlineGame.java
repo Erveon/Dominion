@@ -29,6 +29,7 @@ public class OnlineGame extends Game {
 	
 	public void setCreator(Player player) {
 		players.put(player.getSession(), player);
+		getGameServer().getGameManager().setOnlineGameFor(player.getSession(), this);
 		creator = player.getSession();
 	}
 	
@@ -84,6 +85,7 @@ public class OnlineGame extends Game {
 	@Override
 	public void addPlayer(String name, Session session) {
 		players.put(session, new Player(this, getValidNameFor(name)));
+		getGameServer().getGameManager().setOnlineGameFor(session, this);
 		updateLobby();
 		updateGameInfo();
 		getGameServer().getUtils().debug("A player named " + name + " has been added to an online game");
