@@ -112,6 +112,7 @@ public class OnlineAPI {
 					if(isGame(game, session)) {
 						if(game.getCreator().equals(session) && !game.hasStarted()) {
 							game.getConfig().setCardset(json.getString("cardset"));
+							game.updateGameInfo();
 						}
 					}
 					break;
