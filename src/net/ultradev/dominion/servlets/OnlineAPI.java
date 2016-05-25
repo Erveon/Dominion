@@ -92,7 +92,9 @@ public class OnlineAPI {
 					UUID uuid = UUID.fromString(json.getString("id"));
 					String joinname = json.getString("name");
 					OnlineGame tojoin = getGameServer().getGameManager().getOnlineGame(uuid);
-					tojoin.addPlayer(joinname, session);
+					if(!tojoin.hasStarted()) {
+						tojoin.addPlayer(joinname, session);
+					}
 					break;
 				case "leavelobby":
 					if(isGame(game, session)) {

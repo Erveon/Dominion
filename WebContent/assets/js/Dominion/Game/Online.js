@@ -112,20 +112,24 @@ Dominion.Online = (function(Online, Incoming, Outgoing, Interface) {
                 "</select>" +
                 "<button class='config lobby-start-game'>Start Game</button>"
             );
+            
             $('.confirm-change-name').on('click', function(e) {
                 e.preventDefault();
                 changeLobbyName($("#change-lobby-name").val().replace(/</g, "&lt;").replace(/>/g, "&gt;"));
                 e.stopImmediatePropagation();
             });
+            
             $('#change-card-set').on("change", function() {
-                changeCardSet($(this).val($(this).val()));
+            	changeCardSet($(this).val());
             });
 
-
+            $("#change-card-set").val(game.cardset.toLowerCase());
+            
             if(($("#lobby-players table tr").length > 2)) {
                 $('.lobby-start-game').removeClass('greyed');
                 $('.lobby-start-game').on('click', function(e) {
                     e.preventDefault();
+                    startGame();
                     e.stopImmediatePropagation();
                 });
             } else {
@@ -159,6 +163,10 @@ Dominion.Online = (function(Online, Incoming, Outgoing, Interface) {
 
         $("#lobby-screen").show();
     };
+    
+    var startGame = function() {
+    	send({"type": "startgame"});
+    }
 
     var updateLobbyChat = function(data) {
         $('#lobby-chat').append("<p><span class='username'>" + data.username + ":</span> " + data.message + "</p>");
