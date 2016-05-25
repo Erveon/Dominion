@@ -61,6 +61,10 @@ public class OnlineGame extends Game {
 		}
 	}
 	
+	public boolean isSessionsTurn(Session session) {
+		return session.equals(getTurn().getPlayer().getSession());
+	}
+	
 	@Override
 	public void start() {
 		super.start();

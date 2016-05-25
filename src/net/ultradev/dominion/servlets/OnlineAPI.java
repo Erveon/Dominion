@@ -167,16 +167,18 @@ public class OnlineAPI {
     	JSONObject response = null;
     	switch(json.getString("action").toLowerCase()) {
 	    	case "endphase":
-	    		response = game.endPhase();
-	    		game.broadcast(game.getAsJson());
+	    		if(game.isSessionsTurn(session)) {
+		    		response = game.endPhase();
+		    		game.broadcast(game.getAsJson());
+	    		}
 	    		break;
 	    	case "playcard":
-	    		if(json.containsKey("card")) {
+	    		if(game.isSessionsTurn(session) && json.containsKey("card")) {
 	    			response = game.getTurn().playCard(json.getString("card"));
 	    		}
 	    		break;
 	    	case "buycard":
-	    		if(json.containsKey("card")) {
+	    		if(game.isSessionsTurn(session) && json.containsKey("card")) {
 	    			response = game.getTurn().buyCard(json.getString("card"));
 	    		}
 	    		break;
