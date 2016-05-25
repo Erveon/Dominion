@@ -65,7 +65,7 @@ public class OnlineGame extends Game {
 	public void start() {
 		super.start();
 		broadcast(new JSONObject().accumulate("type", "startgame"));
-		broadcast(getAsJson().accumulate("type", "game"));
+		broadcast(getAsJson());
 		updateLobby();
 	}
 
@@ -128,6 +128,11 @@ public class OnlineGame extends Game {
 				.accumulate("type", "endgame");
 		broadcast(message);
 		getGameServer().getGameManager().removeOnlineGame(getUniqueId());
+	}
+	
+	@Override
+	public JSONObject getAsJson() {
+		return super.getAsJson().accumulate("type", "game");
 	}
 	
 	public void updateGameInfo() {
