@@ -199,6 +199,7 @@ public class OnlineAPI {
 			} else {
 				send(session, response);
 			}
+			game.broadcast(game.getAsJson());
 		}
     }
     
