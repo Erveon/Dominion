@@ -17,7 +17,7 @@
             <div class="fp-section headroom">
                 <div id="lobby-browser">
                     <h2 class="config">Join or create a game</h2>
-                    <h3 id="lobbymessage"></h3>
+                    <h3 class="lobbymessage"></h3>
                     <div id="lobbies">
                         <table>
                             <tr>
@@ -27,8 +27,46 @@
                             </tr>
                         </table>
                     </div>
-                    <button class="config create-online-game">Create</button>
+                    <button class="config show-lobby-creator">Create</button>
                     <button class="config page-down">Back To Menu</button>
+                </div>
+
+                <div id="join-lobby">
+                    <h2 class="config">Enter your username</h2>
+                    <input id="connecting-username" type='text'>
+                    <button class="config join-lobby">Join</button>
+                    <button class="config show-lobby-browser">Back To Lobby Browser</button>
+                </div>
+
+                <div id="lobby-creator">
+                    <h2 class="config">Create a lobby</h2>
+                    <form>
+                        <label for="create-lobby-name">Lobby Name</label>
+                        <input id="create-lobby-name" type="text">
+                        <label for="create-lobby-username">Your Playername</label>
+                        <input id="create-lobby-username" type="text">
+                    </form>
+                    <button class="config create-lobby">Create</button>
+                    <button class="config show-lobby-browser">Back To Lobby Browser</button>
+                </div>
+
+                <div id="lobby-screen">
+                    <h2 class="config lobby-title"></h2>
+                    <div class="container">
+                        <div id="lobby-players">
+                            <table>
+                                <tr>
+                                    <th>Players</th>
+                                    <th>Host</th>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="lobby-settings">
+                        </div>
+                        <div id="lobby-chat">
+                            <h3>Chat</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
 

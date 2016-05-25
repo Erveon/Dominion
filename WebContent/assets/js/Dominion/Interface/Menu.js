@@ -1,7 +1,4 @@
 Dominion.Menu = (function(Menu) {
-
-    var onlineApi;
-
     Menu = function() {
         this.setFullpageConfig();
         this.disableScroll();
@@ -67,49 +64,6 @@ Dominion.Menu = (function(Menu) {
     	};
     };
 
-    Menu.prototype.addLobby = function(id, name, players, joinable) {
-        var classes = joinable ? "lobby" : "lobby nojoin";
-        var btnMsg = joinable ? "Join" : "In progress";
-        var that = this;
-
-        $("#lobbies table").append(
-            "<tr data-id='" + id + "'>" +
-            "<td>" + name + "</td>" +
-            "<td>" + players + "</td>" +
-            "<td><button data-id='" + id + "' class='" + classes + "'>" + btnMsg + "</button></td>" +
-            "</tr>"
-        );
-
-        $('#' + id).on('click', that.joinLobby);
-    };
-
-    Menu.prototype.updateLobbies = function(id, name, players, joinable) {
-        var lobbies = $("#lobbies table tr");
-        $("#lobbies table tr").each(function () {
-            if($(this).attr("data-id") === id) {
-                $(this).eq(0).text(name);
-                $(this).eq(1).text(players);
-                $(this).eq(2).toggleClass(nojoin, !joinable);
-            }
-        });
-    };
-
-    Menu.prototype.clearLobbies = function() {
-        $("#lobbies table tr").each(function() {
-            if($(this).attr("data-id")) {
-                $(this).remove();
-            }
-        });
-    };
-
-    Menu.prototype.removeLobby = function(uuid) {
-        $("#lobbies table tr").each(function() {
-            if($(this).attr("data-id") && $(this).data("id").equals(uuid)) {
-                $(this).remove();
-            }
-        });
-    };
-
     Menu.prototype.addListeners = function() {
     	var that = this;
         $('#player-amount').on('change', function() {
@@ -121,7 +75,6 @@ Dominion.Menu = (function(Menu) {
         $('.start-game').on('click', function() {
         	that.startGame(that);
         });
-        $(".create-online-game").on('click', this.clearLobbies);
     };
 
     return Menu;

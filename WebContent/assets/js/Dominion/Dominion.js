@@ -5,7 +5,7 @@ var Dominion = (function() {
         var api = new Dominion.Api('//localhost:8080/Dominion/api?', true);
         api.doCall({'action': 'info'}, false);
         var menu = new Dominion.Menu();
-        var onlineApi = new Dominion.Online(menu);
+        var onlineApi = new Dominion.Online();
     }, gameObj = null;
 
     return {
