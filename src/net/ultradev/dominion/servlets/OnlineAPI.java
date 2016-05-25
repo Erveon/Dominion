@@ -192,11 +192,13 @@ public class OnlineAPI {
 	    		getGameServer().getUtils().debug("Unrecognized action in online game: " + json.getString("action"));
 	    		break;
     	}
-		if(response != null && isWorthSending(response)) {
-			game.broadcast(response);
-		} else if(response != null) {
-			// Notify the current player all is OK
-			send(session, response);
+		if(response != null) {
+			response.accumulate("type", "game");
+			if(isWorthSending(response)) {
+				game.broadcast(response);
+			} else {
+				send(session, response);
+			}
 		}
     }
     
