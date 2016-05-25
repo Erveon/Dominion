@@ -153,7 +153,7 @@ public class Dominion {
 						inputComplete("There's a player named " + conc + " already!");
 						break;
 					}
-					getGame().addPlayer(conc);
+					getGame().addPlayer(conc, null);
 					print("Added " + conc + " to the players!");
 					handleCommand(askInput(getInputMessage()));
 				} else {

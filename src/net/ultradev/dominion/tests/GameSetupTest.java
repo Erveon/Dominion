@@ -31,8 +31,8 @@ public class GameSetupTest {
 		board = game.getBoard();
 		config = game.getConfig();
 		
-		game.addPlayer("Bob");
-		game.addPlayer("Jos");
+		game.addPlayer("Bob", null);
+		game.addPlayer("Jos", null);
 	}
 	
 	@Test
@@ -50,7 +50,7 @@ public class GameSetupTest {
 			int gardensCount = board.getSupply(SupplyType.ACTION).getCards().get(gardens);
 			int amount = game.getPlayers().size() == 2 ? 8 : 12;
 			assertEquals("Garden count is not correct", amount, gardensCount);
-			game.addPlayer("Player " + speler);
+			game.addPlayer("Player " + speler, null);
 			board.addActionCard(gardens);
 		}
 	}

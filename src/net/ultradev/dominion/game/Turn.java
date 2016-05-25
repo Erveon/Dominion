@@ -11,7 +11,7 @@ import net.ultradev.dominion.game.player.Player.Pile;
 
 public class Turn {
 
-	public enum CardDestination { TOP_DECK, DECK, DISCARD }
+	public enum CardDestination { TOP_DECK, DECK, DISCARD, HAND }
 	public enum Phase { ACTION, BUY, CLEANUP };
 	private enum BuyResponse { CANTAFFORD, BOUGHT };
 	
@@ -25,7 +25,7 @@ public class Turn {
 	
 	Card activeCard;
 	Action activeAction;
-	Action masterAction; // For actions like multiple actions that need an overhead over all other actions
+	Action triggerAction; // For actions like multiple actions that need an overhead over all other actions
 
 	/**
 	 * Represents a turn for a player in a game
@@ -220,7 +220,7 @@ public class Turn {
 	 * @return The response
 	 */
 	public JSONObject buyCard(String cardid, boolean free) {
-		return buyCard(cardid, free, CardDestination.DECK);
+		return buyCard(cardid, free, CardDestination.DISCARD);
 	}
 	
 	public void gainCard(Player player, Card card, CardDestination destination) {
@@ -231,13 +231,17 @@ public class Turn {
 		switch(destination) {
 			case TOP_DECK:
 				// Shifts all other elements to the right
-				getPlayer().getPile(Pile.DECK).add(0, card);
+				player.getPile(Pile.DECK).add(0, card);
 				break;
 			case DECK:
-				getPlayer().getPile(Pile.DECK).add(card);
+				player.getPile(Pile.DECK).add(card);
 				break;
+			case HAND:
+				player.getPile(Pile.HAND).add(card);
+				break;
+			case DISCARD:
 			default:
-				getPlayer().getPile(Pile.DISCARD).add(card);
+				player.getPile(Pile.DISCARD).add(card);
 				break;
 		}
 		board.getSupply(board.getSupplyTypeForCard(card)).removeOne(card);
@@ -439,11 +443,11 @@ public class Turn {
 			if(action.isCompleted(this)) {
 				response = playActions(getActiveCard(), getActiveAction());
 				activeAction = null;
-				if(response.get("result").equals(ActionResult.DONE) && getMasterAction() != null) {
-					response = getMasterAction().finish(this);
+				if(response.get("result").equals(ActionResult.DONE) && getTriggerAction() != null) {
+					response = getTriggerAction().finish(this);
 					// If the overhead action is done, end it
 					if(response.get("result").equals(ActionResult.DONE)) {
-						setMasterAction(null);
+						setTriggerAction(null);
 					}
 				}
 			}
@@ -479,12 +483,12 @@ public class Turn {
 	 * Action that is currently controlling the turn, like throne room
 	 * @param action
 	 */
-	public void setMasterAction(Action action) {
-		this.masterAction = action;
+	public void setTriggerAction(Action action) {
+		this.triggerAction = action;
 	}
 	
-	public Action getMasterAction() {
-		return this.masterAction;
+	public Action getTriggerAction() {
+		return this.triggerAction;
 	}
 	
 	/**

@@ -28,6 +28,7 @@ public class Supply {
 		if(cards.containsKey(card)) {
 			int amount = cards.get(card) - 1;
 			if(amount >= 0) {
+				System.out.println("removed one from " + card.getName());
 				cards.put(card, amount);
 			}
 		}

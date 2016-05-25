@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.websocket.Session;
+
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.game.Game;
 import net.ultradev.dominion.game.card.Card;
@@ -22,6 +24,8 @@ public class Player {
 	private int rounds;
 	private Game g;
 	
+	private Session session;
+	
 	/**
 	 * An object that represents the player in a game
 	 * @param game The game the player will be playing in
@@ -34,6 +38,22 @@ public class Player {
 		this.deck = new ArrayList<>();
 		this.hand = new ArrayList<>();
 		this.rounds = 0;
+	}
+	
+	/**
+	 * The online equivalent of a player
+	 */
+	public Player(Game game, String displayname, Session session) {
+		this(game, displayname);
+		setSession(session);
+	}
+	
+	public void setSession(Session session) {
+		this.session = session;
+	}
+	
+	public Session getSession() {
+		return session;
 	}
 	
 	/**

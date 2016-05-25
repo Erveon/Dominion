@@ -6,9 +6,9 @@ Dominion.Game = (function(Game) {
         this.gameData = null;
         this.Interface = null;
         this.playingAction = false;
-        this.isMp = false;
         this.returnToSamePlayer = true;
         this.cardsSelected = 0;
+        this.hasSkippedThisTurn = false;
         this.initGame();
         gameObj = this;
     };
@@ -16,7 +16,7 @@ Dominion.Game = (function(Game) {
     Game.prototype.startGame = function (players, cardset) {
         var that = this;
         var playerString = this.constructPlayerString(players);
-        this.Api.doCall({'action': 'setup', 'cardset': cardset, 'players': playerString}, this.isMp,
+        this.Api.doCall({'action': 'setup', 'cardset': cardset, 'players': playerString},
             function() {
                 console.log("The game has been started.");
                 that.Interface = new Dominion.Interface();
@@ -46,7 +46,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.buyCard = function(card) {
         var that = this;
-        this.Api.doCall({'action': 'buycard', 'card': card}, this.isMp,
+        this.Api.doCall({'action': 'buycard', 'card': card.toLowerCase().replace(/ /g, "_")},
             function() {
                 console.log("Card has been purchased.");
                 that.updateGameInfo();
@@ -55,17 +55,18 @@ Dominion.Game = (function(Game) {
     };
 
     Game.prototype.playCard = function(card) {
-        var cardToPlay = card.children().first().children().text();
+        var cardToPlay = card.children().first().children().text().toLowerCase().replace(/ /g, "_");
         var that = this;
 
-        this.Api.doCall({'action': 'playcard', 'card': cardToPlay}, this.isMp,
+        this.Api.doCall({'action': 'playcard', 'card': cardToPlay},
             function(data) {
                 console.log("CARD PLAY RESPONSE: ", data);
                 if (data.response == "OK") {
                     that.Interface.addCardToField(card);
                     if(data.result !== "DONE") {
                         that.playingAction = true;
-                        that.Interface.showCardSelector(data);
+                        that.updateGameInfo();
+                        that.Interface.showCardSelector(data, cardToPlay);
                     } else {
                         that.updateGameInfo();
                     }
@@ -76,12 +77,12 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.updateGameInfo = function (callback) {
         var that = this;
-        this.Api.doCall({'action': 'info'}, this.isMp,
+        this.Api.doCall({'action': 'info'},
             function (data) {
                 that.gameData = data;
                 that.Interface.setGameData(that.gameData);
-                that.handlePhaseSkip();
                 that.Interface.refreshUI();
+                that.handlePhaseSkip();
 
                 if(callback) {
                     callback();
@@ -90,7 +91,7 @@ Dominion.Game = (function(Game) {
         );
     };
 
-    Game.prototype.checkHandForActions = function () {
+    Game.prototype.handContainsActions = function () {
         var currentPlayerHand = this.fetchCurrentPlayerHand();
         var containsActions = false;
 
@@ -117,21 +118,9 @@ Dominion.Game = (function(Game) {
         return currentPlayerHand;
     };
 
-    Game.prototype.handlePhaseSkip = function () {
-        /*if(this.gameData.game.turn.phase === "ACTION") {
-            if(this.checkHandForActions() === false && !this.playingAction) {
-                this.Interface.handlePhaseEnd();
-            }
-
-            if(this.gameData.game.turn.actionsleft === 0 && !this.playingAction) {
-                this.Interface.handlePhaseEnd();
-            }
-        }*/
-    };
-
     Game.prototype.endPhase = function () {
         var that = this;
-        this.Api.doCall({'action': 'endphase'}, this.isMp,
+        this.Api.doCall({'action': 'endphase'},
             function (data) {
                 console.log("Phase Ended!");
                 that.updateGameInfo();
@@ -145,7 +134,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.selectCard = function(card, element) {
         var that = this;
-        this.Api.doCall({'action': 'selectcard', 'card': card}, this.isMP,
+        this.Api.doCall({'action': 'selectcard', 'card': card.replace(/ /g, "_")},
             function (data) {
                 console.log('Card Selected: ', card);
                 console.log('Card Select Response', data);
@@ -157,8 +146,28 @@ Dominion.Game = (function(Game) {
         );
     };
 
+    Game.prototype.handlePhaseSkip = function() {
+        if (this.gameData.game.turn.phase === "ACTION") {
+            if(this.handContainsActions() === false && this.playingAction === false) {
+                if(this.hasSkippedThisTurn === false) {
+                    this.Interface.handlePhaseEnd();
+                    this.hasSkippedThisTurn = true;
+                }
+            } else if(this.gameData.game.turn.actionsleft === 0) {
+                if(this.hasSkippedThisTurn === false) {
+                    this.Interface.handlePhaseEnd();
+                    this.hasSkippedThisTurn = true;
+                }
+            }
+        }
+    };
+
     Game.prototype.stopAction = function() {
-        this.Api.doCall({'action': 'stopaction'}, this.isMP);
+        this.Api.doCall({'action': 'stopaction'},
+            function() {
+                this.playingAction = false;
+            }
+        );
     };
 
     Game.prototype.handleSelect = function(data, that) {
@@ -166,19 +175,16 @@ Dominion.Game = (function(Game) {
 
         if (data.result === "DONE") {
             if (this.returnToSamePlayer === true) {
+                this.stopAction();
                 $('.overlay').slideUp(function() {
                     $('.overlay').remove();
                 });
-                that.playingAction = false;
-                that.handlePhaseSkip();
                 this.returnToSamePlayer = false;
             } else {
                 that.Interface.passTurn(that.gameData.game.turn.player, function() {
                     $('.overlay').slideUp(function() {
                         $('.overlay').remove();
                     });
-                    that.playingAction = false;
-                    that.handlePhaseSkip();
                 });
             }
 
@@ -193,7 +199,7 @@ Dominion.Game = (function(Game) {
 
     Game.prototype.initGame = function() {
         var that = this;
-        this.Api.doCall({'action': 'create'}, this.isMp,
+        this.Api.doCall({'action': 'create'},
             function() {
                 console.log('The game has been created.');
                 that.startGame(that.players, that.cardSet);

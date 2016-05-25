@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.websocket.Session;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import net.sf.json.JSONObject;
 import net.ultradev.dominion.GameServer;
 import net.ultradev.dominion.game.Turn.Phase;
@@ -15,7 +19,6 @@ public abstract class Game {
 
 	public static enum State { SETUP, STARTED };
 	
-	private List<Player> players;
 	private State state;
 	
 	//In case there is a tie, this will determine who wins (least amount of turns)
@@ -29,7 +32,6 @@ public abstract class Game {
 	public Game(GameServer gs) {
 		this.gs = gs;
 		this.state = State.SETUP;
-		this.players = new ArrayList<>();
 		this.config = new GameConfig(this);
 		this.board = new Board(this);
 	}
@@ -71,9 +73,7 @@ public abstract class Game {
 		getPlayers().forEach(Player::setup);
 	}
 	
-	public List<Player> getPlayers() {
-		return players;
-	}
+	public abstract List<Player> getPlayers();
 	
 	public Player getWhoStarted() {
 		return this.started;
@@ -150,12 +150,20 @@ public abstract class Game {
 			.accumulate("players", getPlayersAsJson());
 	}
 	
-	public void addPlayer(String name) {
-		if(getPlayerByName(name) == null) {
-			getPlayers().add(new Player(this, name));
-			getGameServer().getUtils().debug("A player named " + name + " has been added to the game");
+	public String getValidNameFor(String name) {
+		while(getPlayerByName(name) != null) {
+			if(Character.isDigit(name.charAt(name.length() - 1))) {
+				char num = name.charAt(name.length() - 1);
+				int newNum = Integer.parseInt(num + "") + 1;
+				name = name.substring(0, name.length() - 1) + newNum;
+			} else {
+				name = name + "2";
+			}
 		}
+		return name;
 	}
+	
+	public abstract void addPlayer(String name, @Nullable Session session);
 	
 	public Player getPlayerByName(String name) {
 		for(Player p : getPlayers()) {
@@ -168,7 +176,7 @@ public abstract class Game {
 	
 	public List<JSONObject> getPlayersAsJson() {
 		List<JSONObject> objs = new ArrayList<>();
-		players.forEach(player -> objs.add(player.getAsJson()));
+		getPlayers().forEach(player -> objs.add(player.getAsJson()));
 		return objs;
 	}
 	
@@ -178,5 +186,7 @@ public abstract class Game {
 				.accumulate("board", getBoard().getAsJson())
 				.accumulate("turn", getTurn() == null ? "null" : getTurn().getAsJson());
 	}
+	
+	public abstract boolean isOnline();
 
 }

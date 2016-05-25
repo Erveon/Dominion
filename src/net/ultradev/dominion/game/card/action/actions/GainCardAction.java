@@ -1,6 +1,7 @@
 package net.ultradev.dominion.game.card.action.actions;
 
 import net.sf.json.JSONObject;
+import net.ultradev.dominion.game.Board;
 import net.ultradev.dominion.game.Turn;
 import net.ultradev.dominion.game.Turn.CardDestination;
 import net.ultradev.dominion.game.card.Card;
@@ -47,11 +48,11 @@ public class GainCardAction extends Action {
 	public JSONObject play(Turn turn, Card card) {
 		if(this.card != null) {
 			if(getTarget().equals(ActionTarget.SELF)) {
-				turn.buyCard(card.getName(), true, getDestinaton());
+				turn.buyCard(this.card.getName(), true, getDestinaton());
 			} else if(getTarget().equals(ActionTarget.OTHERS)) {
 				for(Player p : turn.getGame().getPlayers()) {
 					if(!p.equals(turn.getPlayer())) {
-						turn.gainCard(p, card, getDestinaton());
+						turn.gainCard(p, this.card, getDestinaton());
 					}
 				}
 			}
@@ -66,7 +67,9 @@ public class GainCardAction extends Action {
 					.accumulate("type", type == null ? "ANY" : type)
 					.accumulate("player", turn.getPlayer().getDisplayname())
 					.accumulate("cost", getCost(turn.getPlayer()))
-					.accumulate("message", getDescripton());
+					.accumulate("message", getDescripton())
+					.accumulate("min", 0)
+					.accumulate("max", 0);
 		}
 	}
 	
@@ -75,14 +78,13 @@ public class GainCardAction extends Action {
 		if(!isSelectable(card)) {
 			return turn.getGame().getGameServer().getGameManager().getInvalid("Can't select that card");
 		} else if(card.getCost() <= getCost(turn.getPlayer())) {
-			turn.buyCard(card.getName(), true, getDestinaton());
-			if(hasTrigger(turn.getPlayer())) {
-				return turn.getActiveAction().finish(turn);
-			} else {
-				return new JSONObject().accumulate("response", "OK")
-									   .accumulate("result", ActionResult.DONE);
+			Board board = turn.getGame().getBoard();
+			if(board.getSupply(board.getSupplyTypeForCard(card)).getCards().get(card) <= 0) {
+				return turn.getGame().getGameServer().getGameManager().getInvalid("No supply left for that card");
 			}
-		}			
+			turn.buyCard(card.getName(), true, getDestinaton());
+			return turn.stopAction();
+		}
 		return turn.getGame().getGameServer().getGameManager().getInvalid("Card is too expensive");
 	}
 	

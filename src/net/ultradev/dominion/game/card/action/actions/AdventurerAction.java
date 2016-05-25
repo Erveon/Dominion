@@ -43,7 +43,11 @@ public class AdventurerAction extends Action {
 				.accumulate("result", ActionResult.REVEAL)
 				.accumulate("reveal", new Revealer(toReveal).get())
 				.accumulate("player", turn.getPlayer().getDisplayname())
-				.accumulate("force", false);
+				.accumulate("force", false)
+				.accumulate("min", 0)
+				.accumulate("max", 0)
+				.accumulate("type", "ALL")
+				.accumulate("message", "Reveal " + turn.getPlayer().getDisplayname() + "'s card(s) to everyone");
 	}
 	
 	public void checkDeck(Player p, List<Card> toReveal, List<Card> treasures) {
@@ -57,11 +61,8 @@ public class AdventurerAction extends Action {
 				}
 			}
 		}
-		int amount = toReveal.size() + treasures.size();
-		// Remove the cards to reveal from the deck
-		for(int i = 0; i < amount; i++) {
-			p.getPile(Pile.DECK).remove(0);
-		}
+		p.getPile(Pile.DECK).removeAll(toReveal);
+		p.getPile(Pile.DECK).removeAll(treasures);
 	}
 
 }

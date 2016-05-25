@@ -11,11 +11,13 @@ public class GameConfig {
 	public enum CardSet { TEST, FIRSTGAME, BIGMONEY, INTERACTION, SIZEDISTORTION, VILLAGESQUARE }
 	public enum Option { ADDCARD, REMOVECARD, SETCARDSET };
 	
+	private CardSet cardset;
 	private List<String> actionCardTypes;
 	private Game game;
 	
 	public GameConfig(Game game) {
 		this.game = game;
+		this.cardset = CardSet.FIRSTGAME;
 		this.actionCardTypes = new ArrayList<>();
 	}
 	
@@ -36,6 +38,7 @@ public class GameConfig {
 		} catch(Exception ignored) { 
 			set = CardSet.FIRSTGAME;
 		}
+		this.cardset = set;
 		switch(set) {
 			case TEST:
 				addActionCards("chapel", 
@@ -112,6 +115,10 @@ public class GameConfig {
 			default:
 				break;
 		}
+	}
+	
+	public CardSet getCardset() {
+		return cardset;
 	}
 	
 	public void addActionCards(String... cards) {

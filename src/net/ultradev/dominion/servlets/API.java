@@ -46,7 +46,7 @@ public class API extends HttpServlet {
     }
     
     public void init() throws ServletException {
-        this.gs = new GameServer();
+        this.gs = GameServer.get();
     }
     
     public GameServer getGameServer() {
@@ -60,21 +60,13 @@ public class API extends HttpServlet {
 		res.setContentType("application/json");
 		res.setCharacterEncoding("utf-8");
 		
-		if(req == null || req.getParameter("action") == null || req.getParameter("type") == null) {
-			res.getWriter().append(getGameServer().getGameManager().getInvalid("Need a type & action").toString());
+		if(req == null || req.getParameter("action") == null) {
+			res.getWriter().append(getGameServer().getGameManager().getInvalid("Need a type").toString());
 			return;
 		}
 		
-		String type = req.getParameter("type").toLowerCase();
-		if(type.equals("local")) {
-			LocalGame g = getGameServer().getGameManager().getGame(req.getSession());
-			res.getWriter().append(getGameServer().getGameManager().handleLocalRequest(getParameters(req), g, req.getSession()).toString());
-			return;
-		} else if(type.equals("mp")) {
-			res.getWriter().append(getGameServer().getGameManager().getInvalid("Multiplayer is unsupported at this time").toString());
-		}
-		
-		res.getWriter().append(getGameServer().getGameManager().getInvalid("Unhandled game type: " + type).toString());
+		LocalGame g = getGameServer().getGameManager().getLocalGame(req.getSession());
+		res.getWriter().append(getGameServer().getGameManager().handleLocalRequest(getParameters(req), g, req.getSession()).toString());
 	}
 	
 	public Map<String, String> getParameters(HttpServletRequest req) {

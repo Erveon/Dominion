@@ -15,7 +15,7 @@ Dominion.Interface = (function(Interface) {
     Interface.prototype.updatePlayerDisplayNames = function () {
         var data = this.gameData;
         $('.players').empty();
-        $('.players').append('Players&nbsp;');
+        $('.players').append('<p>Players</p>');
         for (var player in data.game.players) {
             if (data.game.turn.player === data.game.players[player].displayname){
                 $('.players').append("<p class='player active'>" + data.game.players[player].displayname + "</p>");
@@ -45,6 +45,8 @@ Dominion.Interface = (function(Interface) {
     Interface.prototype.updateControlListeners = function () {
         var that = this;
 
+        this.handlePlayTreasuresVisibility();
+
         $('#controls .playCards').on('click', function(e) {
             e.preventDefault();
             that.flushPlayBuffer();
@@ -53,6 +55,12 @@ Dominion.Interface = (function(Interface) {
         $('#controls .endPhase').on('click', function(e) {
             e.preventDefault();
             that.handlePhaseEnd();
+            e.stopImmediatePropagation();
+        });
+
+        $("#controls .playTreasures").on("click", function(e) {
+            e.preventDefault();
+            that.handlePlayTreasures();
             e.stopImmediatePropagation();
         });
 
@@ -119,6 +127,24 @@ Dominion.Interface = (function(Interface) {
             }
 
             e.stopImmediatePropagation();
+        });
+    };
+
+    Interface.prototype.handlePlayTreasuresVisibility = function() {
+        if (this.gameData.game.turn.phase === "ACTION") {
+            $("#controls .playTreasures").hide();
+        } else {
+            $("#controls .playTreasures").show();
+        }
+    };
+
+    Interface.prototype.handlePlayTreasures = function() {
+        var currentHand = $('#handPile .card');
+
+        currentHand.each(function() {
+            if($(this).hasClass('treasure')) {
+                gameObj.playCard($(this));
+            }
         });
     };
 
@@ -222,6 +248,27 @@ Dominion.Interface = (function(Interface) {
             $('.tooltip').remove();
             e.stopImmediatePropagation();
         });
+
+        $(".cursePile").hover(function (e) {
+            $('body').append("<div class='tooltip'></div>");
+            var cardname = $(this).children('.wideCard-title').text().toLowerCase();
+            var pos = $(this).position();
+            var cards = that.gameData.game.board.curse;
+            var cardID;
+
+            for (var card in cards) {
+                if(cards[card].name === cardname) {
+                    cardID = card;
+                }
+            }
+
+            that.addCard(cardID, cards, $('.tooltip'));
+            $(".tooltip").css({left: pos.left + 5  +'px', top: pos.top + 84 +'px'});
+            e.stopImmediatePropagation();
+        }, function (e) {
+            $('.tooltip').remove();
+            e.stopImmediatePropagation();
+        });
     };
 
     Interface.prototype.handleListenerAccess = function () {
@@ -245,8 +292,10 @@ Dominion.Interface = (function(Interface) {
                 that.handCarousel.currentTab = 0;
                 $('#playedCards').empty();
                 gameObj.endPhase();
+                gameObj.hasSkippedThisTurn = false;
             });
         } else {
+            gameObj.stopAction();
             gameObj.endPhase();
         }
     };
@@ -273,15 +322,22 @@ Dominion.Interface = (function(Interface) {
         var cardName = card.children().first().children().text();
         var html = "<li class='miniCard'>";
         html += "<p class='miniCard-title'>" + cardName + "</p>";
-        html += "<img src='assets/images/cards/" + cardName + ".jpg' width='100%'></li>";
+        html += "<img src='assets/images/cards/" + cardName.replace(/ /g, "_") + ".jpg' width='100%'></li>";
         $("#playedCards").append($(html));
         card.remove();
     };
 
-    Interface.prototype.showCardSelector = function(response) {
+    Interface.prototype.showCardSelector = function(response, originCardName) {
         var that = this;
         if (response.player === this.gameData.game.turn.player) {
             this.determineAction(response);
+            var originCardRemoved = false;
+            $("#selectorPile .card").each(function() {
+                if($(this).children().first().children().text().toLowerCase().replace(/ /g, "_") === originCardName && originCardRemoved === false) {
+                    $(this).remove();
+                    originCardRemoved = true;
+                }
+            });
             $('.overlay').slideDown();
             gameObj.returnToSamePlayer = true;
         } else {
@@ -327,7 +383,12 @@ Dominion.Interface = (function(Interface) {
         var sourceArray = response.reveal;
         var message = response.message;
         var force = response.force;
-        this.showActionOverlay(sourceArray, message, force);
+
+        if(response.reveal.length !== 0) {
+            this.showActionOverlay(sourceArray, message, force);
+        } else {
+            gameObj.stopAction();
+        }
     };
 
     Interface.prototype.showActionOverlay = function(sourceArray, message, force, type) {
@@ -366,7 +427,7 @@ Dominion.Interface = (function(Interface) {
 
         for(var array in boardArray) {
             for(var card in boardArray[array]) {
-                if(boardArray[array][card].cost <= maxCost) {
+                if(boardArray[array][card].cost <= maxCost && boardArray[array][card].amount > 0) {
                     buyableCards.push(boardArray[array][card]);
                 }
             }
@@ -402,7 +463,6 @@ Dominion.Interface = (function(Interface) {
                             gameObj.updateGameInfo();
                             $('.overlay').remove();
                         });
-                        gameObj.playingAction = false;
                     });
                 }
 
@@ -434,6 +494,8 @@ Dominion.Interface = (function(Interface) {
         $('body').append(html);
         $('.continue').on('click', function(e) {
             e.preventDefault();
+            gameObj.stopAction();
+            gameObj.handlePhaseSkip();
             endAction();
         });
         $('.overlay').slideDown();
@@ -460,7 +522,7 @@ Dominion.Interface = (function(Interface) {
         cardHTML += "<div class='card-header'>";
         cardHTML += "<p class='card-title'>" + cardname.replace(/_/g, " ") + "</p></div>";
         cardHTML += "<div class='card-body'>";
-        cardHTML += "<img src='assets/images/cards/" + hand[card].name + ".jpg' alt='" + hand[card].name + "' width='100%'>";
+        cardHTML += "<img src='assets/images/cards/" + cardname.replace(/ /g, "_") + ".jpg' alt='" + hand[card].name + "' width='100%'>";
         cardHTML += "<p class='card-description'>" + hand[card].description + "</p></div>";
         cardHTML += "<div class='card-info'>";
         cardHTML += "<p class='card-cost'>" + hand[card].cost + "</p>";
@@ -531,11 +593,13 @@ Dominion.Interface = (function(Interface) {
         $("#mainPile .wideCard").children('.dim').remove();
         $("#treasurePile .wideCard").children('.dim').remove();
         $("#victoryPile .wideCard").children('.dim').remove();
-        $(".cursePile").children('.dim').remove();
+        $("#trashCursePile .wideCard").children('.dim').remove();
+        $("#discardDeckPile .wideCard").children('.dim').remove();
         $("#mainPile .wideCard").append("<div class='dim'></div>");
         $("#treasurePile .wideCard").append("<div class='dim'></div>");
         $("#victoryPile .wideCard").append("<div class='dim'></div>");
-        $(".cursePile").append("<div class='dim'></div>");
+        $("#trashCursePile .wideCard").append("<div class='dim'></div>");
+        $("#discardDeckPile .wideCard").append("<div class='dim'></div>");
     };
 
     Interface.prototype.handleActiveMarketCards = function() {
@@ -559,6 +623,7 @@ Dominion.Interface = (function(Interface) {
         this.showAvailibleCards(availibleCoins, actionPile, actionDOM);
         this.showAvailibleCards(availibleCoins, treasurePile, treasureDOM);
         this.showAvailibleCards(availibleCoins, victoryPile, victoryDOM);
+        $('.cursePile .dim').remove();
     };
 
     Interface.prototype.showAvailibleCards = function(availibleCoins, pile, cardDOM) {
@@ -584,10 +649,12 @@ Dominion.Interface = (function(Interface) {
         switch (data.game.turn.phase) {
             case 'ACTION':
                 $('.actionDisp').addClass('activePhase');
+                $('.currPhase').text("Action");
                 $('#controls .endPhase').text('End Action Phase');
                 break;
             case 'BUY':
                 $('.buyDisp').addClass('activePhase');
+                $('.currPhase').text("Buy");
                 $('#controls .endPhase').text('End Turn');
                 break;
         }

@@ -35,7 +35,29 @@
           </execution>
         </executions>
         <configuration>
-          <finalName>${artifactId}-${version}</finalName>
+          <finalName>${project.artifactId}-${project.version}</finalName>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <id>make-a-jar</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>net.ultradev.dominion.Dominion</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
     </plugins>

@@ -3,26 +3,84 @@
     <head>
         <meta charset="UTF-8">
         <title>Dominion</title>
+        <!-- Stylesheets -->
 
+        <link rel="stylesheet" type="text/css" href="library/css/normalize/normalize.css">
+        <link rel="stylesheet" type="text/css" href="library/css/material-icons/material-icons.css">
+        <link rel="stylesheet" type="text/css" href="library/css/jquery/fullpage/jquery.fullpage.min.css">
         <link rel="stylesheet" type="text/css" href="assets/css/main.min.css">
     </head>
 
     <body>
-        <main id="fullpage">
+        <div id="fullpage">
+            <!-- Online multiplayer screen -->
             <div class="fp-section headroom">
-                <h2 class="config">Pick a Lobby</h1>
+                <div id="lobby-browser" class="multiconfig">
+                    <h2 class="config">Join or create a game</h2>
+                    <h3 class="lobbymessage"></h3>
+                    <div id="lobbies">
+                        <table>
+                            <tr>
+                                <th>Game</th>
+                                <th>Players</th>
+                                <th>Status</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <button class="config show-lobby-creator">Create</button>
+                    <button class="config page-down">Back To Menu</button>
+                </div>
 
-                <button class="config page-down">Back To Menu</button>
+                <div id="join-lobby" class="multiconfig">
+                    <h2 class="config">Enter your username</h2>
+                    <input id="connecting-username" type='text'>
+                    <button class="config join-lobby">Join</button>
+                    <button class="config show-lobby-browser">Back To Lobby Browser</button>
+                </div>
+
+                <div id="lobby-creator" class="multiconfig">
+                    <h2 class="config">Create a lobby</h2>
+                    <form>
+                        <label for="create-lobby-name">Lobby Name</label>
+                        <input id="create-lobby-name" type="text">
+                        <label for="create-lobby-username">Your Playername</label>
+                        <input id="create-lobby-username" type="text">
+                    </form>
+                    <button class="config create-lobby">Create</button>
+                    <button class="config show-lobby-browser">Back To Lobby Browser</button>
+                </div>
+
+                <div id="lobby-screen" class="multiconfig">
+                    <h2 class="config lobby-title"></h2>
+                    <div class="container">
+                        <div id="lobby-players">
+                            <table>
+                                <tr>
+                                    <th>Players</th>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="lobby-settings">
+                        </div>
+                        <div id="lobby-chat">
+                        </div>
+                        <input id='message-bar' type="text" placeholder='Type a message here.'>
+                    </div>
+                    <button class="config leave-lobby">Leave Lobby</button>
+                </div>
             </div>
 
+            <!-- Landing screen -->
             <div class="fp-section active headroom">
                 <h1 class="config">Dominion</h1>
 
-                <button class="config page-up">Play Online</button>
+                <button class="config page-up play-online">Play Online</button>
                 <button class="config page-down">Play Locally</button>
             </div>
 
+            <!-- Local multiplayer screen -->
             <div class="fp-section">
+                <!-- Local game configuration screen -->
                 <div class="headroom" id="config">
                     <h2 class="config">Game Configuration</h2>
 
@@ -30,7 +88,7 @@
                         <div class="form-column">
                             <label for="player-amount">Players</label>
                             <select name="player-amount" id="player-amount">
-                                <option value="2" active>2</option>
+                                <option value="2" selected>2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                             </select>
@@ -46,11 +104,11 @@
                         <div class="form-column">
                             <label for="card-set">Card Set</label>
                             <select name="card-set" id="card-set">
-                                <option value="firstgame" active>First Game</option>
-                                <option value="bigmoney" active>Big Money</option>
-                                <option value="interaction" active>Interaction</option>
-                                <option value="sizedistortion" active>Size Distortion</option>
-                                <option value="villagesquare" active>Village Square</option>
+                                <option value="firstgame" selected>First Game</option>
+                                <option value="bigmoney">Big Money</option>
+                                <option value="interaction">Interaction</option>
+                                <option value="sizedistortion">Size Distortion</option>
+                                <option value="villagesquare">Village Square</option>
                             </select>
                         </div>
                     </form>
@@ -59,6 +117,7 @@
                     <button class="config page-up">Back To Menu</button>
                 </div>
 
+                <!-- Local game screen -->
                 <div id="game">
                     <div class='overlay'></div>
                     <div id="header">
@@ -239,11 +298,13 @@
                                 <div class="actionBtn players">
                                 </div>
                                 <div class="actionBtn phase">
-                                    Phase
-                                    <div class="circle buyDisp"></div>
+                                    <p>Phase</p>
                                     <div class="circle actionDisp"></div>
+                                    <div class="circle buyDisp"></div>
+                                    <p class="currPhase"></p>
                                 </div>
                                 <a href="" class="actionBtn mainAction endPhase">End Phase</a>
+                                <a href="" class="actionBtn mainAction playTreasures">Play Treasures</a>
                                 <a href="" class="actionBtn mainAction playCards">Play Cards</a>
                             </div>
                         </div>
@@ -258,16 +319,17 @@
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
 
-        <script type="text/javascript" src="library/jquery/jquery-2.2.2.min.js"></script>
-        <script type="text/javascript" src="library/fullpage/jquery.fullpage.min.js"></script>
-        <script type="text/javascript" src="assets/js/dominion.js"></script>
-        <script type="text/javascript" src="assets/js/dominionApi.js"></script>
-        <script type="text/javascript" src="assets/js/dominionInterface.js"></script>
-        <script type="text/javascript" src="assets/js/dominionGame.js"></script>
-        <script type="text/javascript" src="assets/js/dominionMenu.js"></script>
-        <script type="text/javascript" src="assets/js/dominionInterfaceCarousel.js"></script>
+        <script type="text/javascript" src="library/js/jquery/jquery-2.2.2.min.js"></script>
+        <script type="text/javascript" src="library/js/jquery/fullpage/jquery.fullpage.min.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Dominion.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Game/Api.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Game/Online.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Game/Game.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Interface/Menu.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Interface/Interface.js"></script>
+        <script type="text/javascript" src="assets/js/Dominion/Interface/Carousel.js"></script>
         <script type="text/javascript" src="assets/js/main.js"></script>
     </body>
 </html>

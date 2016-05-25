@@ -27,8 +27,8 @@ public class EngineTest {
 		game = new LocalGame(gameServer);
 		board = game.getBoard();
 		gameConfig = game.getConfig();
-		game.addPlayer("Bob");
-		game.addPlayer("Jos");
+		game.addPlayer("Bob", null);
+		game.addPlayer("Jos", null);
 		gameConfig.setCardset("test");
 		game.start();
 	}
@@ -53,26 +53,43 @@ public class EngineTest {
 			}
 			assertTrue("Game doesn't end when there are " + amountOfCards + " provinces removed", board.hasEndCondition());
 			String newPlayer = "player " + players;
-			game.addPlayer(newPlayer);
+			game.addPlayer(newPlayer, null);
 			board.initSupplies();
 		}
 	}
-	
+
 	@Test
-	public void testEndConditonThreeEmptyPiles() {
+	public void testEndConditionThreeEmptyPiles() {
+		// since we're testing with 2 players, there will be 10 of these cards
 		Card curse = gameServer.getCardManager().get("curse");
-		Card estate = gameServer.getCardManager().get("estate");
-		Card duchy = gameServer.getCardManager().get("duchy");
-		for(int players = 2; players <= 4; players++) {
-			int playerCount = game.getPlayers().size();
-			int amountOfCards = playerCount == 2 ? 8 : 12;
-			for(int i = 0; i < amountOfCards; i++) {
-				board.getSupply(SupplyType.CURSE).removeOne(gameServer.getCardManager().getCards().get(curse));
-				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().getCards().get(estate));
-				board.getSupply(SupplyType.VICTORY).removeOne(gameServer.getCardManager().getCards().get(duchy));
-				System.out.println(board.getSupply(SupplyType.CURSE).getCards().get(curse));
-			}
-			assertTrue("Game doesn't end when there are " + amountOfCards + " removed from 3 piles", board.hasEndCondition());
+		Card cellar = gameServer.getCardManager().get("cellar");
+		Card moat = gameServer.getCardManager().get("moat");
+		for(int i = 0; i < 10; i++) {
+			board.getSupply(SupplyType.CURSE).removeOne(curse);
+			board.getSupply(SupplyType.ACTION).removeOne(cellar);
+			board.getSupply(SupplyType.ACTION).removeOne(moat);
 		}
+		assertTrue("game doesn't end when there are 3 empty piles", board.hasEndCondition());
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

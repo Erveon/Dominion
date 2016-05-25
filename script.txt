@@ -1,0 +1,100 @@
+CREATE DATABASE IF NOT EXISTS Dominion;
+
+USE Dominion;
+
+CREATE TABLE IF NOT EXISTS Cards
+(card_id		VARCHAR(30) NOT NULL,
+ description	MEDIUMTEXT,
+ cost 			TINYINT DEFAULT 0,
+ PRIMARY KEY (card_id));
+
+CREATE TABLE IF NOT EXISTS Actions
+(card_id		VARCHAR(30) NOT NULL,
+ action_id		VARCHAR(30) NOT NULL,
+ description	MEDIUMTEXT,
+ params 		VARCHAR(50),
+ PRIMARY KEY (card_id, action_id, params),
+ FOREIGN KEY (card_id) REFERENCES Cards(card_id));
+ 
+CREATE TABLE IF NOT EXISTS ActionCallbacks
+(card_id			VARCHAR(30) NOT NULL,
+ action_id			VARCHAR(30) NOT NULL,
+ callback_action	VARCHAR(30) NOT NULL,
+ description		MEDIUMTEXT,
+ params 			VARCHAR(50),
+ PRIMARY KEY (card_id, action_id, callback_action, params),
+ FOREIGN KEY (card_id) REFERENCES Actions(card_id));
+
+INSERT INTO Cards VALUES ('chapel', 'Trash up to 4 cards from your hand', 2);
+INSERT INTO Cards VALUES ('village', '+1 card, +2 actions', 3);
+INSERT INTO Cards VALUES ('woodcutter', '+1 buy, +2 Coins', 3);
+INSERT INTO Cards VALUES ('moneylender', 'Trash a copper from your hand. If you do, +3 coins', 3);
+INSERT INTO Cards VALUES ('cellar', '+1 action. Discard any number of cards, +1 Card per card discarded', 2);
+INSERT INTO Cards VALUES ('market', '+1 card, +1 action, +1 buy, +1 coin', 5);
+INSERT INTO Cards VALUES ('militia', '+2 coins, each other player discards down to 3 cards in his hand', 4);
+INSERT INTO Cards VALUES ('mine', 'Trash a treasure card from your hand. Gain a treasure card costing up to 3 coins more, put it into your hand', 5);
+INSERT INTO Cards VALUES ('moat', '+2 Cards. When another player plays an attack card, you may reveal this from your hand. If you do, you are unaffected by that attack', 2);
+INSERT INTO Cards VALUES ('remodel', 'Trash a card from your hand. Gain a card costing up to 2 coins more than the trashed card', 4);
+INSERT INTO Cards VALUES ('smithy', '+3 cards', 4);
+INSERT INTO Cards VALUES ('workshop', 'Gain a card costing up to 4 coins', 3);
+INSERT INTO Cards VALUES ('adventurer', 'Reveal cards from your deck until you reveal 2 treasure cards. Put those treasure cards into your hand and discard the other revealed cards', 6);
+INSERT INTO Cards VALUES ('bureaucrat', 'Gain a silver card, put it on top of your deck. Each other player reveals a victory card from his hand and puts it on his deck', 4);
+INSERT INTO Cards VALUES ('chancellor', '+2 coins, you immediately put your deck into your discard pile', 3);
+INSERT INTO Cards VALUES ('feast', 'Trash this card. Gain a card costing up to 5 coins', 4);
+INSERT INTO Cards VALUES ('laboratory', '+2 cards, +1 action', 5);
+INSERT INTO Cards VALUES ('throne_room', 'Choose an action card in your hand. Play it twice', 4);
+INSERT INTO Cards VALUES ('council_room', '+4 cards, +1 buy, each other player draws a card', 5);
+INSERT INTO Cards VALUES ('festival', '+2 actions, +1 buy, +2 coins', 5);
+INSERT INTO Cards VALUES ('witch', '+2 cards, each other player draws a curse card', 5);
+INSERT INTO Cards VALUES ('library', 'Draw until you have 7 cards in hand. You may set aside any action cards drawn this way, as you draw them, discard the set aside cards after you finish drawing', 5);
+INSERT INTO Cards VALUES ('thief', 'Each other player reveals the top 2 cards of his deck. If they revealed any treasure cards, you gain all of those cards. They discard the other revealed cards', 4);
+INSERT INTO Cards VALUES ('spy', '+1 card, +1 action, each player (including you) reveals the top card of his deck and either discards it or puts it back, your choice', 4);
+
+INSERT INTO Actions VALUES ('chapel', 'trash_range', 'Trash up to 4 cards from your hand', 'min=0;max=4');
+INSERT INTO Actions VALUES ('village', 'draw_cards', 'Draw 1 card', 'amount=1');
+INSERT INTO Actions VALUES ('village', 'add_actions', 'Adds 2 actions to your turn', 'amount=2');
+INSERT INTO Actions VALUES ('woodcutter', 'add_buys', 'Adds 1 buy to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('woodcutter', 'add_buypower', 'Adds 2 coins to your turn', 'amount=2');
+INSERT INTO Actions VALUES ('moneylender', 'trash_range', 'Ability to trash a single copper for $3', 'min=0;max=1;restrict=copper');
+INSERT INTO Actions VALUES ('cellar', 'add_actions', 'Adds 1 action to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('cellar', 'discard_choose', 'Discard any number of cards. +1 Card per card discarded', '');
+INSERT INTO Actions VALUES ('market', 'draw_cards', 'Draw 1 card', 'amount=1');
+INSERT INTO Actions VALUES ('market', 'add_actions', 'Adds 1 action to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('market', 'add_buys', 'Adds 1 buy to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('market', 'add_buypower', 'Adds 1 coin to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('militia', 'add_buypower', 'Adds 2 coins to your turn', 'amount=2');
+INSERT INTO Actions VALUES ('militia', 'discard_until', 'Discard down to 3 cards in your hand', 'amount=3;for=others');
+INSERT INTO Actions VALUES ('mine', 'trash_specific', 'Trash a treasure card from your hand & gain a treasure card costing up to 3 coins more', 'amount=1;restrict=gold,copper,silver');
+INSERT INTO Actions VALUES ('moat', 'draw_cards', 'Draw 2 cards', 'amount=2');
+INSERT INTO Actions VALUES ('remodel', 'trash_specific', 'Trash a card from your hand. Gain a card costing up to 2 Coins more than the trashed card', 'amount=1');
+INSERT INTO Actions VALUES ('smithy', 'draw_cards', 'Draw 3 cards', 'amount=3');
+INSERT INTO Actions VALUES ('workshop', 'gain_card', 'Gain a card costing up to 4 coins', 'cost=4');
+INSERT INTO Actions VALUES ('adventurer', 'adventurer', 'Reveal cards from your deck until you reveal 2 Treasure cards. Put those Treasure cards into your hand and discard the other revealed cards', '');
+INSERT INTO Actions VALUES ('bureaucrat', 'gain_specific_card', 'Gain a Silver card; put it on top of your deck', 'card=silver;to=top_deck');
+INSERT INTO Actions VALUES ('bureaucrat', 'bureaucrat', 'Each other player reveals a Victory card from his hand and puts it on his deck', 'for=others');
+INSERT INTO Actions VALUES ('chancellor', 'add_buypower', 'Adds 2 coins to your turn', 'amount=2');
+INSERT INTO Actions VALUES ('chancellor', 'transferpile', 'You immediately put your deck into your discard pile', 'from=deck;to=discard');
+INSERT INTO Actions VALUES ('feast', 'trash_self', 'Trash this card', '');
+INSERT INTO Actions VALUES ('feast', 'gain_card', 'Gain a card costing up to 5 coins', 'cost=5');
+INSERT INTO Actions VALUES ('laboratory', 'draw_cards', 'Draw 2 cards', 'amount=2');
+INSERT INTO Actions VALUES ('laboratory', 'add_actions', 'Adds 1 action to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('throne_room', 'multiaction', 'Choose an Action card in your hand. Play it twice', 'times=2');
+INSERT INTO Actions VALUES ('council_room', 'draw_cards', 'Draw 4 cards', 'amount=4');
+INSERT INTO Actions VALUES ('council_room', 'add_buys', 'Adds 1 buy to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('council_room', 'draw_cards', 'Every other player draws 1 card', 'amount=1;for=others');
+INSERT INTO Actions VALUES ('festival', 'add_actions', 'Adds 2 actions to your turn', 'amount=2');
+INSERT INTO Actions VALUES ('festival', 'add_buys', 'Adds 1 buy to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('festival', 'add_buypower', 'Adds 2 coins to your turn', 'amount=2');
+INSERT INTO Actions VALUES ('witch', 'draw_cards', 'Draw 2 cards', 'amount=2');
+INSERT INTO Actions VALUES ('witch', 'gain_specific_card', 'Draw a curse card', 'card=curse;for=others;to=hand');
+INSERT INTO Actions VALUES ('library', 'draw_cards', 'Draw until you have 7 cards', 'amount=7;type=until');
+INSERT INTO Actions VALUES ('library', 'discard_choose', 'Discard any number of action cards', 'restricttype=action');
+INSERT INTO Actions VALUES ('thief', 'thief', 'You reveal the top 2 cards from your deck, the thief grabs all the treasure', 'for=others');
+INSERT INTO Actions VALUES ('spy', 'draw_cards', 'Draw 1 card', 'amount=1');
+INSERT INTO Actions VALUES ('spy', 'add_actions', 'Adds 1 action to your turn', 'amount=1');
+INSERT INTO Actions VALUES ('spy', 'spy', 'Reveal the top card of your deck, discard or put it back. Your choice.', 'for=everyone');
+
+INSERT INTO ActionCallbacks VALUES ('moneylender', 'trash_range', 'add_buypower', 'Grants 3 buypower', 'amount=3');
+INSERT INTO ActionCallbacks VALUES ('cellar', 'discard_choose', 'draw_cards', 'Draw 1 card', 'amount=1');
+INSERT INTO ActionCallbacks VALUES ('mine', 'trash_specific', 'gain_card', 'Gain a treasure card costing up to 3 coins more', 'cost=3;type=treasure');
+INSERT INTO ActionCallbacks VALUES ('remodel', 'trash_specific', 'gain_card', 'gain a card costing up to 2 coins more', 'cost=2');
