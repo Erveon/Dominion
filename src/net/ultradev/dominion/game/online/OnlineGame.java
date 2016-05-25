@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.websocket.Session;
 
@@ -136,7 +137,7 @@ public class OnlineGame extends Game {
 				.accumulate("id", getUniqueId().toString())
 				.accumulate("cardset", getConfig().getCardset())
 				.accumulate("name", name)
-				.accumulate("players", players.values().stream().map(Player::getDisplayname));
+				.accumulate("players", players.values().stream().map(Player::getDisplayname).collect(Collectors.toList()));
 	}
 	
 	public JSONObject getLobbyInfo() {
