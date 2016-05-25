@@ -109,8 +109,8 @@ public class OnlineGame extends Game {
 	
 	public void sendToHost(JSONObject message) {
 		try {
-			if(creator.isOpen()) {
-			creator.getBasicRemote().sendText(message.toString());
+			if(creator != null && creator.isOpen()) {
+				creator.getBasicRemote().sendText(message.toString());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
