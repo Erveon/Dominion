@@ -56,38 +56,45 @@ Dominion.Online = (function(Online) {
             console.log('Received: ', JSON.parse(msg.data));
             var data = JSON.parse(msg.data);
 
-            switch(data.type.toLowerCase()) {
-                case "lobbies":
-                    createLobbies(data.lobbies);
-                    break;
+            if(data.type !== undefined) {
+                switch(data.type.toLowerCase()) {
+                    case "lobbies":
+                        createLobbies(data.lobbies);
+                        break;
 
-                case "updatelobby":
-                    updateLobbies(data.lobby);
-                    break;
+                    case "updatelobby":
+                        updateLobbies(data.lobby);
+                        break;
 
-                case "addlobby":
-                    addLobby(data.lobby);
-                    break;
+                    case "addlobby":
+                        addLobby(data.lobby);
+                        break;
 
-                case "dellobby":
-                    delLobby(data.lobby);
-                    break;
+                    case "dellobby":
+                        delLobby(data.lobby);
+                        break;
 
-                case "gameinfo":
-                    updateGameInfo(data.game);
-                    break;
+                    case "gameinfo":
+                        updateGameInfo(data.game);
+                        break;
 
-                case "chat":
-                    updateLobbyChat(data);
-                    break;
+                    case "chat":
+                        updateLobbyChat(data);
+                        break;
 
-                case "startgame":
-                    initializeGame(data);
-                    break;
+                    case "startgame":
+                        initializeGame(data);
+                        requestUpdatedGameInfo();
+                        break;
 
-                case "game":
-                    updateGameData(data);
-                    break;
+                    case "game":
+                        if(data.response !== "OK" && data.result !== "DONE") {
+                            updateGameData(data);
+                        } else {
+                            requestUpdatedGameInfo();
+                        }
+                        break;
+                }
             }
         };
     };
@@ -227,6 +234,7 @@ Dominion.Online = (function(Online) {
 
     var createLobby = function(name, creator) {
         send({"type": "createlobby", "name": name, "displayname": creator});
+        thisplayer = creator;
     };
 
     var send = function(message) {
@@ -363,15 +371,19 @@ Dominion.Online = (function(Online) {
             case 'ACTION':
                 $('.actionDisp').addClass('activePhase');
                 $('.currPhase').text("Action");
-                if(thisplayer === turn.player) {
-                    $('#controls .endPhase').text('End Action Phase');
+                $('#controls .endPhase').text('End Action Phase');
+                $("#controls .mainAction").show();
+                if(thisplayer !== turn.player) {
+                    $("#controls .mainAction").hide();
                 }
                 break;
             case 'BUY':
                 $('.buyDisp').addClass('activePhase');
                 $('.currPhase').text("Buy");
-                if(thisplayer === turn.player) {
-                    $('#controls .endPhase').text('End Turn');
+                $('#controls .endPhase').text('End Turn');
+                $("#controls .mainAction").show();
+                if(thisplayer !== turn.player) {
+                    $("#controls .mainAction").hide();
                 }
                 break;
         }
@@ -394,7 +406,7 @@ Dominion.Online = (function(Online) {
     };
 
     var loadCards = function(hand) {
-        $('#handPile').empty();
+        $('#handPile').children().remove();
 
         for (var card in hand) {
             addCard(card, hand, $("#handPile"));
@@ -435,18 +447,8 @@ Dominion.Online = (function(Online) {
 
     var handlePhaseEnd = function () {
         if(turn.phase === "BUY") {
-            var target = turn.next_player;
-
-            this.passTurn(target, function() {
-                $(".overlay").slideUp(function() {
-                    $(".overlay").remove();
-                });
-
-                handCarousel.currentTab = 0;
-                $('#playedCards').empty();
-                endPhase();
-                //gameObj.hasSkippedThisTurn = false;
-            });
+            handCarousel.currentTab = 0;
+            endPhase();
         } else {
             stopAction();
             endPhase();
@@ -538,21 +540,158 @@ Dominion.Online = (function(Online) {
         });
     };
 
-    var updateCardListeners = function () {
-        if(turn.phase === "ACTION") {
-            $("#handPile .action, #handPile .curse").on("click", function(e) {
-                togglePlayBuffer($(this));
-                e.stopImmediatePropagation();
+
+    var showCardSelector = function(response, originCardName) {
+        if (response.player === thisplayer) {
+            determineAction(response);
+            var originCardRemoved = false;
+            $("#selectorPile .card").each(function() {
+                if($(this).children().first().children().text().toLowerCase().replace(/ /g, "_") === originCardName && originCardRemoved === false) {
+                    $(this).remove();
+                    originCardRemoved = true;
+                }
             });
-            $("#handPile .treasure").off().append("<div class='dim'></div>");
-        } else {
-            $("#handPile .treasure").on("click", function(e) {
-                togglePlayBuffer($(this));
-                e.stopImmediatePropagation();
-            });
-            $("#handPile .action, #handPile .curse").off().append("<div class='dim'></div>");
+            $('.overlay').slideDown();
+            //gameObj.returnToSamePlayer = true;
         }
-        $("#handPile .victory").off().append("<div class='dim'></div>");
+    };
+
+    var determineAction = function(response) {
+        switch(response.result) {
+            case 'SELECT_CARD_HAND':
+                selectCardsFromHand(response);
+                break;
+            case 'SELECT_CARD_BOARD':
+                selectCardsFromBoard(response);
+                break;
+            case 'REVEAL':
+                revealCards(response);
+                break;
+        }
+    };
+
+    var selectCardsFromHand = function(response) {
+        var sourceArray = generateHandArray(response.player);
+        var message = response.message;
+        var force = response.force;
+        showActionOverlay(sourceArray, message, force);
+        addSelectorListeners();
+    };
+
+    var selectCardsFromBoard = function(response) {
+        var sourceArray = generateBoardArray(response.cost);
+        var message = response.message;
+        var force = response.force;
+        showActionOverlay(sourceArray, message, force);
+        addSelectorListeners();
+    };
+
+    var revealCards = function(response){
+        var sourceArray = response.reveal;
+        var message = response.message;
+        var force = response.force;
+
+        if(response.reveal.length !== 0) {
+            showActionOverlay(sourceArray, message, force);
+        } else {
+            stopAction();
+        }
+    };
+
+    var showActionOverlay = function(sourceArray, message, force, type) {
+        var overlayHTML = "<div class='overlay'></div>";
+        var selectorContainer = "<div id='selectorContainer'></div>";
+        var leftArrow = "<a href='' class='arrow prev'><i class='material-icons'>chevron_left</i></a>";
+        var rightArrow = "<a href='' class='arrow next'><i class='material-icons'>chevron_right</i></a>";
+        var selectorHand = "<ul id='selectorPile' class='cardContainer'></ul>";
+        var selectorCarousel = null;
+        $('body').append(overlayHTML);
+        $('.overlay').append("<h2 class='message'>" + message + "</h2>").append(selectorContainer);
+        $('#selectorContainer').append(leftArrow).append(selectorHand).append(rightArrow);
+        addCardsFromSourceArray(sourceArray);
+        selectorCarousel = new Dominion.Interface.Carousel($('#selectorContainer'));
+        handleSelectButton(force);
+    };
+
+    var generateHandArray = function(targetHand) {
+        var hand = [];
+
+        for(var player in players) {
+            if(players[player].displayname === targetHand){
+                hand = players[player].hand;
+            }
+        }
+
+        return hand;
+    };
+
+    var generateBoardArray = function(maxCost) {
+        var boardArray = [board.action, board.treasure, board.victory];
+        var buyableCards = [];
+
+        for(var array in boardArray) {
+            for(var card in boardArray[array]) {
+                if(boardArray[array][card].cost <= maxCost && boardArray[array][card].amount > 0) {
+                    buyableCards.push(boardArray[array][card]);
+                }
+            }
+        }
+
+        return buyableCards;
+    };
+
+    var addCardsFromSourceArray = function(sourceArray) {
+        for(var item in sourceArray) {
+            addCard(item, sourceArray, $("#selectorPile"));
+        }
+    };
+
+    var handleSelectButton = function(force) {
+        if(force === false) {
+            $('.overlay').append("<a class='actionBtn continue' href=''>Continue</a>");
+            $('.overlay a.actionBtn').on('click', function (e) {
+                e.preventDefault();
+                stopAction();
+
+                if (gameObj.returnToSamePlayer === true) {
+                    $('.overlay').slideUp(function() {
+                        $('.overlay').remove();
+                    });
+                    gameObj.returnToSamePlayer = false;
+                }
+
+                e.stopImmediatePropagation();
+            });
+        }
+    };
+
+    var addSelectorListeners = function(type) {
+        $('#selectorPile .card').on('click', function(e) {
+            var card = $(this).children().first().children().text();
+            selectCard(card, $(this));
+            e.stopImmediatePropagation();
+        });
+    };
+
+    var updateCardListeners = function () {
+        if(thisplayer === turn.player) {
+            if(turn.phase === "ACTION") {
+                $("#handPile .action, #handPile .curse").on("click", function(e) {
+                    togglePlayBuffer($(this));
+                    e.stopImmediatePropagation();
+                });
+                $("#handPile .treasure").off().append("<div class='dim'></div>");
+            } else {
+                $("#handPile .treasure").on("click", function(e) {
+                    togglePlayBuffer($(this));
+                    e.stopImmediatePropagation();
+                });
+                $("#handPile .action, #handPile .curse").off().append("<div class='dim'></div>");
+            }
+            $("#handPile .victory").off().append("<div class='dim'></div>");
+        } else {
+            $("#handPile .card").append("<div class='dim'></div>");
+        }
     };
 
     var updateMarketListeners = function() {
@@ -676,7 +815,7 @@ Dominion.Online = (function(Online) {
     };
 
     var handlePlayTreasuresVisibility = function() {
-        if (turn.phase === "ACTION") {
+        if (turn.phase === "ACTION" || thisplayer !== turn.player) {
             $("#controls .playTreasures").hide();
         } else {
             $("#controls .playTreasures").show();
@@ -795,11 +934,12 @@ Dominion.Online = (function(Online) {
     };
 
     var playCard = function(card) {
-        send({"type": "play", "request": {"action": "playcard", "card": card}});
+        var cardToPlay = card.children().first().children().text().toLowerCase().replace(/ /g, "_");
+        send({"type": "play", "request": {"action": "playcard", "card": cardToPlay}});
     };
 
     var buyCard = function(card) {
-        send({"type": "play", "request": {"action": "playcard", "card": card}});
+        send({"type": "play", "request": {"action": "buycard", "card": card}});
     };
 
     var selectCard = function(card) {
@@ -808,6 +948,10 @@ Dominion.Online = (function(Online) {
 
     var stopAction = function() {
         send({"type": "play", "request": {"action": "stopaction"}});
+    };
+
+    var requestUpdatedGameInfo = function() {
+        send({"type": "info"});
     };
 
     return Online;
