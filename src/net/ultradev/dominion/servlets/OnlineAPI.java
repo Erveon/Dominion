@@ -165,7 +165,12 @@ public class OnlineAPI {
     
     public void play(Session session, OnlineGame game, JSONObject json) {
     	JSONObject response = null;
-    	switch(json.getString("action").toLowerCase()) {
+		GameManager gm = getGameServer().getGameManager();
+    	if(json.containsKey("request") && json.getJSONObject("request").containsKey("action")) {
+			send(session, gm.getInvalid("Play needs a request & action"));
+			return;
+    	}
+    	switch(json.getJSONObject("request").getString("action").toLowerCase()) {
 	    	case "endphase":
 	    		response = game.endPhase();
 	    		game.broadcast(game.getAsJson());
